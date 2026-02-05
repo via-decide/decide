@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v56 |</title>
+    <title>| decide.engine v57 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -62,10 +62,10 @@
             letter-spacing: 1px; font-weight: 700; text-transform: uppercase;
         }
 
-        /* 🎥 CLEANER VIDEO LAYOUT */
+        /* 🎥 VIDEO ENGINE */
         .video-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: -1; opacity: 0.3; /* Dimmed slightly more for readability */
+            object-fit: cover; z-index: -1; opacity: 0.3;
         }
         
         .winner-container {
@@ -124,7 +124,7 @@
             display: flex; justify-content: space-between;
         }
         
-        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
         .btn-full { grid-column: span 2; }
         .btn-amazon { background: #232f3e; border: none; color: #ff9900; }
@@ -142,6 +142,12 @@
         }
         .cuisine-btn { background: #222; border: 1px solid #444; color: #888; padding: 20px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-radius: 12px; transition: all 0.2s; flex-shrink: 0; }
         .cuisine-btn.selected { background: var(--brand-orange); color: #000; border-color: var(--brand-orange); }
+
+        /* ENGINE STATS */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .stat-card { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333; }
+        .stat-val { color: var(--accent-go); font-size: 1.2rem; font-weight: bold; font-family: var(--font-tech); }
+        .stat-label { color: #666; font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; }
 
         #search-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 15px; font-size: 1.2rem; border-radius: 8px; margin-bottom: 20px; outline: none; text-align: center; }
         .source-toggle { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
@@ -173,7 +179,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v56.0
+       KUTCH AUTOMATION | UNIVERSAL OS v57.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
@@ -215,6 +221,7 @@
         }
     };
 
+    // 🧠 2. MODULE REGISTRY (Expanded)
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
@@ -251,6 +258,12 @@
             label: "RESEARCH",
             database: null,
             init: () => renderSearchSlide(),
+            categories: []
+        },
+        review: {
+            label: "ENGINE REVIEW",
+            database: null,
+            init: () => renderEngineReview(),
             categories: []
         }
     };
@@ -307,7 +320,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v56.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v57.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -333,6 +346,34 @@
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
+    /* 🟢 MODULE: ENGINE REVIEW (NEW) */
+    function renderEngineReview() {
+        const container = document.getElementById('master-container');
+        while(container.children.length > 1) container.removeChild(container.lastChild);
+        slideElements = [slideElements[0]];
+        const section = document.createElement('section');
+        section.className = "main-slide next";
+        
+        section.innerHTML = `
+        <div class="slide-header"><span class="header-title">SYSTEM DIAGNOSTICS</span></div>
+        <div class="lobby-container">
+            <h1 style="text-align:center">ENGINE STATUS: ONLINE</h1>
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-val">v57.0</div><div class="stat-label">CORE VER</div></div>
+                <div class="stat-card"><div class="stat-val">ACTIVE</div><div class="stat-label">NEURAL NET</div></div>
+                <div class="stat-card"><div class="stat-val">${Object.keys(PHONE_DB).length}</div><div class="stat-label">PHONES DB</div></div>
+                <div class="stat-card"><div class="stat-val">${Object.keys(AUDIO_DB).length}</div><div class="stat-label">AUDIO DB</div></div>
+                <div class="stat-card"><div class="stat-val">LIVE</div><div class="stat-label">WIKI ENGINE</div></div>
+                <div class="stat-card"><div class="stat-val">READY</div><div class="stat-label">PDF BUILDER</div></div>
+            </div>
+            <button class="btn btn-full" style="margin-top:30px" onclick="location.reload()">REBOOT SYSTEM</button>
+        </div>`;
+        container.appendChild(section);
+        slideElements.push(section);
+        goToSlide(1);
+    }
+
+    /* 🟢 MODULE: SMARTPHONES */
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
