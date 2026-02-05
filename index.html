@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v55 |</title>
+    <title>| decide.engine v56 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -24,6 +25,7 @@
             --accent-zomato: #cb202d;
             --accent-swiggy: #fc8019;
             --accent-blinkit: #f8cb46;
+            --accent-yt: #FF0000;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -68,8 +70,9 @@
         }
         .winner-overlay {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, #000 80%, transparent);
+            background: linear-gradient(to top, #000 90%, transparent);
             padding: 40px 25px; box-sizing: border-box;
+            display: flex; flex-direction: column; gap: 15px;
         }
 
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; margin-top: 70px; }
@@ -107,19 +110,30 @@
             width: fit-content; margin-bottom: 15px; font-weight: bold;
         }
 
+        /* 🎥 VIDEO CHIP */
+        .video-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(255,0,0,0.15); color: #ff4444; border: 1px solid #ff4444;
+            padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; 
+            font-family: var(--font-tech); cursor: pointer; margin-left: 10px;
+            vertical-align: middle;
+        }
+
         .nav-hint {
             margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
             font-family: var(--font-tech); font-size: 0.7rem; color: #666;
             display: flex; justify-content: space-between;
         }
         
-        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
         .btn-full { grid-column: span 2; }
         .btn-amazon { background: #232f3e; border: none; color: #ff9900; }
         .btn-zomato { background: #cb202d; border: none; }
-        .btn-blinkit { background: #f8cb46; color: #000; border: none; }
+        .btn-blinkit { background: var(--accent-blinkit); color: #000; border: none; }
         .btn-wa { background: #25D366; color: #000; border: none; }
+        .btn-yt { background: #cc0000; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-speak { background: #444; color: #fff; border: 1px solid #666; }
         
         /* 🟢 SCROLLABLE LOBBY */
         .lobby-container { 
@@ -161,39 +175,36 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v55.0
+       KUTCH AUTOMATION | UNIVERSAL OS v56.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. DATABASES
+    // 🧠 1. DATABASES WITH VIDEO LINKS
+    // Note: Video links are dynamically generated if set to null
     const PHONE_DB = {
-      "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
-      "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
-      "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999 },
-      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999 },
-      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999 },
-      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999 },
-      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999 },
-      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499 },
-      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999 }
+      "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
+      "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
+      "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999, video: null },
+      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999, video: null },
+      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999, video: null },
+      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null },
+      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999, video: null },
+      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499, video: null },
+      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999, video: null }
     };
 
-    // 🟢 NEW 2026 EARBUD DB
     const AUDIO_DB = {
-      // 🏆 Flagships
-      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9, mic: 9.5, latency: 8.5, battery: 7.0 }, tags: ["audiophile", "multipoint", "work_pro"], price: 22990 },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, mic: 8.5, latency: 6.0, battery: 7.5 }, tags: ["anc_king", "travel"], price: 24990 },
-      // 🎮 Gaming & Sport
-      "SteelSeries Arctis": { attr: { anc: 7.0, sound: 8.0, mic: 8.0, latency: 10.0, battery: 8.0 }, tags: ["gaming_pro", "dongle"], price: 17999 },
-      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, mic: 8.0, latency: 7.0, battery: 9.0 }, tags: ["sport", "stable"], price: 21900 },
-      // 🔋 Battery & Budget
-      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, mic: 6.0, latency: 6.0, battery: 10.0 }, tags: ["battery_king", "powerbank"], price: 3999 },
-      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0, mic: 7.5, latency: 7.0, battery: 8.0 }, tags: ["value_anc", "49db"], price: 3299 },
-      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, mic: 5.0, latency: 8.5, battery: 7.0 }, tags: ["budget_king", "rgb"], price: 1499 },
-      "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999 }
+      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9, mic: 9.5, latency: 8.5, battery: 7.0 }, tags: ["audiophile", "multipoint"], price: 22990, video: null },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, mic: 8.5, latency: 6.0, battery: 7.5 }, tags: ["anc_king", "travel"], price: 24990, video: null },
+      "SteelSeries Arctis": { attr: { anc: 7.0, sound: 8.0, mic: 8.0, latency: 10.0, battery: 8.0 }, tags: ["gaming_pro", "dongle"], price: 17999, video: null },
+      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, mic: 8.0, latency: 7.0, battery: 9.0 }, tags: ["sport", "stable"], price: 21900, video: null },
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, mic: 6.0, latency: 6.0, battery: 10.0 }, tags: ["battery_king", "powerbank"], price: 3999, video: null },
+      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0, mic: 7.5, latency: 7.0, battery: 8.0 }, tags: ["value_anc", "49db"], price: 3299, video: null },
+      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, mic: 5.0, latency: 8.5, battery: 7.0 }, tags: ["budget_king", "rgb"], price: 1499, video: null },
+      "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999, video: null }
     };
 
     const DEAL_BREAKERS = {
@@ -206,16 +217,6 @@
             app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
             web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
         }
-    };
-
-    // 🟢 UPDATE 1: Vectors now support 'battery' for audio
-    const CATEGORY_VECTORS = {
-        "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
-        "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 },
-        "comfort_food": { comfort: 0.45, heaviness: 0.20, speed: 0.10 },
-        "study_fuel": { speed: 0.5, comfort: 0.4, health: -0.1 },  
-        "mid_week": { speed: 0.6, health: 0.2, heaviness: -0.2 }, 
-        "bistro": { speed: 0.5, comfort: 0.2 } 
     };
 
     // 🧠 2. MODULE REGISTRY
@@ -237,7 +238,6 @@
             label: "EARBUDS",
             database: AUDIO_DB,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); },
-            // 🟢 UPDATE 2: New Audio Layers
             categories: [
                 { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
                 { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
@@ -260,6 +260,7 @@
         }
     };
 
+    // ... (Wiki Engine remains same) ...
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
@@ -315,7 +316,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v55.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v56.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -378,18 +379,15 @@
 
         const section = document.createElement('section');
         section.className = "main-slide next"; 
-        
         const module = MODULES[domain];
         const categories = module.categories;
 
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
-        
         categories.forEach((cat, idx) => {
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
-        
         section.innerHTML = html;
         container.appendChild(section);
         slideElements.push(section); 
@@ -413,7 +411,7 @@
         buildDeck(); 
     }
 
-    /* 🟢 MODULE: EXTERNAL (FOOD) */
+    /* 🟢 MODULE: EXTERNAL & RESEARCH */
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -427,7 +425,6 @@
         container.appendChild(closeBtn);
     }
     
-    /* 🟢 MODULE: RESEARCH */
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -516,7 +513,12 @@
         showToast("DOWNLOAD STARTED");
     }
 
-    /* 🟢 CORE: DECK BUILDER */
+    /* 🟢 CORE: DECK BUILDER (WITH VIDEO) */
+    function getMediaLink(itemName) {
+        // Fallback to Dynamic YouTube Search
+        return `https://www.youtube.com/results?search_query=${encodeURIComponent(itemName + " review 2026")}`;
+    }
+
     function buildDeck() {
         const container = document.getElementById('master-container');
         const currentMod = MODULES[ENGINE_STATE.currentDomain];
@@ -550,6 +552,8 @@
                             <div class="input-group" id="final-list" style="background:rgba(0,0,0,0.8);"></div>
                             <div class="final-actions">
                                 <button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button>
+                                <button class="btn btn-yt" onclick="openReview()">▶ WATCH REVIEW</button>
+                                <button class="btn btn-speak" onclick="triggerVerdictSpeech()">🔊 HEAR VERDICT</button>
                                 <button class="btn btn-full" onclick="location.reload()">RESTART</button>
                             </div>
                         </div>
@@ -558,7 +562,8 @@
                 let html = `<div class="slide-header"><span class="header-title">${s.title}</span></div><div class="carousel-viewport">`;
                 s.items.forEach((item, i) => {
                     html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}">
-                             <div class="role-label">OPTION</div><h1>${item.name}</h1>
+                             <div class="role-label">OPTION</div>
+                             <h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1>
                              <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
                 });
                 html += `</div>`;
@@ -624,6 +629,25 @@
             ENGINE_STATE.items_detected[winner.name] = {qty:1};
         }
         list.innerHTML = html;
+        // Try auto-speak (might be blocked)
+        setTimeout(() => triggerVerdictSpeech(), 1000);
+    }
+
+    /* 🔊 SONIC VERDICT */
+    function triggerVerdictSpeech() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!winner) return;
+        
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = `The winner is ${winner}. Based on your priorities, this is the best choice.`;
+        msg.lang = 'en-US';
+        msg.rate = 1.0;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function openReview() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(winner) window.open(getMediaLink(winner), '_blank');
     }
 
     /* =========================================
