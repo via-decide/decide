@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v54 |</title>
+    <title>| decide.engine v55 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -21,6 +21,9 @@
             --text-main: #f0f0f0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
+            --accent-zomato: #cb202d;
+            --accent-swiggy: #fc8019;
+            --accent-blinkit: #f8cb46;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -158,14 +161,14 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v54.0
+       KUTCH AUTOMATION | UNIVERSAL OS v55.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. DATABASES (Truth Source)
+    // 🧠 1. DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
@@ -178,14 +181,19 @@
       "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999 }
     };
 
+    // 🟢 NEW 2026 EARBUD DB
     const AUDIO_DB = {
-      "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
-      "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 },
-      "OnePlus Buds 3 Pro": { attr: { anc: 8.5, sound: 9.5, mic: 8.0, latency: 7.0 }, price: 8999 },
-      "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
-      "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
-      "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 },
-      "Razer Hammerhead V3": { attr: { anc: 6.0, sound: 7.0, mic: 7.0, latency: 9.8 }, price: 14999 }
+      // 🏆 Flagships
+      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9, mic: 9.5, latency: 8.5, battery: 7.0 }, tags: ["audiophile", "multipoint", "work_pro"], price: 22990 },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, mic: 8.5, latency: 6.0, battery: 7.5 }, tags: ["anc_king", "travel"], price: 24990 },
+      // 🎮 Gaming & Sport
+      "SteelSeries Arctis": { attr: { anc: 7.0, sound: 8.0, mic: 8.0, latency: 10.0, battery: 8.0 }, tags: ["gaming_pro", "dongle"], price: 17999 },
+      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, mic: 8.0, latency: 7.0, battery: 9.0 }, tags: ["sport", "stable"], price: 21900 },
+      // 🔋 Battery & Budget
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, mic: 6.0, latency: 6.0, battery: 10.0 }, tags: ["battery_king", "powerbank"], price: 3999 },
+      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0, mic: 7.5, latency: 7.0, battery: 8.0 }, tags: ["value_anc", "49db"], price: 3299 },
+      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, mic: 5.0, latency: 8.5, battery: 7.0 }, tags: ["budget_king", "rgb"], price: 1499 },
+      "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999 }
     };
 
     const DEAL_BREAKERS = {
@@ -200,7 +208,17 @@
         }
     };
 
-    // 🧠 2. MODULE REGISTRY (The Core Refactor)
+    // 🟢 UPDATE 1: Vectors now support 'battery' for audio
+    const CATEGORY_VECTORS = {
+        "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
+        "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 },
+        "comfort_food": { comfort: 0.45, heaviness: 0.20, speed: 0.10 },
+        "study_fuel": { speed: 0.5, comfort: 0.4, health: -0.1 },  
+        "mid_week": { speed: 0.6, health: 0.2, heaviness: -0.2 }, 
+        "bistro": { speed: 0.5, comfort: 0.2 } 
+    };
+
+    // 🧠 2. MODULE REGISTRY
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
@@ -219,11 +237,13 @@
             label: "EARBUDS",
             database: AUDIO_DB,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); },
+            // 🟢 UPDATE 2: New Audio Layers
             categories: [
-                { label: "MUSIC LOVER", type: "sound", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Buds 3 Pro"}] },
-                { label: "GAMING (LOW LATENCY)", type: "latency", items: [{"name": "Razer Hammerhead V3"}, {"name": "Realme Buds T310"}] },
-                { label: "CALLS & WORK", type: "mic", items: [{"name": "Nothing Ear (4)"}, {"name": "Realme Buds Air 7 Pro"}] },
-                { label: "TRAVEL (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "Samsung Buds 3 Pro"}] }
+                { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
+                { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
+                { label: "WORK CALLS (AI MIC)", type: "mic", items: [{"name": "Technics AZ100"}, {"name": "OnePlus Nord Buds 3"}] },
+                { label: "SILENCE (ANC >45dB)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
+                { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}, {"name": "Beats Powerbeats 2"}] }
             ]
         },
         food: {
@@ -295,7 +315,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v54.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v55.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -318,11 +338,10 @@
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🚀 MODULAR JUMP
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
-    /* 🟢 MODULE: SMARTPHONES (Layer 0 Gate) */
+    /* 🟢 MODULE: SMARTPHONES */
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -350,7 +369,7 @@
         renderSubLobby('smartphones');
     }
 
-    /* 🟢 MODULE: FILTERS (Shared for Tech) */
+    /* 🟢 MODULE: FILTERS */
     function renderSubLobby(domain) {
         const container = document.getElementById('master-container');
         const depth = domain === 'smartphones' ? 2 : 1; 
@@ -390,7 +409,6 @@
 
     function startHunt() { 
         if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
-        // Reset Weights
         ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1, anc:0.1, sound:0.1, mic:0.1, latency:0.1 };
         buildDeck(); 
     }
@@ -512,7 +530,6 @@
 
         let slides = [];
         targetCats.forEach(cat => {
-            // Only add actionable slides, not meta-filters
             if(cat.type !== "fast_charge" && cat.type !== "lightweight") {
                 slides.push({ type: 'opt', title: cat.label, items: cat.items });
             }
@@ -568,7 +585,6 @@
 
         for (let name in DB) {
             let item = DB[name];
-            // Safe guard for items without tags (like audio)
             const tags = item.tags || [];
             const hasDeadlyTag = tags.some(t => bannedTags.includes(t));
             if(hasDeadlyTag) continue; 
