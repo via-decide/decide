@@ -1,15 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v52 |</title>
+    <title>| decide.engine v53 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="background-color" content="#0a0a0a">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -22,6 +20,7 @@
             --text-main: #f0f0f0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
+            --accent-warn: #ffcc00;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -58,9 +57,15 @@
             letter-spacing: 1px; font-weight: 700; text-transform: uppercase;
         }
 
-        .pdf-btn {
-            background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px;
-            border-radius: 4px; font-size: 0.7rem; font-family: var(--font-tech); cursor: pointer;
+        /* 🎥 VIDEO ENGINE */
+        .video-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1; opacity: 0.4;
+        }
+        .winner-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(to top, #000 80%, transparent);
+            padding: 40px 25px; box-sizing: border-box;
         }
 
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; }
@@ -76,10 +81,8 @@
         .sub-slide.static { z-index: 30; opacity: 1; pointer-events: auto; transform: none; }
 
         h1 { font-size: 1.8rem; margin: 0 0 15px 0; line-height: 1; letter-spacing: -1px; color: var(--brand-orange); }
-        .primary-question { font-size: 1.1rem; color: #fff; margin-bottom: 25px; line-height: 1.4; font-weight: 600; }
         .wiki-summary { font-size: 0.9rem; color: #aaa; line-height: 1.6; max-height: 180px; overflow-y: auto; margin-bottom: 20px; }
 
-        /* 📚 BOOK & SUPPORT */
         .resources-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333; }
         .book-btn {
             background: #232f3e; color: #FF9900; border: 1px solid #FF9900; 
@@ -91,6 +94,7 @@
             text-align: center; font-size: 0.7rem; color: #666; text-decoration: none; 
             display: block; margin-top: 10px; font-family: var(--font-tech); opacity: 0.7;
         }
+        .pdf-btn { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
 
         .role-label {
             font-family: var(--font-tech); font-size: 0.6rem; color: #000;
@@ -103,11 +107,6 @@
             font-family: var(--font-tech); font-size: 0.7rem; color: #666;
             display: flex; justify-content: space-between;
         }
-
-        .input-group { border: 1px solid #333; background: #111; padding: 20px; border-radius: 8px; margin-bottom: 20px; max-height: 40vh; overflow-y: auto; }
-        .input-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 10px 0; font-family: var(--font-tech); font-size: 0.8rem; }
-        .input-key { color: #888; text-transform: uppercase; }
-        .input-val { color: var(--accent-go); font-weight: bold; text-align: right; }
         
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
@@ -148,18 +147,19 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v52.0
+       KUTCH AUTOMATION | UNIVERSAL OS v53.0
        ========================================= */
     
     // 🔧 CONFIG
     const AMZN_TAG = "decideos-21";
-    const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation"; // Example link
+    const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
+    // Placeholder video for the winner reveal
+    const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. CONTEXT EXTRACTOR
+    // 🧠 1. CONTEXT EXTRACTOR (WIKI)
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
-        
         async search(query) {
             try {
                 const base = this.endpoints[this.source];
@@ -189,46 +189,75 @@
         }
     };
 
-    // 🧠 2. TECH TRUTH DATABASES
+    // 🧠 2. TECH TRUTH DATABASES (UPDATED 2026)
+    // ⚠️ CRITICAL: Tags added for "Deal Breaker" Logic
     const PHONE_DATABASE = {
-      "Poco F7": { attr: { camera: 6.0, gaming: 9.5, battery: 8.0, ui: 4.0 }, price: 29999 },
-      "iQOO Neo 10R": { attr: { camera: 6.5, gaming: 9.0, battery: 7.5, ui: 5.0 }, price: 30999 },
-      "Nothing 3a Pro": { attr: { camera: 8.0, gaming: 6.0, battery: 7.0, ui: 10.0 }, price: 27999 },
-      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, price: 32999 },
-      "Vivo V60e": { attr: { camera: 9.0, gaming: 5.0, battery: 7.0, ui: 7.0 }, price: 28999 },
-      "Samsung A55": { attr: { camera: 7.5, gaming: 5.0, battery: 6.5, ui: 9.0 }, price: 33999 },
-      "Realme GT 7T": { attr: { camera: 5.0, gaming: 8.5, battery: 10.0, ui: 5.0 }, price: 31999 },
-      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, price: 7499 },
-      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, price: 7999 }
+      "Poco F7": { 
+          attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, 
+          tags: ["heavy", "bloatware", "performance"], 
+          price: 29999 
+      },
+      "iQOO Neo 10R": { 
+          attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, 
+          tags: ["balanced", "value", "144hz"], 
+          price: 30999 
+      },
+      "Nothing 3a Pro": { 
+          attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, 
+          tags: ["clean_ui", "no_charger", "service_king"], 
+          price: 27999 
+      },
+      "Xiaomi 14 Civi": { 
+          attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, 
+          tags: ["camera_king", "compact"], 
+          price: 32999 
+      },
+      "Vivo V60e": { 
+          attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, 
+          tags: ["camera_king", "aura_light", "weak_chip"], 
+          price: 28999 
+      },
+      "Samsung A55": { 
+          attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, 
+          tags: ["trust", "slow_charge", "updates"], 
+          price: 33999 
+      },
+      "Realme GT 7T": { 
+          attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, 
+          tags: ["battery_king", "plastic_build", "120w"], 
+          price: 31999 
+      },
+      "Moto Edge 60": {
+          attr: { camera: 6.5, gaming: 8.0, battery: 8.0, ui: 8.0 },
+          tags: ["waterproof", "shutter_lag"],
+          price: 29999
+      }
     };
 
-    const AUDIO_DATABASE = {
-      "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
-      "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 },
-      "OnePlus Buds 3 Pro": { attr: { anc: 8.5, sound: 9.5, mic: 8.0, latency: 7.0 }, price: 8999 },
-      "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
-      "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
-      "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 }
+    // 🛑 ACHILLES MATRIX (The Kill Switches)
+    // If user selects Key, Kill phones with Value tag
+    const DEAL_BREAKERS = {
+        "Lightweight": "heavy",         // Kills Poco F7
+        "Clean UI": "bloatware",        // Kills Poco, Realme
+        "Fast Charging": "slow_charge", // Kills Samsung A55
+        "In-Box Value": "no_charger",   // Kills Nothing
+        "Instant Camera": "shutter_lag",// Kills Moto
+        "Premium Build": "plastic_build"// Kills Realme
     };
 
     // 🧠 3. CONFIGURATION LAYERS
     const FALLBACK_MENU = {
       "smartphones": {
           "label": "SMARTPHONES",
+          // Layer 0 is handled via Logic Gate now
           "categories": [
               { "label": "CAMERA-FIRST", "type": "camera", "items": [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
               { "label": "PRO GAMER", "type": "gaming", "items": [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
-              { "label": "CLEAN UI", "type": "ui", "items": [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
-              { "label": "BATTERY KING", "type": "battery", "items": [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] }
-          ]
-      },
-      "earbuds": {
-          "label": "EARBUDS",
-          "categories": [
-              { "label": "MUSIC LOVER", "type": "sound", "items": [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Buds 3 Pro"}] },
-              { "label": "GAMING (LATENCY)", "type": "latency", "items": [{"name": "Razer Hammerhead V3"}, {"name": "Realme Buds T310"}] },
-              { "label": "CALLS & WORK", "type": "mic", "items": [{"name": "Nothing Ear (4)"}, {"name": "Realme Buds Air 7 Pro"}] },
-              { "label": "TRAVEL (ANC)", "type": "anc", "items": [{"name": "Sony WF-1000XM6"}, {"name": "Samsung Buds 3 Pro"}] }
+              { "label": "CLEAN UI", "type": "ui", "items": [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] },
+              { "label": "BATTERY KING", "type": "battery", "items": [{"name": "Realme GT 7T"}, {"name": "Poco F7"}] },
+              // NEW FILTERS FOR DEAL BREAKERS
+              { "label": "MUST HAVE: FAST CHARGE", "type": "fast_charge", "items": [] },
+              { "label": "MUST HAVE: LIGHTWEIGHT", "type": "lightweight", "items": [] }
           ]
       },
       "food": { label: "DINING (v28)", categories: [] }, 
@@ -247,7 +276,8 @@
         items_detected: {}, 
         session_weights: {}, 
         active_filters: [],
-        researchPath: [] 
+        researchPath: [],
+        ecosystem: null // "specs" or "peace"
     };
     let RAW_DATA = FALLBACK_MENU;
     let slideElements = [];
@@ -264,7 +294,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v52.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v53.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in RAW_DATA) {
@@ -293,34 +323,58 @@
             renderExternalModule("https://via-decide.github.io/food.decider/");
         } else if(domain === "research") {
             renderSearchSlide();
-        } else { 
+        } else if (domain === "smartphones") {
+            renderEcosystemGate(); // 🟢 NEW LAYER 0
+        } else {
             ENGINE_STATE.active_filters = []; 
             renderSubLobby(domain); 
         }
     }
 
-    function renderExternalModule(url) {
-        const container = document.getElementById('master-container');
-        container.innerHTML = "";
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        container.appendChild(iframe);
-        const closeBtn = document.createElement('button');
-        closeBtn.className = "close-iframe";
-        closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => window.location.reload();
-        container.appendChild(closeBtn);
-    }
-
-    function renderSubLobby(domain) {
+    /* 🟢 LAYER 0: ECOSYSTEM GATE */
+    function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         const section = document.createElement('section');
+        section.className = "main-slide next";
+        
+        section.innerHTML = `
+        <div class="slide-header"><span class="header-title">PHILOSOPHY</span></div>
+        <div class="lobby-container">
+            <h1 style="text-align:center">WHAT MATTERS?</h1>
+            <div style="display:grid; gap:20px;">
+                <button class="cuisine-btn" onclick="selectEcosystem('specs')">
+                    PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, 120W Charge, Customization</span>
+                </button>
+                <button class="cuisine-btn" onclick="selectEcosystem('peace')">
+                    PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Cameras, Resale Value</span>
+                </button>
+            </div>
+        </div>`;
+        
+        container.appendChild(section);
+        slideElements.push(section);
+        goToSlide(1);
+    }
+
+    function selectEcosystem(type) {
+        ENGINE_STATE.ecosystem = type;
+        renderSubLobby("smartphones");
+    }
+
+    function renderSubLobby(domain) {
+        const container = document.getElementById('master-container');
+        // Clear anything after Layer 1 if coming from Ecosystem Gate
+        while(container.children.length > 2) container.removeChild(container.lastChild);
+        // Fix slide array reference
+        slideElements = slideElements.slice(0, 2); 
+
+        const section = document.createElement('section');
         section.className = "main-slide next"; 
         const categories = RAW_DATA[domain].categories;
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
-                    <div class="lobby-container"><h1 style="text-align:center">SELECT PRIORITY</h1><div style="display:grid; gap:15px;">`;
+                    <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
         categories.forEach((cat, idx) => {
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
@@ -328,7 +382,7 @@
         section.innerHTML = html;
         container.appendChild(section);
         slideElements.push(section); 
-        goToSlide(1); 
+        goToSlide(2); 
     }
 
     function toggleFilter(label, idx) {
@@ -344,25 +398,34 @@
 
     function startHunt() { 
         if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
-        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1, anc:0.1, sound:0.1, mic:0.1, latency:0.1 };
+        // Reset Weights
+        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1 };
         buildDeck(); 
     }
 
-    /* 🟢 INFINITE RESEARCH ENGINE (Stack + Book + Support) */
+    /* 🟢 RESEARCH & EXTERNAL MODULES (Kept from v52) */
+    function renderExternalModule(url) {
+        const container = document.getElementById('master-container');
+        container.innerHTML = "";
+        const iframe = document.createElement('iframe');
+        iframe.src = url;
+        container.appendChild(iframe);
+        const closeBtn = document.createElement('button');
+        closeBtn.className = "close-iframe";
+        closeBtn.innerText = "EXIT MODULE";
+        closeBtn.onclick = () => window.location.reload();
+        container.appendChild(closeBtn);
+    }
+    
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         ENGINE_STATE.researchPath = []; 
-
         const section = document.createElement('section');
         section.className = "main-slide next";
         section.innerHTML = `<div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
-                    <div class="lobby-container">
-                        <h1>TOPIC?</h1>
-                        <input type="text" id="search-input" placeholder="e.g. Black Holes, AI...">
-                        <button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button>
-                    </div>`;
+                    <div class="lobby-container"><h1>TOPIC?</h1><input type="text" id="search-input" placeholder="e.g. AI, Space..."><button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button></div>`;
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
@@ -375,7 +438,6 @@
         const title = await WIKI_ENGINE.search(query);
         if(!title) return showToast("NOT FOUND");
         const context = await WIKI_ENGINE.getContext(title);
-        
         ENGINE_STATE.researchPath.push({ depth: 0, title: context.title, summary: context.full_summary, link: null });
         buildResearchDeck(context);
     }
@@ -384,58 +446,32 @@
         const container = document.getElementById('master-container');
         while(container.children.length > 2) container.removeChild(container.lastChild);
         slideElements = slideElements.slice(0, 2);
-
-        // 📚 DYNAMIC BOOK LINK
-        const bookQuery = encodeURIComponent(context.title + " books");
-        const bookLink = `https://www.amazon.in/s?k=${bookQuery}&tag=${AMZN_TAG}`;
-
-        // 1. Summary Card
+        const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " books")}&tag=${AMZN_TAG}`;
+        
         const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next";
-        sumSlide.dataset.mode = "research"; 
-        sumSlide.innerHTML = `<div class="slide-header">
-                <span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span>
-                <button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button>
-            </div>
-            <div class="carousel-viewport"><div class="sub-slide static">
-                <div class="role-label">KNOWLEDGE NODE</div>
-                <h1>${context.title}</h1>
-                <div class="wiki-summary">${context.summary}</div>
-                
-                <div class="resources-section">
-                    <button class="book-btn" onclick="window.open('${bookLink}', '_blank')">
-                        📚 Find Books on ${context.title}
-                    </button>
-                    <a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a>
-                </div>
-
-                <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div>
-            </div></div>`;
+        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
+        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
+            <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
+            <div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button><a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a></div>
+            <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div></div></div>`;
         container.appendChild(sumSlide);
         slideElements.push(sumSlide);
 
-        // 2. Q&A Links
         const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next";
-        linkSlide.dataset.mode = "research"; 
+        linkSlide.className = "main-slide next"; linkSlide.dataset.mode = "research"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         context.links.forEach((link, i) => {
              html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${link.name}">
-                        <div class="role-label">FOLLOW UP</div>
-                        <h1>Tell me about<br><span style="color:var(--accent-go)">${link.name}</span></h1>
-                        <div class="primary-question">Swipe Down to Investigate</div>
-                        <div class="nav-hint"><span>&larr; NEXT</span><span style="color:var(--accent-go)">SELECT &darr;</span></div>
-                     </div>`;
+                        <div class="role-label">FOLLOW UP</div><h1>Tell me about<br><span style="color:var(--accent-go)">${link.name}</span></h1>
+                        <div class="nav-hint"><span>&larr; NEXT</span><span style="color:var(--accent-go)">SELECT &darr;</span></div></div>`;
         });
         html += `</div>`;
         linkSlide.innerHTML = html;
         container.appendChild(linkSlide);
         slideElements.push(linkSlide);
-        
         goToSlide(2);
     }
 
-    // 📄 PDF GENERATOR: ONE DEPTH PER PAGE
     async function generateStoryPDF() {
         showToast("GENERATING STORY...");
         const { jsPDF } = window.jspdf;
@@ -443,72 +479,43 @@
         const width = doc.internal.pageSize.getWidth();
         const height = doc.internal.pageSize.getHeight();
         const margin = 20;
-        const maxLineWidth = width - (margin * 2);
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
-
-            // Header
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text(`LEVEL ${index} | ${new Date().toLocaleDateString()}`, margin, 15);
-            doc.text(`ROOT: ${ENGINE_STATE.researchPath[0].title}`, width - margin, 15, { align: "right" });
-
-            // Title
-            doc.setTextColor(0);
-            doc.setFontSize(24);
-            doc.setFont("helvetica", "bold");
-            doc.text(item.title, margin, 40);
-
-            // Summary (Story Body)
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            const bodyText = doc.splitTextToSize(item.summary, maxLineWidth);
-            doc.text(bodyText, margin, 60);
-
-            // Footer (The Bridge)
-            const footerY = height - 30;
+            doc.setFontSize(10); doc.setTextColor(100); doc.text(`LEVEL ${index} | ${new Date().toLocaleDateString()}`, margin, 15);
+            doc.setTextColor(0); doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text(item.title, margin, 40);
+            doc.setFontSize(12); doc.setFont("helvetica", "normal");
+            const bodyText = doc.splitTextToSize(item.summary, width - 40); doc.text(bodyText, margin, 60);
             
+            const footerY = height - 30;
             if (item.link) {
-                // Not Last Page
-                doc.setDrawColor(255, 103, 31); // Brand Orange
-                doc.setLineWidth(0.5);
-                doc.line(margin, footerY - 10, width - margin, footerY - 10);
-                
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "italic");
-                doc.setTextColor(100);
-                doc.text("You asked:", margin, footerY);
-                
-                doc.setFontSize(14);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(255, 103, 31); 
-                doc.text(`"Tell me more about ${item.link}..."`, margin, footerY + 8);
-            } else {
-                // Last Page (Current Focus)
-                doc.setFontSize(12);
-                doc.setTextColor(0, 200, 0);
-                doc.text("[ CURRENT FOCUS ]", margin, footerY);
-            }
+                doc.setDrawColor(255, 103, 31); doc.setLineWidth(0.5); doc.line(margin, footerY - 10, width - margin, footerY - 10);
+                doc.setFontSize(10); doc.setTextColor(100); doc.text("You asked:", margin, footerY);
+                doc.setFontSize(14); doc.setTextColor(255, 103, 31); doc.text(`"Tell me more about ${item.link}..."`, margin, footerY + 8);
+            } else { doc.setFontSize(12); doc.setTextColor(0, 200, 0); doc.text("[ CURRENT FOCUS ]", margin, footerY); }
         });
-
         doc.save(`${ENGINE_STATE.researchPath[0].title}_Story.pdf`);
         showToast("DOWNLOAD STARTED");
     }
 
-    /* 🔴 TECH BRANCH */
+    /* 🔴 TECH BRANCH (UPDATED v53) */
     function buildDeck() {
         const container = document.getElementById('master-container');
-        while(container.children.length > 2) container.removeChild(container.lastChild);
-        slideElements = slideElements.slice(0, 2); 
+        // Clear children but keep lobby layers based on flow
+        while(container.children.length > 3) container.removeChild(container.lastChild);
+        slideElements = slideElements.slice(0, 3); 
 
-        const domain = ENGINE_STATE.cuisines_detected[0];
+        // 1. FILTER CATEGORIES
+        const domain = "smartphones";
         const allCats = RAW_DATA[domain].categories;
         const targetCats = allCats.filter(c => ENGINE_STATE.active_filters.includes(c.label));
 
         let slides = [];
         targetCats.forEach(cat => {
-            slides.push({ type: 'opt', title: cat.label, items: cat.items });
+            // Check if this category maps to a deal breaker (e.g., "fast_charge")
+            if(cat.type !== "fast_charge" && cat.type !== "lightweight") {
+                slides.push({ type: 'opt', title: cat.label, items: cat.items });
+            }
         });
         slides.push({ type: 'final' });
 
@@ -517,11 +524,20 @@
             el.className = `main-slide next`;
             
             if(s.type === 'final') {
-                el.innerHTML = `<div class="sub-slide static"><div class="input-group" id="final-list"></div>
-                           <div class="final-actions">
-                             <button class="btn btn-amazon" onclick="redirect('amazon')">BUY ON AMAZON</button>
-                             <button class="btn btn-full" onclick="location.reload()">HOME</button>
-                           </div></div>`;
+                // 🎥 VIDEO WINNER REVEAL
+                el.innerHTML = `
+                    <video class="video-bg" autoplay loop muted playsinline>
+                        <source src="${WINNER_VIDEO}" type="video/mp4">
+                    </video>
+                    <div class="winner-overlay">
+                        <div class="sub-slide static" style="background:transparent; padding:0;">
+                            <div class="input-group" id="final-list" style="background:rgba(0,0,0,0.8);"></div>
+                            <div class="final-actions">
+                                <button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button>
+                                <button class="btn btn-full" onclick="location.reload()">RESTART</button>
+                            </div>
+                        </div>
+                    </div>`;
             } else {
                 let html = `<div class="slide-header"><span class="header-title">${s.title}</span></div><div class="carousel-viewport">`;
                 s.items.forEach((item, i) => {
@@ -536,14 +552,70 @@
             slideElements.push(el);
         });
         
-        goToSlide(2); 
+        goToSlide(3); 
+    }
+
+    function calculateVerdict() {
+        let DB = PHONE_DATABASE;
+        let scores = [];
+        
+        // 🛑 DEAL BREAKER LOGIC
+        const bannedTags = [];
+        if(ENGINE_STATE.active_filters.some(f => f.includes("FAST CHARGE"))) bannedTags.push(DEAL_BREAKERS["Fast Charging"]);
+        if(ENGINE_STATE.active_filters.some(f => f.includes("LIGHTWEIGHT"))) bannedTags.push(DEAL_BREAKERS["Lightweight"]);
+        if(ENGINE_STATE.active_filters.some(f => f.includes("CLEAN UI"))) bannedTags.push(DEAL_BREAKERS["Clean UI"]);
+        if(ENGINE_STATE.active_filters.some(f => f.includes("BATTERY"))) bannedTags.push("weak_chip"); // Contextual
+
+        for (let name in DB) {
+            let item = DB[name];
+            
+            // 🛑 KILL SWITCH
+            const hasDeadlyTag = item.tags.some(t => bannedTags.includes(t));
+            if(hasDeadlyTag) continue; // Skip this phone entirely
+
+            // 🧠 ECOSYSTEM BIAS
+            let ecoScore = 0;
+            if(ENGINE_STATE.ecosystem === 'specs' && (item.tags.includes('value') || item.tags.includes('performance'))) ecoScore += 2;
+            if(ENGINE_STATE.ecosystem === 'peace' && (item.tags.includes('trust') || item.tags.includes('service_king'))) ecoScore += 2;
+
+            // ⚖️ ATTRIBUTE SCORING
+            let score = ecoScore;
+            for(let attr in item.attr) {
+                let w = ENGINE_STATE.session_weights[attr] || 0.1;
+                score += item.attr[attr] * w;
+            }
+            if(ENGINE_STATE.items_detected[name]) score += 10;
+            
+            scores.push({name, score, price: item.price});
+        }
+        scores.sort((a, b) => b.score - a.score);
+        return scores.length > 0 ? scores[0] : {name: "No Perfect Match", price: 0}; 
+    }
+
+    function updateFinal() {
+        const list = document.getElementById('final-list');
+        const winner = calculateVerdict();
+        
+        let html = "";
+        if (winner.price === 0) {
+            html = `<div style="text-align:center; padding:20px; color:#aaa">Your filters were too strict.<br>Try removing some conditions.</div>`;
+        } else {
+            html = `
+            <div class="biz-card" style="border-left:4px solid var(--accent-go); padding-left:15px;">
+                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:1px;">🏆 THE CHAMPION</span>
+                <div style="font-size:2rem; font-weight:900; margin:10px 0; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5)">${winner.name}</div>
+                <p style="color:#ddd">Est. Price: ₹${winner.price}</p>
+            </div>`;
+            ENGINE_STATE.items_detected = {};
+            ENGINE_STATE.items_detected[winner.name] = {qty:1};
+        }
+        list.innerHTML = html;
     }
 
     /* =========================================
-       UX PHYSICS ENGINE
+       STANDARD HELPERS (Physics, Voice, Redirect)
        ========================================= */
     let touchStartX = 0, touchStartY = 0;
-
     function initSwipeSystem() {
         const doc = document;
         doc.addEventListener('touchstart', e => {
@@ -551,7 +623,6 @@
             if(!view) return;
             touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
         }, {passive: true});
-
         doc.addEventListener('touchmove', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
@@ -561,22 +632,18 @@
                 document.getElementById('depth-fill').style.height = Math.min((Math.abs(dy)/150)*100, 100) + '%';
             }
         }, {passive: false});
-
         doc.addEventListener('touchend', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             document.getElementById('depth-fill').style.height = '0%';
-            
             const mainSlide = view.closest('.main-slide');
             const mode = mainSlide.dataset.mode;
-
-            if(dy > 80) { // SWIPE DOWN
+            if(dy > 80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
-                
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
@@ -586,21 +653,21 @@
                     });
                 } else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
+                    // Dynamic Weights
+                    if(val === "Samsung A55") ENGINE_STATE.session_weights.ui += 0.2;
+                    if(val === "Poco F7") ENGINE_STATE.session_weights.gaming += 0.2;
                     showToast("SELECTED");
                     goToSlide(currentIdx + 1);
                 } else goToSlide(currentIdx + 1);
-            } 
-            else if (dy < -80) { // SWIPE UP
+            } else if (dy < -80) {
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
-                        ENGINE_STATE.researchPath.pop();
-                        showToast("BACK");
+                        ENGINE_STATE.researchPath.pop(); showToast("BACK");
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
                 } else goToSlide(currentIdx - 1);
-            }
-            else if(Math.abs(dx) > 60) { // SWIPE SIDE
+            } else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
                 const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
@@ -619,39 +686,6 @@
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
     }
 
-    function calculateVerdict() {
-        const domain = ENGINE_STATE.cuisines_detected[0];
-        let DB = (domain === 'smartphones') ? PHONE_DATABASE : AUDIO_DATABASE;
-        let scores = [];
-        for (let name in DB) {
-            let item = DB[name];
-            let score = 0;
-            for(let attr in item.attr) {
-                let w = ENGINE_STATE.session_weights[attr] || 0.1;
-                score += item.attr[attr] * w;
-            }
-            if(ENGINE_STATE.items_detected[name]) score += 10;
-            scores.push({name, score, price: item.price});
-        }
-        scores.sort((a, b) => b.score - a.score);
-        return scores[0]; 
-    }
-
-    function updateFinal() {
-        const list = document.getElementById('final-list');
-        const winner = calculateVerdict();
-        if (winner) {
-            list.innerHTML = `
-            <div class="biz-card" style="border-color:var(--accent-go); border:1px solid var(--accent-go); padding:20px; border-radius:10px;">
-                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold;">TOP RECOMMENDATION</span>
-                <div style="font-size:1.5rem; font-weight:800; margin:10px 0">${winner.name}</div>
-                <p style="color:#aaa">Est. Price: ₹${winner.price}</p>
-            </div>`;
-            ENGINE_STATE.items_detected = {};
-            ENGINE_STATE.items_detected[winner.name] = {qty:1};
-        }
-    }
-
     function forceCopy(text) {
         const textArea = document.createElement("textarea");
         textArea.value = text;
@@ -661,21 +695,17 @@
         try { document.execCommand('copy'); } catch (err) {}
         document.body.removeChild(textArea);
     }
-
     function redirect(type) {
         const item = Object.keys(ENGINE_STATE.items_detected)[0];
         if(!item) return showToast("NOTHING SELECTED");
-        forceCopy(item); 
-        showToast("LINK COPIED");
+        forceCopy(item); showToast("LINK COPIED");
         const target = ECOM_DEEP_LINKS.amazon;
         const q = encodeURIComponent(item);
         const start = Date.now();
         window.location.href = target.app(q);
         setTimeout(() => { if (Date.now() - start < 2500) window.location.href = target.web(q); }, 2000);
     }
-
     function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
-    
     function initVoice() { 
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if(!SR) return;
