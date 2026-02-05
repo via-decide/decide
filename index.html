@@ -142,7 +142,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v35.0
+       KUTCH AUTOMATION | UNIVERSAL OS v36.0
        ========================================= */
     
     // 🧠 1. PHONE TRUTH DATABASE (Scores 1-10)
@@ -167,16 +167,30 @@
       "Razer Hammerhead V3": { attr: { anc: 6.0, sound: 7.0, mic: 7.0, latency: 9.8 }, price: 14999 }
     };
 
-    // 🧠 3. FOOD TRUTH DATABASE (New Schema)
+    // 🧠 3. FOOD TRUTH DATABASE (Full Attribute Matrix)
     const FOOD_DATABASE = {
-        "Paneer Butter Masala": { attr: { comfort: 9.0, heaviness: 8.5, spice: 5.0, protein: 6.0, speed: 4.0 }, price: 240 },
-        "Dal Makhani": { attr: { comfort: 9.5, heaviness: 9.0, spice: 4.0, protein: 5.0, speed: 3.0 }, price: 220 },
-        "Butter Naan": { attr: { comfort: 8.0, heaviness: 7.0, spice: 1.0, protein: 2.0, speed: 8.0 }, price: 40 },
-        "Hakka Noodles": { attr: { comfort: 7.0, heaviness: 5.0, spice: 6.0, protein: 3.0, speed: 9.0 }, price: 200 },
-        "Chilli Chicken": { attr: { comfort: 6.0, heaviness: 6.0, spice: 9.0, protein: 9.0, speed: 8.0 }, price: 260 },
-        "Coke": { attr: { comfort: 5.0, heaviness: 2.0, spice: 0.0, protein: 0.0, speed: 10.0 }, price: 40 },
-        "Chips": { attr: { comfort: 4.0, heaviness: 3.0, spice: 4.0, protein: 1.0, speed: 10.0 }, price: 20 },
-        "Grilled Chicken Salad": { attr: { comfort: 3.0, heaviness: 2.0, spice: 3.0, protein: 9.5, speed: 6.0 }, price: 280 }
+        "Paneer Butter Masala": { attr: { comfort: 9.5, heaviness: 9.0, spice: 6.0, protein: 5.0, speed: 4.0, health: 3.0, shareability: 9.0 }, price: 240 },
+        "Dal Makhani": { attr: { comfort: 9.8, heaviness: 9.5, spice: 4.0, protein: 6.0, speed: 3.0, health: 4.0, shareability: 9.0 }, price: 220 },
+        "Butter Naan": { attr: { comfort: 9.0, heaviness: 8.0, spice: 1.0, protein: 2.0, speed: 7.0, health: 2.0, shareability: 8.0 }, price: 40 },
+        "Hakka Noodles": { attr: { comfort: 7.5, heaviness: 6.0, spice: 5.0, protein: 3.0, speed: 9.0, health: 3.0, shareability: 8.0 }, price: 200 },
+        "Chilli Chicken": { attr: { comfort: 7.0, heaviness: 6.0, spice: 9.0, protein: 9.0, speed: 8.0, health: 5.0, shareability: 9.5 }, price: 260 },
+        "Coke": { attr: { comfort: 6.0, heaviness: 1.0, spice: 0.0, protein: 0.0, speed: 10.0, health: 0.0, shareability: 10.0 }, price: 40 },
+        "Chips": { attr: { comfort: 5.0, heaviness: 2.0, spice: 4.0, protein: 1.0, speed: 10.0, health: 1.0, shareability: 9.0 }, price: 20 },
+        "Grilled Chicken Salad": { attr: { comfort: 4.0, heaviness: 2.0, spice: 3.0, protein: 9.5, speed: 5.0, health: 9.8, shareability: 4.0 }, price: 280 },
+        "Samosa": { attr: { comfort: 8.5, heaviness: 7.0, spice: 6.0, protein: 2.0, speed: 9.0, health: 1.0, shareability: 8.0 }, price: 20 }
+    };
+
+    // 🧠 4. VECTOR DEFINITIONS
+    const CATEGORY_VECTORS = {
+        // Food Vectors
+        "comfort_food": { comfort: 0.45, heaviness: 0.20, speed: 0.10, health: -0.10 },
+        "healthy_choice": { health: 0.45, protein: 0.25, heaviness: -0.15, comfort: 0.10 },
+        "quick_bite": { speed: 0.45, comfort: 0.15, heaviness: 0.10, shareability: 0.10 },
+        "party_snack": { shareability: 0.40, spice: 0.20, comfort: 0.15, speed: 0.10 },
+        "protein_heavy": { protein: 0.45, heaviness: 0.20, health: 0.15 },
+        // Tech Vectors
+        "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
+        "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 }
     };
 
     const DEEP_LINKS = {
@@ -211,10 +225,10 @@
       "food": {
           "label": "DINING",
           "categories": [
-              { "label": "COMFORT FOOD", "type": "comfort", "items": [{"name": "Dal Makhani"}, {"name": "Butter Naan"}] },
-              { "label": "HEALTHY CHOICE", "type": "health", "items": [{"name": "Grilled Chicken Salad"}, {"name": "Paneer Butter Masala"}] },
-              { "label": "PARTY SNACK", "type": "spice", "items": [{"name": "Chilli Chicken"}, {"name": "Coke"}] },
-              { "label": "QUICK BITE", "type": "speed", "items": [{"name": "Hakka Noodles"}, {"name": "Chips"}] }
+              { "label": "COMFORT FOOD", "type": "comfort_food", "items": [{"name": "Dal Makhani"}, {"name": "Butter Naan"}] },
+              { "label": "HEALTHY CHOICE", "type": "healthy_choice", "items": [{"name": "Grilled Chicken Salad"}, {"name": "Paneer Butter Masala"}] },
+              { "label": "PARTY SNACK", "type": "party_snack", "items": [{"name": "Chilli Chicken"}, {"name": "Coke"}] },
+              { "label": "QUICK BITE", "type": "quick_bite", "items": [{"name": "Hakka Noodles"}, {"name": "Chips"}] }
           ]
       }
     };
@@ -222,14 +236,7 @@
     let ENGINE_STATE = { 
         cuisines_detected: [], 
         items_detected: {}, 
-        session_weights: { 
-            // Phones
-            camera: 0.1, gaming: 0.1, battery: 0.1, ui: 0.1, 
-            // Audio
-            anc: 0.1, sound: 0.1, mic: 0.1, latency: 0.1,
-            // Food
-            comfort: 0.1, health: 0.1, spice: 0.1, speed: 0.1, protein: 0.1
-        } 
+        session_weights: {} // Dynamically filled based on vectors
     };
     
     let RAW_DATA = {};
@@ -248,9 +255,6 @@
         initVoice();
     }
 
-    /* =========================================
-       UI LAYER 1: SELECTION LOBBY
-       ========================================= */
     function renderLobby() {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -258,7 +262,7 @@
         section.className = "main-slide active";
         section.id = "lobby";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v35.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v36.0</span></div>
                     <div class="lobby-container">
                     <h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
@@ -287,12 +291,15 @@
 
     function startHunt() { 
         if(ENGINE_STATE.cuisines_detected.length === 0) return showToast("PLEASE SELECT ONE");
+        // Reset Weights
+        ENGINE_STATE.session_weights = { 
+            camera:0.1, gaming:0.1, battery:0.1, ui:0.1, 
+            anc:0.1, sound:0.1, mic:0.1, latency:0.1,
+            comfort:0.1, health:0.1, spice:0.1, speed:0.1, protein:0.1, heaviness:0.1, shareability:0.1
+        };
         buildDeck(); 
     }
 
-    /* =========================================
-       UI LAYER 2: THE DECK & NEURAL LOGIC
-       ========================================= */
     function buildDeck() {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -358,19 +365,8 @@
             
             // 🧠 NEURAL MATH: Σ (Attribute * Session Weight)
             for (let attr in item.attr) {
-                // Mapping complex food weights (e.g. Health -> Protein/Heaviness)
-                let userWeight = 0.1; 
-                
-                if (isFood) {
-                    if (attr === 'protein' && ENGINE_STATE.session_weights['health'] > 0.2) userWeight += 0.3;
-                    if (attr === 'heaviness' && ENGINE_STATE.session_weights['comfort'] > 0.2) userWeight += 0.3;
-                    if (attr === 'spice' && ENGINE_STATE.session_weights['spice'] > 0.2) userWeight += 0.4;
-                    if (attr === 'speed' && ENGINE_STATE.session_weights['speed'] > 0.2) userWeight += 0.4;
-                } else {
-                    userWeight = ENGINE_STATE.session_weights[attr] || 0.1;
-                }
-                
-                score += (item.attr[attr] * userWeight);
+                let weight = ENGINE_STATE.session_weights[attr] || 0.0;
+                score += (item.attr[attr] * weight);
             }
             
             if (ENGINE_STATE.items_detected[itemName]) score += 5.0; 
@@ -382,7 +378,7 @@
     }
 
     /* =========================================
-       UX PHYSICS ENGINE
+       UX PHYSICS ENGINE (VECTOR ADJUSTER)
        ========================================= */
     function attachEvents() {
         document.querySelectorAll('.carousel-viewport').forEach(view => {
@@ -409,7 +405,16 @@
                         if(slides[view._curr]) {
                             const val = slides[view._curr].dataset.val;
                             ENGINE_STATE.items_detected[val] = { qty: 1 };
-                            if(catType && ENGINE_STATE.session_weights[catType] !== undefined) ENGINE_STATE.session_weights[catType] += 0.25;
+                            
+                            // 🧠 NEURAL UPDATE: Apply Category Vector
+                            if(catType && CATEGORY_VECTORS[catType]) {
+                                const vec = CATEGORY_VECTORS[catType];
+                                for(let k in vec) {
+                                    if(!ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] = 0.1;
+                                    ENGINE_STATE.session_weights[k] += vec[k]; 
+                                }
+                            }
+
                             showToast("SELECTED");
                             goToSlide(currentIdx + 1);
                         }
@@ -418,7 +423,13 @@
                     const slides = view.querySelectorAll('.sub-slide');
                     if(slides.length <= 1) return;
                     if(dx < -60 || dx > 60) {
-                        if(catType && ENGINE_STATE.session_weights[catType] !== undefined) ENGINE_STATE.session_weights[catType] -= 0.05;
+                        // 🧠 PENALTY
+                        if(catType && CATEGORY_VECTORS[catType]) {
+                            const vec = CATEGORY_VECTORS[catType];
+                            for(let k in vec) {
+                                if(ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] -= (vec[k] * 0.2); 
+                            }
+                        }
                     }
                     if(dx < -60) {
                         slides[view._curr].classList.replace('opt-active', 'opt-hidden');
@@ -448,7 +459,6 @@
 
         const winners = calculateVerdict();
         
-        // Dynamic Button Visibility based on Domain
         const isFood = ENGINE_STATE.cuisines_detected.includes("food");
         document.getElementById('btn-amazon').style.display = isFood ? 'none' : 'block';
         document.getElementById('btn-zomato').style.display = isFood ? 'block' : 'none';
