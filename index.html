@@ -142,7 +142,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v39.0
+       KUTCH AUTOMATION | UNIVERSAL OS v40.0
        ========================================= */
     
     // 🧠 1. PHONE TRUTH DATABASE (Scores 1-10)
@@ -162,7 +162,9 @@
       "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
       "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
       "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 },
-      "Realme Buds 2 Neo": { attr: { anc: 0.0, sound: 6.0, mic: 5.0, latency: 9.0 }, price: 350 }
+      "Realme Buds 2 Neo": { attr: { anc: 0.0, sound: 6.0, mic: 5.0, latency: 9.0 }, price: 350 },
+      "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
+      "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 }
     };
 
     // 🧠 3. FOOD TRUTH DATABASE
@@ -180,15 +182,20 @@
 
     // 🧠 4. VECTOR DEFINITIONS
     const CATEGORY_VECTORS = {
-        // Tech
         "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
         "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 },
-        // Food
         "comfort_food": { comfort: 0.45, heaviness: 0.20, speed: 0.10, health: -0.10 },
         "healthy_choice": { health: 0.45, protein: 0.25, heaviness: -0.15, comfort: 0.10 },
         "quick_bite": { speed: 0.45, comfort: 0.15, heaviness: 0.10, shareability: 0.10 },
         "party_snack": { shareability: 0.40, spice: 0.20, comfort: 0.15, speed: 0.10 }
     };
+
+    // 💰 AFFILIATE SYSTEM
+    const AMZN_TAG = "decideos-21";
+    
+    function buildAmazonLink(q) {
+        return `https://www.amazon.in/s?k=${encodeURIComponent(q)}&tag=${AMZN_TAG}`;
+    }
 
     const DEEP_LINKS = {
         zomato: { app: q => `intent://search?q=${q}#Intent;scheme=zomato;package=com.application.zomato;end`, web: q => `https://www.zomato.com/search?q=${q}` },
@@ -197,7 +204,10 @@
     };
 
     const ECOM_DEEP_LINKS = {
-        amazon: { app: q => `intent://www.amazon.in/s?k=${q}#Intent;scheme=https;package=com.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}` },
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => buildAmazonLink(q) 
+        },
         flipkart: { app: q => `flipkart://search?q=${q}`, web: q => `https://www.flipkart.com/search?q=${q}` },
         croma: { app: q => `https://www.croma.com/search/?text=${q}`, web: q => `https://www.croma.com/search/?text=${q}` }
     };
@@ -260,7 +270,7 @@
         section.className = "main-slide active";
         section.id = "lobby";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v39.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v40.0</span></div>
                     <div class="lobby-container">
                     <h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
@@ -287,12 +297,9 @@
         }
     }
 
-    /* 🟢 NEW SUB-LOBBY LOGIC */
     function triggerSubLobby() {
         if(ENGINE_STATE.cuisines_detected.length === 0) return showToast("SELECT DOMAIN");
-        
         const domain = ENGINE_STATE.cuisines_detected[0];
-        // Reset filters for new run
         ENGINE_STATE.active_filters = [];
         renderSubLobby(domain);
     }
@@ -300,7 +307,7 @@
     function renderSubLobby(domain) {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
-        section.className = "main-slide next"; // Prepare for animation
+        section.className = "main-slide next"; 
         section.id = "sub-lobby";
         
         const title = domain === 'food' ? "AAJ KYA MANGVAAYEGE!" : "SELECT PRIORITY";
@@ -319,8 +326,8 @@
         
         section.innerHTML = html;
         container.appendChild(section);
-        slideElements.push(section); // Add to stack
-        goToSlide(1); // Animate to Sub-Lobby
+        slideElements.push(section); 
+        goToSlide(1); 
     }
 
     function toggleFilter(label, idx) {
@@ -336,7 +343,6 @@
 
     function startHunt() { 
         if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
-        // Reset Weights
         ENGINE_STATE.session_weights = { 
             camera:0.1, gaming:0.1, battery:0.1, ui:0.1, 
             anc:0.1, sound:0.1, mic:0.1, latency:0.1,
@@ -345,20 +351,13 @@
         buildDeck(); 
     }
 
-    /* =========================================
-       UI LAYER 3: FILTERED DECK & NEURAL LOGIC
-       ========================================= */
     function buildDeck() {
-        // Clear previous deck slides if re-running
-        slideElements = slideElements.slice(0, 2); // Keep Lobby & Sub-Lobby
+        slideElements = slideElements.slice(0, 2); 
         const container = document.getElementById('master-container');
-        // Remove old deck slides from DOM
         while(container.children.length > 2) container.removeChild(container.lastChild);
 
         const domain = ENGINE_STATE.cuisines_detected[0];
         const allCats = RAW_DATA[domain].categories;
-        
-        // 🧠 FILTER LOGIC: Only build slides for selected sub-categories
         const targetCats = allCats.filter(c => ENGINE_STATE.active_filters.includes(c.label));
 
         let slides = [];
@@ -369,7 +368,7 @@
 
         slides.forEach((s, idx) => {
             const el = document.createElement('section');
-            el.className = `main-slide next`; // All new slides start hidden
+            el.className = `main-slide next`; 
             el.dataset.catType = s.catType; 
             
             let html = `<div class="slide-header"><span class="header-title">${s.title}</span></div><div class="carousel-viewport">`;
@@ -399,10 +398,9 @@
         });
         
         attachEvents();
-        goToSlide(2); // Jump to first card of the deck
+        goToSlide(2); 
     }
 
-    /* 🧠 NEURAL ENGINE: UNIVERSAL CALCULATOR */
     function calculateVerdict() {
         const isFood = ENGINE_STATE.cuisines_detected.includes("food");
         const isAudio = ENGINE_STATE.cuisines_detected.includes("earbuds");
@@ -435,12 +433,9 @@
         return [scores[0], scores[1]]; 
     }
 
-    /* =========================================
-       UX PHYSICS ENGINE
-       ========================================= */
     function attachEvents() {
         document.querySelectorAll('.carousel-viewport').forEach(view => {
-            if(view.dataset.bound) return; // Prevent double binding
+            if(view.dataset.bound) return; 
             view.dataset.bound = true;
             
             let startX = 0, startY = 0;
@@ -467,7 +462,6 @@
                             const val = slides[view._curr].dataset.val;
                             ENGINE_STATE.items_detected[val] = { qty: 1 };
                             if(catType && ENGINE_STATE.session_weights[catType] !== undefined) {
-                                // Apply Vector Boost
                                 const vec = CATEGORY_VECTORS[catType];
                                 if(vec) for(let k in vec) ENGINE_STATE.session_weights[k] = (ENGINE_STATE.session_weights[k] || 0.1) + vec[k];
                                 else ENGINE_STATE.session_weights[catType] += 0.25;
@@ -480,7 +474,6 @@
                     const slides = view.querySelectorAll('.sub-slide');
                     if(slides.length <= 1) return;
                     if(dx < -60 || dx > 60) {
-                        // Penalty
                         if(catType && CATEGORY_VECTORS[catType]) {
                             const vec = CATEGORY_VECTORS[catType];
                             for(let k in vec) if(ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] -= (vec[k] * 0.2); 
@@ -553,6 +546,10 @@
         const target = ["amazon","flipkart","croma"].includes(mode) ? ECOM_DEEP_LINKS[mode] : DEEP_LINKS[mode];
         
         const q = encodeURIComponent(items.join(", "));
+        
+        // Monetization: Show URL being constructed in console for debug
+        console.log("Monetization Link:", target.web(q));
+
         navigator.clipboard.writeText(items.join(", "));
         showToast(`ROUTING TO ${mode.toUpperCase()}`);
 
@@ -564,7 +561,12 @@
     function sendWhatsapp() {
         const items = Object.keys(ENGINE_STATE.items_detected);
         if(!items.length) return;
-        const text = encodeURIComponent(`*FINAL VERDICT*\n- ${items.join("\n- ")}`);
+        
+        // 💰 Monetization: Add affiliate link to WhatsApp message
+        const itemName = items[0];
+        const affLink = buildAmazonLink(itemName);
+        const text = encodeURIComponent(`*FINAL VERDICT*\n- ${itemName}\n\n🛒 Buy Now: ${affLink}`);
+        
         window.open(`https://wa.me/916351537770?text=${text}`, "_blank");
     }
 
