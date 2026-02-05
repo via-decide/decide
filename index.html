@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v50 |</title>
+    <title>| decide.engine v51 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -76,7 +76,20 @@
 
         h1 { font-size: 1.8rem; margin: 0 0 15px 0; line-height: 1; letter-spacing: -1px; color: var(--brand-orange); }
         .primary-question { font-size: 1.1rem; color: #fff; margin-bottom: 25px; line-height: 1.4; font-weight: 600; }
-        .wiki-summary { font-size: 0.9rem; color: #aaa; line-height: 1.6; max-height: 200px; overflow-y: auto; margin-bottom: 20px; }
+        .wiki-summary { font-size: 0.9rem; color: #aaa; line-height: 1.6; max-height: 180px; overflow-y: auto; margin-bottom: 20px; }
+
+        /* 📚 NEW BOOK & SUPPORT STYLES */
+        .resources-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333; }
+        .book-btn {
+            background: #232f3e; color: #FF9900; border: 1px solid #FF9900; 
+            padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; 
+            margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
+        }
+        .support-link {
+            text-align: center; font-size: 0.7rem; color: #666; text-decoration: none; 
+            display: block; margin-top: 10px; font-family: var(--font-tech); opacity: 0.7;
+        }
 
         .role-label {
             font-family: var(--font-tech); font-size: 0.6rem; color: #000;
@@ -85,7 +98,7 @@
         }
 
         .nav-hint {
-            margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;
+            margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
             font-family: var(--font-tech); font-size: 0.7rem; color: #666;
             display: flex; justify-content: space-between;
         }
@@ -105,15 +118,21 @@
         .cuisine-btn.selected { background: var(--brand-orange); color: #000; border-color: var(--brand-orange); }
 
         #search-input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 15px; font-size: 1.2rem; border-radius: 8px; margin-bottom: 20px; outline: none; text-align: center; }
-        
+        .source-toggle { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .source-chip { padding: 5px 15px; border: 1px solid #333; border-radius: 20px; font-size: 0.7rem; color: #666; font-family: var(--font-tech); cursor: pointer; }
+        .source-chip.active { background: #333; color: var(--accent-go); border-color: var(--accent-go); }
+
         #depth-fill { position: fixed; right: 0; top: 0; bottom: 0; width: 4px; background: #333; z-index: 900; height: 0%; transition: height 0.05s linear; }
         
-        /* Iframe Portal */
         iframe { width: 100%; height: 100%; border: none; background: #000; }
         .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 100; background: #000; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-family: var(--font-tech); font-weight: bold; }
 
         .toast-msg { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #222; color: #00e676; padding: 10px 20px; border: 1px solid #00e676; border-radius: 20px; font-size: 0.8rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 3000; font-family: var(--font-tech); }
         .toast-msg.visible { opacity: 1; }
+
+        #mic-toggle { position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #444; z-index: 2000; cursor: pointer; }
+        #mic-toggle.listening { border-color: var(--accent-go); box-shadow: 0 0 15px rgba(0,230,118,0.3); }
+        #mic-toggle svg { fill: #666; width: 24px; }
     </style>
 </head>
 <body>
@@ -122,12 +141,20 @@
 <div id="depth-fill"></div>
 <div id="toast" class="toast-msg"></div>
 
+<div id="mic-toggle" onclick="toggleListenMode()">
+    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+</div>
+
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v50.0
+       KUTCH AUTOMATION | UNIVERSAL OS v51.0
        ========================================= */
     
-    // 🧠 1. KNOWLEDGE ENGINE (Stack & PDF)
+    // 🔧 CONFIG
+    const AMZN_TAG = "decideos-21";
+    const SUPPORT_URL = "https://www.buymeacoffee.com/"; // Placeholder - Replace with your link
+
+    // 🧠 1. CONTEXT EXTRACTOR
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
@@ -161,7 +188,7 @@
         }
     };
 
-    // 🧠 2. TECH TRUTH DATABASES (v34/v47 Merged)
+    // 🧠 2. TECH TRUTH DATABASES
     const PHONE_DATABASE = {
       "Poco F7": { attr: { camera: 6.0, gaming: 9.5, battery: 8.0, ui: 4.0 }, price: 29999 },
       "iQOO Neo 10R": { attr: { camera: 6.5, gaming: 9.0, battery: 7.5, ui: 5.0 }, price: 30999 },
@@ -178,6 +205,7 @@
       "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
       "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 },
       "OnePlus Buds 3 Pro": { attr: { anc: 8.5, sound: 9.5, mic: 8.0, latency: 7.0 }, price: 8999 },
+      "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
       "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
       "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 }
     };
@@ -202,17 +230,23 @@
               { "label": "TRAVEL (ANC)", "type": "anc", "items": [{"name": "Sony WF-1000XM6"}, {"name": "Samsung Buds 3 Pro"}] }
           ]
       },
-      "food": { label: "DINING (v28)", categories: [] }, // Portal to External Module
+      "food": { label: "DINING (v28)", categories: [] }, 
       "research": { label: "KNOWLEDGE ENGINE", categories: [] } 
     };
 
-    const AMZN_TAG = "decideos-21";
+    const ECOM_DEEP_LINKS = {
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
+        }
+    };
+
     let ENGINE_STATE = { 
         cuisines_detected: [], 
         items_detected: {}, 
         session_weights: {}, 
         active_filters: [],
-        researchPath: [] // Stack for PDF
+        researchPath: [] 
     };
     let RAW_DATA = FALLBACK_MENU;
     let slideElements = [];
@@ -229,7 +263,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v50.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v51.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in RAW_DATA) {
@@ -278,7 +312,6 @@
     }
 
     function renderSubLobby(domain) {
-        // ... (Standard Sub-Lobby Logic from v47) ...
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
@@ -314,12 +347,12 @@
         buildDeck(); 
     }
 
-    /* 🟢 INFINITE RESEARCH ENGINE (Stack + PDF) */
+    /* 🟢 INFINITE RESEARCH ENGINE (With Book Link) */
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
-        ENGINE_STATE.researchPath = []; // Reset Stack
+        ENGINE_STATE.researchPath = []; 
 
         const section = document.createElement('section');
         section.className = "main-slide next";
@@ -342,18 +375,20 @@
         if(!title) return showToast("NOT FOUND");
         const context = await WIKI_ENGINE.getContext(title);
         
-        // Root Push
         ENGINE_STATE.researchPath.push({ depth: 0, title: context.title, summary: context.full_summary, link: null });
         buildResearchDeck(context);
     }
 
     function buildResearchDeck(context) {
         const container = document.getElementById('master-container');
-        // Clear anything after the lobby to maintain clean stack visual
         while(container.children.length > 2) container.removeChild(container.lastChild);
         slideElements = slideElements.slice(0, 2);
 
-        // 1. Summary Card (The Answer)
+        // 📚 DYNAMIC BOOK LINK
+        const bookQuery = encodeURIComponent(context.title + " books");
+        const bookLink = `https://www.amazon.in/s?k=${bookQuery}&tag=${AMZN_TAG}`;
+
+        // 1. Summary Card
         const sumSlide = document.createElement('section');
         sumSlide.className = "main-slide next";
         sumSlide.dataset.mode = "research"; 
@@ -365,18 +400,25 @@
                 <div class="role-label">KNOWLEDGE NODE</div>
                 <h1>${context.title}</h1>
                 <div class="wiki-summary">${context.summary}</div>
+                
+                <div class="resources-section">
+                    <button class="book-btn" onclick="window.open('${bookLink}', '_blank')">
+                        📚 Find Books on ${context.title}
+                    </button>
+                    <a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a>
+                </div>
+
                 <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div>
             </div></div>`;
         container.appendChild(sumSlide);
         slideElements.push(sumSlide);
 
-        // 2. Q&A Links (The Questions)
+        // 2. Q&A Links
         const linkSlide = document.createElement('section');
         linkSlide.className = "main-slide next";
         linkSlide.dataset.mode = "research"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         context.links.forEach((link, i) => {
-             // Framed as Questions
              html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${link.name}">
                         <div class="role-label">FOLLOW UP</div>
                         <h1>Tell me about<br><span style="color:var(--accent-go)">${link.name}</span></h1>
@@ -398,32 +440,24 @@
         const doc = new jsPDF();
         let y = 20;
 
-        // Header
         doc.setFontSize(20);
         doc.text(`Research Session: ${ENGINE_STATE.researchPath[0].title}`, 10, y);
         y += 10;
         doc.setFontSize(10);
-        doc.text(`Generated by Decide OS v50 | ${new Date().toLocaleDateString()}`, 10, y);
+        doc.text(`Generated by Decide OS v51 | ${new Date().toLocaleDateString()}`, 10, y);
         y += 20;
 
-        // Loop Stack
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (y > 270) { doc.addPage(); y = 20; }
-            
-            // Level Title
             doc.setFontSize(14);
             doc.setFont("helvetica", "bold");
             doc.text(`Level ${index}: ${item.title}`, 10, y);
             y += 8;
-
-            // Summary
             doc.setFontSize(11);
             doc.setFont("helvetica", "normal");
             const lines = doc.splitTextToSize(item.summary, 180);
             doc.text(lines, 10, y);
             y += (lines.length * 6) + 10;
-
-            // Connector
             if(item.link) {
                 doc.setTextColor(100);
                 doc.text(`⬇ Investigated: ${item.link}`, 15, y);
@@ -436,7 +470,7 @@
         showToast("DOWNLOAD STARTED");
     }
 
-    /* 🔴 STANDARD TECH BRANCH */
+    /* 🔴 TECH BRANCH */
     function buildDeck() {
         const container = document.getElementById('master-container');
         while(container.children.length > 2) container.removeChild(container.lastChild);
@@ -519,7 +553,6 @@
                 const val = activeSub.dataset.val;
                 
                 if(mode === "research" && val) {
-                    // STACK PUSH LOGIC
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
                     WIKI_ENGINE.getContext(val).then(ctx => {
@@ -536,9 +569,8 @@
             else if (dy < -80) {
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
-                        ENGINE_STATE.researchPath.pop(); // Pop Stack
+                        ENGINE_STATE.researchPath.pop();
                         showToast("BACK");
-                        // Re-fetch previous context to rebuild view (simplified for memory)
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
@@ -620,6 +652,8 @@
     }
 
     function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
+    function initVoice() { /* Basic setup kept */ }
+
     boot();
 </script>
 </body>
