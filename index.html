@@ -142,32 +142,34 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v36.0
+       KUTCH AUTOMATION | UNIVERSAL OS v37.0
        ========================================= */
     
     // 🧠 1. PHONE TRUTH DATABASE (Scores 1-10)
     const PHONE_DATABASE = {
-      "Vivo V60e": { attr: { camera: 9.5, gaming: 5.0, battery: 7.0, ui: 7.0 }, price: 28999 },
-      "Xiaomi 14 Civi": { attr: { camera: 9.0, gaming: 6.0, battery: 6.5, ui: 6.0 }, price: 32999 },
+      // Mid-Range & Flagship (20k+)
       "Poco F7": { attr: { camera: 6.0, gaming: 9.5, battery: 8.0, ui: 4.0 }, price: 29999 },
       "iQOO Neo 10R": { attr: { camera: 6.5, gaming: 9.0, battery: 7.5, ui: 5.0 }, price: 30999 },
       "Nothing 3a Pro": { attr: { camera: 8.0, gaming: 6.0, battery: 7.0, ui: 10.0 }, price: 27999 },
-      "Samsung A55": { attr: { camera: 7.5, gaming: 5.0, battery: 6.5, ui: 9.0 }, price: 33999 },
       "Realme GT 7T": { attr: { camera: 5.0, gaming: 8.5, battery: 10.0, ui: 5.0 }, price: 31999 },
-      "iQOO Z10": { attr: { camera: 5.5, gaming: 7.0, battery: 9.0, ui: 6.0 }, price: 25999 }
+      // 🟢 BUDGET <10K ENTRY
+      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 8.5, ui: 7.0 }, price: 7499 },
+      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, price: 7999 },
+      "Samsung Galaxy M07": { attr: { camera: 5.5, gaming: 3.0, battery: 9.0, ui: 7.0 }, price: 7499 }
     };
 
-    // 🧠 2. AUDIO TRUTH DATABASE
+    // 🧠 2. AUDIO TRUTH DATABASE (Sub-10k Focus)
     const AUDIO_DATABASE = {
-      "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
-      "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 },
-      "OnePlus Buds Pro 4": { attr: { anc: 8.5, sound: 9.0, mic: 8.5, latency: 8.0 }, price: 12999 },
-      "Realme Buds Air 7": { attr: { anc: 7.5, sound: 7.5, mic: 7.0, latency: 9.0 }, price: 5999 },
-      "Samsung Buds 3 Pro": { attr: { anc: 9.0, sound: 9.0, mic: 8.5, latency: 7.5 }, price: 19999 },
-      "Razer Hammerhead V3": { attr: { anc: 6.0, sound: 7.0, mic: 7.0, latency: 9.8 }, price: 14999 }
+      // 🔵 PREMIUM AUDIO (<10K)
+      "OnePlus Buds 3 Pro": { attr: { anc: 8.5, sound: 9.5, mic: 8.0, latency: 7.0 }, price: 8999 },
+      "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
+      // 🔵 VALUE & BASS
+      "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
+      "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 },
+      "Realme Buds 2 Neo": { attr: { anc: 0.0, sound: 6.0, mic: 5.0, latency: 9.0 }, price: 350 }
     };
 
-    // 🧠 3. FOOD TRUTH DATABASE (Full Attribute Matrix)
+    // 🧠 3. FOOD TRUTH DATABASE
     const FOOD_DATABASE = {
         "Paneer Butter Masala": { attr: { comfort: 9.5, heaviness: 9.0, spice: 6.0, protein: 5.0, speed: 4.0, health: 3.0, shareability: 9.0 }, price: 240 },
         "Dal Makhani": { attr: { comfort: 9.8, heaviness: 9.5, spice: 4.0, protein: 6.0, speed: 3.0, health: 4.0, shareability: 9.0 }, price: 220 },
@@ -182,21 +184,14 @@
 
     // 🧠 4. VECTOR DEFINITIONS
     const CATEGORY_VECTORS = {
-        // Food Vectors
+        // Tech
+        "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
+        "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 },
+        // Food
         "comfort_food": { comfort: 0.45, heaviness: 0.20, speed: 0.10, health: -0.10 },
         "healthy_choice": { health: 0.45, protein: 0.25, heaviness: -0.15, comfort: 0.10 },
         "quick_bite": { speed: 0.45, comfort: 0.15, heaviness: 0.10, shareability: 0.10 },
-        "party_snack": { shareability: 0.40, spice: 0.20, comfort: 0.15, speed: 0.10 },
-        "protein_heavy": { protein: 0.45, heaviness: 0.20, health: 0.15 },
-        // Tech Vectors
-        "camera": { camera: 0.4 }, "gaming": { gaming: 0.4 }, "battery": { battery: 0.4 }, "ui": { ui: 0.4 },
-        "sound": { sound: 0.4 }, "anc": { anc: 0.4 }, "mic": { mic: 0.4 }, "latency": { latency: 0.4 }
-    };
-
-    const DEEP_LINKS = {
-        zomato: { app: q => `intent://search?q=${q}#Intent;scheme=zomato;package=com.application.zomato;end`, web: q => `https://www.zomato.com/search?q=${q}` },
-        swiggy: { app: q => `swiggy://explore?query=${q}`, web: q => `https://www.swiggy.com/search?query=${q}` },
-        blinkit: { app: _ => `blinkit://`, web: q => `https://blinkit.com/s/?q=${q}` }
+        "party_snack": { shareability: 0.40, spice: 0.20, comfort: 0.15, speed: 0.10 }
     };
 
     const ECOM_DEEP_LINKS = {
@@ -205,21 +200,27 @@
         croma: { app: q => `https://www.croma.com/search/?text=${q}`, web: q => `https://www.croma.com/search/?text=${q}` }
     };
 
+    const DEEP_LINKS = {
+        zomato: { app: q => `intent://search?q=${q}#Intent;scheme=zomato;package=com.application.zomato;end`, web: q => `https://www.zomato.com/search?q=${q}` },
+        swiggy: { app: q => `swiggy://explore?query=${q}`, web: q => `https://www.swiggy.com/search?query=${q}` },
+        blinkit: { app: _ => `blinkit://`, web: q => `https://blinkit.com/s/?q=${q}` }
+    };
+
     const FALLBACK_MENU = {
       "smartphones": {
-          "label": "SMARTPHONES 2026",
+          "label": "SMARTPHONES",
           "categories": [
-              { "label": "CAMERA-FIRST", "type": "camera", "items": [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}] },
+              { "label": "BUDGET <10K", "type": "battery", "items": [{"name": "Samsung Galaxy F07"}, {"name": "Realme Note 60"}] },
               { "label": "PRO GAMER", "type": "gaming", "items": [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
-              { "label": "BATTERY KING", "type": "battery", "items": [{"name": "Realme GT 7T"}, {"name": "iQOO Z10"}] }
+              { "label": "CLEAN UI", "type": "ui", "items": [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] }
           ]
       },
       "earbuds": {
-          "label": "EARBUDS 2026",
+          "label": "EARBUDS <10K",
           "categories": [
-              { "label": "MUSIC LOVER", "type": "sound", "items": [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Buds Pro 4"}] },
-              { "label": "GAMING (LOW LATENCY)", "type": "latency", "items": [{"name": "Razer Hammerhead V3"}, {"name": "Realme Buds Air 7"}] },
-              { "label": "TRAVEL (ANC)", "type": "anc", "items": [{"name": "Sony WF-1000XM6"}, {"name": "Samsung Buds 3 Pro"}] }
+              { "label": "PREMIUM AUDIO", "type": "sound", "items": [{"name": "OnePlus Buds 3 Pro"}, {"name": "Realme Buds Air 7 Pro"}] },
+              { "label": "VALUE PICKS", "type": "mic", "items": [{"name": "Realme Buds T310"}, {"name": "boAt Nirvana 2026"}] },
+              { "label": "WIRED BACKUP", "type": "latency", "items": [{"name": "Realme Buds 2 Neo"}] }
           ]
       },
       "food": {
@@ -235,8 +236,9 @@
 
     let ENGINE_STATE = { 
         cuisines_detected: [], 
+        active_filters: [],
         items_detected: {}, 
-        session_weights: {} // Dynamically filled based on vectors
+        session_weights: {}
     };
     
     let RAW_DATA = {};
@@ -262,23 +264,23 @@
         section.className = "main-slide active";
         section.id = "lobby";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v36.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v37.0</span></div>
                     <div class="lobby-container">
                     <h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in RAW_DATA) {
             const isSelected = ENGINE_STATE.cuisines_detected.includes(key) ? "selected" : "";
-            html += `<button class="cuisine-btn ${isSelected}" onclick="toggleSelection('${key}', this)">${RAW_DATA[key].label}</button>`;
+            html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${RAW_DATA[key].label}</button>`;
         }
         
-        html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">START DECISION &rarr;</button></div>`;
+        html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="triggerSubLobby()">NEXT &rarr;</button></div>`;
         section.innerHTML = html;
         container.appendChild(section);
         slideElements = [section];
         currentIdx = 0;
     }
 
-    function toggleSelection(id, btn) {
+    function toggleDomain(id, btn) {
         if(ENGINE_STATE.cuisines_detected.includes(id)) {
             ENGINE_STATE.cuisines_detected = [];
             document.querySelectorAll('.cuisine-btn').forEach(b => b.classList.remove('selected'));
@@ -289,34 +291,78 @@
         }
     }
 
+    function triggerSubLobby() {
+        if(ENGINE_STATE.cuisines_detected.length === 0) return showToast("SELECT DOMAIN");
+        const domain = ENGINE_STATE.cuisines_detected[0];
+        ENGINE_STATE.active_filters = [];
+        renderSubLobby(domain);
+    }
+
+    function renderSubLobby(domain) {
+        const container = document.getElementById('master-container');
+        const section = document.createElement('section');
+        section.className = "main-slide next"; 
+        section.id = "sub-lobby";
+        
+        const title = domain === 'food' ? "AAJ KYA MANGVAAYEGE!" : "SELECT PRIORITY";
+        const categories = RAW_DATA[domain].categories;
+
+        let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
+                    <div class="lobby-container">
+                    <h1 style="text-align:center; text-transform:uppercase;">${title}</h1>
+                    <div style="display:grid; gap:15px;">`;
+
+        categories.forEach((cat, idx) => {
+            html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+        });
+
+        html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
+        
+        section.innerHTML = html;
+        container.appendChild(section);
+        slideElements.push(section); 
+        goToSlide(1); 
+    }
+
+    function toggleFilter(label, idx) {
+        const btn = document.getElementById(`filter-btn-${idx}`);
+        if(ENGINE_STATE.active_filters.includes(label)) {
+            ENGINE_STATE.active_filters = ENGINE_STATE.active_filters.filter(x => x !== label);
+            btn.classList.remove('selected');
+        } else {
+            ENGINE_STATE.active_filters.push(label);
+            btn.classList.add('selected');
+        }
+    }
+
     function startHunt() { 
-        if(ENGINE_STATE.cuisines_detected.length === 0) return showToast("PLEASE SELECT ONE");
-        // Reset Weights
+        if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
         ENGINE_STATE.session_weights = { 
             camera:0.1, gaming:0.1, battery:0.1, ui:0.1, 
             anc:0.1, sound:0.1, mic:0.1, latency:0.1,
-            comfort:0.1, health:0.1, spice:0.1, speed:0.1, protein:0.1, heaviness:0.1, shareability:0.1
+            comfort:0.1, health:0.1, spice:0.1, speed:0.1, protein:0.1
         };
         buildDeck(); 
     }
 
     function buildDeck() {
+        slideElements = slideElements.slice(0, 2); 
         const container = document.getElementById('master-container');
-        container.innerHTML = "";
+        while(container.children.length > 2) container.removeChild(container.lastChild);
+
+        const domain = ENGINE_STATE.cuisines_detected[0];
+        const allCats = RAW_DATA[domain].categories;
+        const targetCats = allCats.filter(c => ENGINE_STATE.active_filters.includes(c.label));
+
         let slides = [];
-        
-        ENGINE_STATE.cuisines_detected.forEach(c => {
-            if(RAW_DATA[c]) {
-                RAW_DATA[c].categories.forEach(cat => {
-                    slides.push({ type: 'opt', catType: cat.type || 'generic', title: `${RAW_DATA[c].label} · ${cat.label}`, items: cat.items });
-                });
-            }
+        targetCats.forEach(cat => {
+            slides.push({ type: 'opt', catType: cat.type || 'generic', title: `${RAW_DATA[domain].label} · ${cat.label}`, items: cat.items });
         });
         slides.push({ type: 'final', title: 'FINAL VERDICT' });
 
         slides.forEach((s, idx) => {
             const el = document.createElement('section');
-            el.className = `main-slide ${idx === 0 ? 'active' : 'next'}`;
+            el.className = `main-slide next`; 
             el.dataset.catType = s.catType; 
             
             let html = `<div class="slide-header"><span class="header-title">${s.title}</span></div><div class="carousel-viewport">`;
@@ -342,14 +388,13 @@
             html += `</div>`;
             el.innerHTML = html;
             container.appendChild(el);
+            slideElements.push(el);
         });
-        slideElements = Array.from(document.querySelectorAll('.main-slide'));
-        currentIdx = 0;
+        
         attachEvents();
-        updateResult();
+        goToSlide(2); 
     }
 
-    /* 🧠 NEURAL ENGINE: UNIVERSAL CALCULATOR */
     function calculateVerdict() {
         const isFood = ENGINE_STATE.cuisines_detected.includes("food");
         const isAudio = ENGINE_STATE.cuisines_detected.includes("earbuds");
@@ -362,13 +407,18 @@
         for (let itemName in DB) {
             let item = DB[itemName];
             let score = 0;
-            
-            // 🧠 NEURAL MATH: Σ (Attribute * Session Weight)
             for (let attr in item.attr) {
-                let weight = ENGINE_STATE.session_weights[attr] || 0.0;
-                score += (item.attr[attr] * weight);
+                let userWeight = 0.1;
+                if(isFood) {
+                     if (attr === 'protein' && ENGINE_STATE.session_weights['health'] > 0.2) userWeight += 0.3;
+                     if (attr === 'heaviness' && ENGINE_STATE.session_weights['comfort'] > 0.2) userWeight += 0.3;
+                     if (attr === 'spice' && ENGINE_STATE.session_weights['spice'] > 0.2) userWeight += 0.4;
+                     if (attr === 'speed' && ENGINE_STATE.session_weights['speed'] > 0.2) userWeight += 0.4;
+                } else {
+                     userWeight = ENGINE_STATE.session_weights[attr] || 0.1;
+                }
+                score += (item.attr[attr] * userWeight);
             }
-            
             if (ENGINE_STATE.items_detected[itemName]) score += 5.0; 
             scores.push({ name: itemName, score: score, price: item.price });
         }
@@ -377,11 +427,11 @@
         return [scores[0], scores[1]]; 
     }
 
-    /* =========================================
-       UX PHYSICS ENGINE (VECTOR ADJUSTER)
-       ========================================= */
     function attachEvents() {
         document.querySelectorAll('.carousel-viewport').forEach(view => {
+            if(view.dataset.bound) return; 
+            view.dataset.bound = true;
+            
             let startX = 0, startY = 0;
             view._curr = 0;
             view.addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, {passive:true});
@@ -405,16 +455,11 @@
                         if(slides[view._curr]) {
                             const val = slides[view._curr].dataset.val;
                             ENGINE_STATE.items_detected[val] = { qty: 1 };
-                            
-                            // 🧠 NEURAL UPDATE: Apply Category Vector
-                            if(catType && CATEGORY_VECTORS[catType]) {
+                            if(catType && ENGINE_STATE.session_weights[catType] !== undefined) {
                                 const vec = CATEGORY_VECTORS[catType];
-                                for(let k in vec) {
-                                    if(!ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] = 0.1;
-                                    ENGINE_STATE.session_weights[k] += vec[k]; 
-                                }
+                                if(vec) for(let k in vec) ENGINE_STATE.session_weights[k] = (ENGINE_STATE.session_weights[k] || 0.1) + vec[k];
+                                else ENGINE_STATE.session_weights[catType] += 0.25;
                             }
-
                             showToast("SELECTED");
                             goToSlide(currentIdx + 1);
                         }
@@ -423,12 +468,11 @@
                     const slides = view.querySelectorAll('.sub-slide');
                     if(slides.length <= 1) return;
                     if(dx < -60 || dx > 60) {
-                        // 🧠 PENALTY
                         if(catType && CATEGORY_VECTORS[catType]) {
                             const vec = CATEGORY_VECTORS[catType];
-                            for(let k in vec) {
-                                if(ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] -= (vec[k] * 0.2); 
-                            }
+                            for(let k in vec) if(ENGINE_STATE.session_weights[k]) ENGINE_STATE.session_weights[k] -= (vec[k] * 0.2); 
+                        } else if(catType && ENGINE_STATE.session_weights[catType]) {
+                            ENGINE_STATE.session_weights[catType] -= 0.05;
                         }
                     }
                     if(dx < -60) {
@@ -458,7 +502,6 @@
         if(!list) return;
 
         const winners = calculateVerdict();
-        
         const isFood = ENGINE_STATE.cuisines_detected.includes("food");
         document.getElementById('btn-amazon').style.display = isFood ? 'none' : 'block';
         document.getElementById('btn-zomato').style.display = isFood ? 'block' : 'none';
