@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v53 |</title>
+    <title>| decide.engine v54 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -21,9 +21,6 @@
             --text-main: #f0f0f0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
-            --accent-zomato: #cb202d;
-            --accent-swiggy: #fc8019;
-            --accent-blinkit: #f8cb46;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
@@ -34,9 +31,7 @@
             color: var(--text-main);
             font-family: var(--font-ui);
             overflow: hidden;
-            touch-action: none; 
-            -webkit-user-select: none;
-            user-select: none;
+            touch-action: none; user-select: none;
         }
 
         #master-container { height: 100vh; width: 100vw; position: relative; overflow: hidden; }
@@ -55,8 +50,7 @@
         .slide-header {
             padding: 20px; border-left: 3px solid var(--brand-orange); height: 70px;
             flex-shrink: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
-            background: var(--brand-bg);
-            position: absolute; top: 0; left: 0; right: 0;
+            background: var(--brand-bg); position: absolute; top: 0; left: 0; right: 0;
         }
 
         .header-title {
@@ -121,19 +115,14 @@
         .btn-full { grid-column: span 2; }
         .btn-amazon { background: #232f3e; border: none; color: #ff9900; }
         .btn-zomato { background: #cb202d; border: none; }
-        .btn-blinkit { background: var(--accent-blinkit); color: #000; border: none; }
+        .btn-blinkit { background: #f8cb46; color: #000; border: none; }
         .btn-wa { background: #25D366; color: #000; border: none; }
         
+        /* 🟢 SCROLLABLE LOBBY */
         .lobby-container { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            padding: 30px; 
-            height: 100%; 
-            overflow-y: auto; 
-            justify-content: flex-start; 
-            padding-top: 80px; 
-            padding-bottom: 120px; 
+            display: flex; flex-direction: column; gap: 15px; padding: 30px; height: 100%; 
+            overflow-y: auto; justify-content: flex-start; 
+            padding-top: 80px; padding-bottom: 120px; 
             -webkit-overflow-scrolling: touch; 
         }
         .cuisine-btn { background: #222; border: 1px solid #444; color: #888; padding: 20px; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-radius: 12px; transition: all 0.2s; flex-shrink: 0; }
@@ -169,15 +158,88 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v53.0
+       KUTCH AUTOMATION | UNIVERSAL OS v54.0
        ========================================= */
     
-    // 🔧 CONFIG
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. CONTEXT EXTRACTOR (WIKI)
+    // 🧠 1. DATABASES (Truth Source)
+    const PHONE_DB = {
+      "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
+      "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
+      "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999 },
+      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999 },
+      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999 },
+      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999 },
+      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999 },
+      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499 },
+      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999 }
+    };
+
+    const AUDIO_DB = {
+      "Sony WF-1000XM6": { attr: { anc: 9.8, sound: 9.5, mic: 8.0, latency: 6.0 }, price: 24990 },
+      "Nothing Ear (4)": { attr: { anc: 8.0, sound: 8.5, mic: 9.0, latency: 7.0 }, price: 11999 },
+      "OnePlus Buds 3 Pro": { attr: { anc: 8.5, sound: 9.5, mic: 8.0, latency: 7.0 }, price: 8999 },
+      "Realme Buds Air 7 Pro": { attr: { anc: 9.0, sound: 8.0, mic: 8.5, latency: 8.0 }, price: 4999 },
+      "Realme Buds T310": { attr: { anc: 6.0, sound: 7.5, mic: 7.0, latency: 8.0 }, price: 2499 },
+      "boAt Nirvana 2026": { attr: { anc: 4.0, sound: 7.0, mic: 6.0, latency: 6.0 }, price: 1999 },
+      "Razer Hammerhead V3": { attr: { anc: 6.0, sound: 7.0, mic: 7.0, latency: 9.8 }, price: 14999 }
+    };
+
+    const DEAL_BREAKERS = {
+        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
+        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
+    };
+
+    const ECOM_DEEP_LINKS = {
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
+        }
+    };
+
+    // 🧠 2. MODULE REGISTRY (The Core Refactor)
+    const MODULES = {
+        smartphones: {
+            label: "SMARTPHONES",
+            database: PHONE_DB,
+            init: () => renderEcosystemGate(),
+            categories: [
+                { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
+                { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
+                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
+                { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] },
+                { label: "MUST HAVE: FAST CHARGE", type: "fast_charge", items: [] },
+                { label: "MUST HAVE: LIGHTWEIGHT", type: "lightweight", items: [] }
+            ]
+        },
+        earbuds: {
+            label: "EARBUDS",
+            database: AUDIO_DB,
+            init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); },
+            categories: [
+                { label: "MUSIC LOVER", type: "sound", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Buds 3 Pro"}] },
+                { label: "GAMING (LOW LATENCY)", type: "latency", items: [{"name": "Razer Hammerhead V3"}, {"name": "Realme Buds T310"}] },
+                { label: "CALLS & WORK", type: "mic", items: [{"name": "Nothing Ear (4)"}, {"name": "Realme Buds Air 7 Pro"}] },
+                { label: "TRAVEL (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "Samsung Buds 3 Pro"}] }
+            ]
+        },
+        food: {
+            label: "DINING",
+            database: null,
+            init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
+            categories: []
+        },
+        research: {
+            label: "RESEARCH",
+            database: null,
+            init: () => renderSearchSlide(),
+            categories: []
+        }
+    };
+
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
@@ -210,58 +272,15 @@
         }
     };
 
-    // 🧠 2. TECH TRUTH DATABASES
-    const PHONE_DATABASE = {
-      "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
-      "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
-      "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999 },
-      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999 },
-      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999 },
-      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999 },
-      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999 },
-      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499 },
-      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999 }
-    };
-
-    // 🛑 ACHILLES MATRIX
-    const DEAL_BREAKERS = {
-        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
-        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
-    };
-
-    // 🧠 3. CONFIGURATION LAYERS
-    const FALLBACK_MENU = {
-      "smartphones": {
-          "label": "SMARTPHONES",
-          "categories": [
-              { "label": "CAMERA-FIRST", "type": "camera", "items": [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
-              { "label": "PRO GAMER", "type": "gaming", "items": [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
-              { "label": "CLEAN UI", "type": "ui", "items": [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] },
-              { "label": "BATTERY KING", "type": "battery", "items": [{"name": "Realme GT 7T"}, {"name": "Poco F7"}] },
-              { "label": "MUST HAVE: FAST CHARGE", "type": "fast_charge", "items": [] },
-              { "label": "MUST HAVE: LIGHTWEIGHT", "type": "lightweight", "items": [] }
-          ]
-      },
-      "food": { label: "DINING (v28)", categories: [] }, 
-      "research": { label: "KNOWLEDGE ENGINE", categories: [] } 
-    };
-
-    const ECOM_DEEP_LINKS = {
-        amazon: { 
-            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
-            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
-        }
-    };
-
     let ENGINE_STATE = { 
-        cuisines_detected: [], 
+        currentDomain: null,
         items_detected: {}, 
         session_weights: {}, 
         active_filters: [],
         researchPath: [],
-        ecosystem: null // "specs" or "peace"
+        ecosystem: null 
     };
-    let RAW_DATA = FALLBACK_MENU;
+    
     let slideElements = [];
     let currentIdx = 0;
 
@@ -276,12 +295,12 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v53.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v54.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
-        for(let key in RAW_DATA) {
-            const isSelected = ENGINE_STATE.cuisines_detected.includes(key) ? "selected" : "";
-            html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${RAW_DATA[key].label}</button>`;
+        for(let key in MODULES) {
+            const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
+            html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
         }
         
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="handleStart()">NEXT &rarr;</button></div>`;
@@ -292,28 +311,18 @@
     }
 
     function toggleDomain(id, btn) {
-        ENGINE_STATE.cuisines_detected = [id]; 
+        ENGINE_STATE.currentDomain = id;
         document.querySelectorAll('.cuisine-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
     }
 
     function handleStart() {
-        if(ENGINE_STATE.cuisines_detected.length === 0) return showToast("SELECT DOMAIN");
-        const domain = ENGINE_STATE.cuisines_detected[0];
-        
-        if(domain === "food") {
-            renderExternalModule("https://via-decide.github.io/food.decider/");
-        } else if(domain === "research") {
-            renderSearchSlide();
-        } else if (domain === "smartphones") {
-            renderEcosystemGate(); 
-        } else {
-            ENGINE_STATE.active_filters = []; 
-            renderSubLobby(domain); 
-        }
+        if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
+        // 🚀 MODULAR JUMP
+        MODULES[ENGINE_STATE.currentDomain].init();
     }
 
-    /* 🟢 LAYER 0: ECOSYSTEM GATE */
+    /* 🟢 MODULE: SMARTPHONES (Layer 0 Gate) */
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -326,15 +335,10 @@
         <div class="lobby-container">
             <h1 style="text-align:center">WHAT MATTERS?</h1>
             <div style="display:grid; gap:20px;">
-                <button class="cuisine-btn" onclick="selectEcosystem('specs')">
-                    PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, 120W Charge, Customization</span>
-                </button>
-                <button class="cuisine-btn" onclick="selectEcosystem('peace')">
-                    PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Cameras, Resale Value</span>
-                </button>
+                <button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, 120W Charge</span></button>
+                <button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Cameras</span></button>
             </div>
         </div>`;
-        
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
@@ -342,27 +346,35 @@
 
     function selectEcosystem(type) {
         ENGINE_STATE.ecosystem = type;
-        renderSubLobby("smartphones");
+        ENGINE_STATE.active_filters = [];
+        renderSubLobby('smartphones');
     }
 
+    /* 🟢 MODULE: FILTERS (Shared for Tech) */
     function renderSubLobby(domain) {
         const container = document.getElementById('master-container');
-        while(container.children.length > 2) container.removeChild(container.lastChild);
-        slideElements = slideElements.slice(0, 2); 
+        const depth = domain === 'smartphones' ? 2 : 1; 
+        while(container.children.length > depth) container.removeChild(container.lastChild);
+        slideElements = slideElements.slice(0, depth);
 
         const section = document.createElement('section');
         section.className = "main-slide next"; 
-        const categories = RAW_DATA[domain].categories;
+        
+        const module = MODULES[domain];
+        const categories = module.categories;
+
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
+        
         categories.forEach((cat, idx) => {
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
+        
         section.innerHTML = html;
         container.appendChild(section);
         slideElements.push(section); 
-        goToSlide(2); 
+        goToSlide(depth); 
     }
 
     function toggleFilter(label, idx) {
@@ -378,11 +390,12 @@
 
     function startHunt() { 
         if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
-        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1 };
+        // Reset Weights
+        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1, anc:0.1, sound:0.1, mic:0.1, latency:0.1 };
         buildDeck(); 
     }
 
-    /* 🟢 RESEARCH & EXTERNAL MODULES */
+    /* 🟢 MODULE: EXTERNAL (FOOD) */
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -396,6 +409,7 @@
         container.appendChild(closeBtn);
     }
     
+    /* 🟢 MODULE: RESEARCH */
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -473,7 +487,6 @@
             doc.setTextColor(0); doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text(item.title, margin, 40);
             doc.setFontSize(12); doc.setFont("helvetica", "normal");
             const bodyText = doc.splitTextToSize(item.summary, width - 40); doc.text(bodyText, margin, 60);
-            
             const footerY = height - 30;
             if (item.link) {
                 doc.setDrawColor(255, 103, 31); doc.setLineWidth(0.5); doc.line(margin, footerY - 10, width - margin, footerY - 10);
@@ -485,19 +498,21 @@
         showToast("DOWNLOAD STARTED");
     }
 
-    /* 🔴 TECH BRANCH */
+    /* 🟢 CORE: DECK BUILDER */
     function buildDeck() {
         const container = document.getElementById('master-container');
-        while(container.children.length > 3) container.removeChild(container.lastChild);
-        slideElements = slideElements.slice(0, 3); 
+        const currentMod = MODULES[ENGINE_STATE.currentDomain];
+        const depth = ENGINE_STATE.currentDomain === 'smartphones' ? 3 : 2;
+        
+        while(container.children.length > depth) container.removeChild(container.lastChild);
+        slideElements = slideElements.slice(0, depth);
 
-        // 1. FILTER CATEGORIES
-        const domain = "smartphones";
-        const allCats = RAW_DATA[domain].categories;
+        const allCats = currentMod.categories;
         const targetCats = allCats.filter(c => ENGINE_STATE.active_filters.includes(c.label));
 
         let slides = [];
         targetCats.forEach(cat => {
+            // Only add actionable slides, not meta-filters
             if(cat.type !== "fast_charge" && cat.type !== "lightweight") {
                 slides.push({ type: 'opt', title: cat.label, items: cat.items });
             }
@@ -536,27 +551,31 @@
             slideElements.push(el);
         });
         
-        goToSlide(3); 
+        goToSlide(depth); 
     }
 
     function calculateVerdict() {
-        let DB = PHONE_DATABASE;
+        const activeModule = MODULES[ENGINE_STATE.currentDomain];
+        if(!activeModule.database) return {name: "Error", price: 0};
+
+        let DB = activeModule.database;
         let scores = [];
         
         const bannedTags = [];
         if(ENGINE_STATE.active_filters.some(f => f.includes("FAST CHARGE"))) bannedTags.push(DEAL_BREAKERS["Fast Charging"]);
         if(ENGINE_STATE.active_filters.some(f => f.includes("LIGHTWEIGHT"))) bannedTags.push(DEAL_BREAKERS["Lightweight"]);
         if(ENGINE_STATE.active_filters.some(f => f.includes("CLEAN UI"))) bannedTags.push(DEAL_BREAKERS["Clean UI"]);
-        if(ENGINE_STATE.active_filters.some(f => f.includes("BATTERY"))) bannedTags.push("weak_chip"); 
 
         for (let name in DB) {
             let item = DB[name];
-            const hasDeadlyTag = item.tags.some(t => bannedTags.includes(t));
+            // Safe guard for items without tags (like audio)
+            const tags = item.tags || [];
+            const hasDeadlyTag = tags.some(t => bannedTags.includes(t));
             if(hasDeadlyTag) continue; 
 
             let ecoScore = 0;
-            if(ENGINE_STATE.ecosystem === 'specs' && (item.tags.includes('value') || item.tags.includes('performance'))) ecoScore += 2;
-            if(ENGINE_STATE.ecosystem === 'peace' && (item.tags.includes('trust') || item.tags.includes('service_king'))) ecoScore += 2;
+            if(ENGINE_STATE.ecosystem === 'specs' && (tags.includes('value') || tags.includes('performance'))) ecoScore += 2;
+            if(ENGINE_STATE.ecosystem === 'peace' && (tags.includes('trust') || tags.includes('service_king'))) ecoScore += 2;
 
             let score = ecoScore;
             for(let attr in item.attr) {
