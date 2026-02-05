@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v57 |</title>
+    <title>| decide.engine v59 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -134,6 +134,7 @@
         .btn-yt { background: #cc0000; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-speak { background: #333; color: #aaa; border: 1px solid #444; }
         
+        /* 🟢 SCROLLABLE LOBBY */
         .lobby-container { 
             display: flex; flex-direction: column; gap: 15px; padding: 30px; height: 100%; 
             overflow-y: auto; justify-content: flex-start; 
@@ -179,11 +180,14 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v57.0
+       KUTCH AUTOMATION | UNIVERSAL OS v59.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
+    const ENGINE_REVIEW_URL = "https://www.youtube.com/@KutchAutomation";
+    // 🟢 NEW EARBUD REVIEW LINK
+    const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY"; 
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
     const PHONE_DB = {
@@ -221,7 +225,7 @@
         }
     };
 
-    // 🧠 2. MODULE REGISTRY (Expanded)
+    // 🧠 2. MODULE REGISTRY
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
@@ -244,6 +248,8 @@
                 { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
                 { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
                 { label: "WORK CALLS (AI MIC)", type: "mic", items: [{"name": "Technics AZ100"}, {"name": "OnePlus Nord Buds 3"}] },
+                // 🟢 4TH BUTTON: DEV REVIEW
+                { label: "▶ DEV REVIEW", type: "external", link: EARBUD_REVIEW_URL },
                 { label: "SILENCE (ANC >45dB)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
                 { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}, {"name": "Beats Powerbeats 2"}] }
             ]
@@ -261,9 +267,9 @@
             categories: []
         },
         review: {
-            label: "ENGINE REVIEW",
+            label: "ENGINE REVIEW ↗",
             database: null,
-            init: () => renderEngineReview(),
+            init: () => window.open(ENGINE_REVIEW_URL, '_blank'),
             categories: []
         }
     };
@@ -320,7 +326,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v57.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v59.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -339,38 +345,12 @@
         ENGINE_STATE.currentDomain = id;
         document.querySelectorAll('.cuisine-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
+        if(id === 'review') MODULES[id].init();
     }
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        MODULES[ENGINE_STATE.currentDomain].init();
-    }
-
-    /* 🟢 MODULE: ENGINE REVIEW (NEW) */
-    function renderEngineReview() {
-        const container = document.getElementById('master-container');
-        while(container.children.length > 1) container.removeChild(container.lastChild);
-        slideElements = [slideElements[0]];
-        const section = document.createElement('section');
-        section.className = "main-slide next";
-        
-        section.innerHTML = `
-        <div class="slide-header"><span class="header-title">SYSTEM DIAGNOSTICS</span></div>
-        <div class="lobby-container">
-            <h1 style="text-align:center">ENGINE STATUS: ONLINE</h1>
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-val">v57.0</div><div class="stat-label">CORE VER</div></div>
-                <div class="stat-card"><div class="stat-val">ACTIVE</div><div class="stat-label">NEURAL NET</div></div>
-                <div class="stat-card"><div class="stat-val">${Object.keys(PHONE_DB).length}</div><div class="stat-label">PHONES DB</div></div>
-                <div class="stat-card"><div class="stat-val">${Object.keys(AUDIO_DB).length}</div><div class="stat-label">AUDIO DB</div></div>
-                <div class="stat-card"><div class="stat-val">LIVE</div><div class="stat-label">WIKI ENGINE</div></div>
-                <div class="stat-card"><div class="stat-val">READY</div><div class="stat-label">PDF BUILDER</div></div>
-            </div>
-            <button class="btn btn-full" style="margin-top:30px" onclick="location.reload()">REBOOT SYSTEM</button>
-        </div>`;
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(1);
+        if(ENGINE_STATE.currentDomain !== 'review') MODULES[ENGINE_STATE.currentDomain].init();
     }
 
     /* 🟢 MODULE: SMARTPHONES */
@@ -414,8 +394,14 @@
 
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
+        
         categories.forEach((cat, idx) => {
-            html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+            // 🟢 SMART LINK DETECTION FOR EARBUDS REVIEW
+            if (cat.type === 'external') {
+                html += `<button class="cuisine-btn" style="border-color:#ff4444; color:#ff4444;" onclick="window.open('${cat.link}', '_blank')">${cat.label}</button>`;
+            } else {
+                html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+            }
         });
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html;
