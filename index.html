@@ -252,11 +252,11 @@
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
-        research: {
+       research: {
             label: "RESEARCH",
             database: null,
-            // 🟢 FIXED: Now correctly initializes the search UI
-            init: () => renderSearchSlide(),
+            // 🟢 PATCH: Point back to internal search function
+            init: () => renderSearchSlide(), 
             categories: []
         },
         review: {
@@ -344,12 +344,11 @@
         if(id === 'review') MODULES[id].init();
     }
 
-    function handleStart() {
+   function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🟢 FIX: This ensures the init() function is called properly for every module
+        // 🟢 PATCH: Run the init() function for WHATEVER domain is selected
         MODULES[ENGINE_STATE.currentDomain].init();
     }
-
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
