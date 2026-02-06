@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine |</title>
+    <title>| decide.engine v67.3 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -21,6 +22,9 @@
             --text-main: #f0f0f0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
+            --accent-zomato: #cb202d;
+            --accent-swiggy: #fc8019;
+            --accent-blinkit: #f8cb46;
             --accent-yt: #FF0000;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -190,6 +194,7 @@
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
+    // 🧠 1. DATABASES (Full)
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
@@ -213,10 +218,19 @@
       "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999, video: null }
     };
 
-    const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
-    const ECOM_DEEP_LINKS = { amazon: { app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` } };
+    const DEAL_BREAKERS = {
+        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
+        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
+    };
 
-    // 🧠 2. MODULE REGISTRY (Fixed Research & Dining)
+    const ECOM_DEEP_LINKS = {
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
+        }
+    };
+
+    // 🧠 2. MODULE REGISTRY (Restored)
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
@@ -248,14 +262,13 @@
         food: {
             label: "DINING",
             database: null,
-            // 🟢 FIXED: Now correctly opens iframe
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
         research: {
             label: "RESEARCH",
             database: null,
-            // 🟢 FIXED: Now correctly initializes the search UI
+            // 🟢 FIXED: Properly mapped to search
             init: () => renderSearchSlide(),
             categories: []
         },
@@ -291,13 +304,7 @@
                 const p = pages[pageId];
                 
                 const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
-                
-                return {
-                    title: p.title,
-                    summary: p.extract ? p.extract.split('. ')[0] + '.' : "No summary available.",
-                    full_summary: p.extract || "",
-                    links: safeLinks
-                };
+                return { title: p.title, summary: p.extract || "No data.", full_summary: p.extract || "", links: safeLinks };
             } catch(e) { return null; }
         }
     };
@@ -341,12 +348,12 @@
         ENGINE_STATE.currentDomain = id;
         document.querySelectorAll('.cuisine-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
-        if(id === 'review') MODULES[id].init();
+        // We do NOT init() here anymore, we wait for "NEXT" button
     }
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🟢 FIX: This ensures the init() function is called properly for every module
+        // 🟢 FIXED: Only init() when NEXT is clicked
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
@@ -386,13 +393,12 @@
         const section = document.createElement('section');
         section.className = "main-slide next"; 
         const module = MODULES[domain];
-        const categories = module.categories;
-
+        
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
         
-        categories.forEach((cat, idx) => {
-            if (cat.type === 'external') {
+        module.categories.forEach((cat, idx) => {
+             if (cat.type === 'external') {
                 html += `<button class="cuisine-btn" style="border-color:#ff4444; color:#ff4444;" onclick="window.open('${cat.link}', '_blank')">${cat.label}</button>`;
             } else {
                 html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
@@ -434,7 +440,7 @@
         const closeBtn = document.createElement('button');
         closeBtn.className = "close-iframe";
         closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => location.reload(); // Reset to exit cleanly
+        closeBtn.onclick = () => location.reload(); 
         
         container.appendChild(iframe);
         container.appendChild(closeBtn);
@@ -443,7 +449,6 @@
     // 🟢 FIXED: Research Module Renderer
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
-        // Clear all except lobby? No, Research takes over.
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         ENGINE_STATE.researchPath = []; 
@@ -537,8 +542,10 @@
         buildResearchDeck(context);
     }
 
+    /* 🟢 SIGNATURE GENERATION & SHEET PUSH */
     async function generateStoryPDF() {
         showToast("SIGNING & SYNCING...");
+        
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
         const payload = {
@@ -715,18 +722,27 @@
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
+
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     WIKI_ENGINE.getContext(val).then(ctx => {
                         if(ctx) {
-                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary });
+                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
                             buildResearchDeck(ctx);
+                        } else {
+                            showToast("LINK BROKEN");
                         }
                     });
                 } else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
+                    // Dynamic Weights
+                    if(val === "Samsung A55") ENGINE_STATE.session_weights.ui += 0.2;
+                    if(val === "Poco F7") ENGINE_STATE.session_weights.gaming += 0.2;
+                    showToast("SELECTED");
                     goToSlide(currentIdx + 1);
-                } else goToSlide(currentIdx + 1);
+                } else {
+                    goToSlide(currentIdx + 1);
+                }
             } 
             // SWIPE DOWN (Back)
             else if (dy > 80) {
@@ -736,7 +752,9 @@
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
-                } else goToSlide(currentIdx - 1);
+                } else {
+                    goToSlide(currentIdx - 1);
+                }
             } 
             // SIDE SWIPE
             else if(Math.abs(dx) > 60) {
