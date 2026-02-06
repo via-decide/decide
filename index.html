@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.0 |</title>
+    <title>| decide.engine v67.2 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -177,13 +177,11 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.0
+       KUTCH AUTOMATION | UNIVERSAL OS v67.2
        ========================================= */
     
     // 🔴 CONFIGURATION
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
-    
-    // 🔴 CHANNEL LINK (The new destination)
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
 
     const AMZN_TAG = "decideos-21";
@@ -332,7 +330,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.2</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -444,7 +442,6 @@
         container.appendChild(closeBtn);
     }
     
-    // --- 🟢 WIKI RESEARCH MODULE ---
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -457,8 +454,8 @@
         <div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
         <div class="lobby-container">
             <div class="source-toggle">
-                <span class="source-chip active" onclick="setSource('wiki', this)">WIKI</span>
-                <span class="source-chip" onclick="setSource('travel', this)">TRAVEL</span>
+                <span class="source-chip active">NEURAL SEARCH</span>
+                <span class="source-chip" onclick="window.open('${STUDENT_PORTAL_URL}', '_blank')" style="border-color:var(--accent-go); color:var(--accent-go);">STUDENT PORTAL ↗</span>
             </div>
             <h1>TOPIC?</h1>
             <input type="text" id="search-input" placeholder="e.g. AI, Space...">
@@ -470,12 +467,6 @@
         goToSlide(1);
     }
 
-    function setSource(src, btn) {
-        WIKI_ENGINE.source = src;
-        document.querySelectorAll('.source-chip').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
     async function executeSearch() {
         const query = document.getElementById('search-input').value;
         if(!query) return showToast("ENTER TOPIC");
@@ -483,7 +474,7 @@
         const title = await WIKI_ENGINE.search(query);
         if(!title) return showToast("NOT FOUND");
         const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath.push({ depth: 0, title: context.title, summary: context.full_summary, link: null });
+        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
 
@@ -494,16 +485,20 @@
         const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " books")}&tag=${AMZN_TAG}`;
         
         const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
+        sumSlide.className = "main-slide next"; 
+        sumSlide.dataset.mode = "research"; // Explicit mode tagging
+        
         sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
             <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
             <div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button><a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a></div>
-            <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div></div></div>`;
+            <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div></div>`;
         container.appendChild(sumSlide);
         slideElements.push(sumSlide);
 
         const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next"; linkSlide.dataset.mode = "research"; 
+        linkSlide.className = "main-slide next"; 
+        linkSlide.dataset.mode = "research"; // Explicit mode tagging
+        
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         
         if(context.links && context.links.length > 0) {
@@ -511,10 +506,10 @@
                  const safeTitle = link.name.replace(/'/g, "\\'");
                  html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${safeTitle}')">
                             <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
-                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
+                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
         } else {
-            html += `<div class="sub-slide opt-active"><h1>End of the line.</h1></div>`;
+            html += `<div class="sub-slide opt-active"><h1>No further links available.</h1></div>`;
         }
         
         html += `</div>`;
@@ -527,8 +522,11 @@
     async function diveDeeper(title) {
         showToast("ACCESSING NODE...");
         const context = await WIKI_ENGINE.getContext(title);
-        if(!context) return showToast("DATA CORRUPTED");
-        ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: context.title, summary: context.full_summary, link: null });
+        if (!context) {
+            showToast("DATA CORRUPTED");
+            return;
+        }
+        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
 
@@ -536,10 +534,8 @@
     async function generateStoryPDF() {
         showToast("SIGNING & SYNCING...");
         
-        // 1. MINT SESSION SIGNATURE
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
-        // 2. PUSH TO BACKEND (Your Creator Dashboard)
         const payload = {
             event: "PDF_GENERATED",
             session_id: sessionID,
@@ -554,7 +550,6 @@
             body: JSON.stringify(payload)
         });
 
-        // 3. GENERATE PDF (USER TICKET)
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const width = doc.internal.pageSize.getWidth();
@@ -563,7 +558,6 @@
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
-            
             doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
             doc.text(`SESSION SIGNATURE: ${sessionID} | LEVEL ${index}`, margin, 15);
             
@@ -575,11 +569,10 @@
             const bodyText = doc.splitTextToSize(summaryText, width - 40); 
             doc.text(bodyText, margin, 55);
             
-            // 🟥 THE NEW FOOTER: DIRECTS TO YOUTUBE WITH SIGNATURE
             const boxY = height - 50;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 35, 'F');
             
-            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); // YouTube Red
+            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); 
             doc.text("Video Generating...", margin + 5, boxY + 10);
             
             doc.setTextColor(0); doc.setFontSize(12);
@@ -726,7 +719,7 @@
     }
 
     /* =========================================
-       STANDARD HELPERS
+       STANDARD HELPERS (UX UPGRADE v67.2)
        ========================================= */
     let touchStartX = 0, touchStartY = 0;
     function initSwipeSystem() {
@@ -753,7 +746,10 @@
             document.getElementById('depth-fill').style.height = '0%';
             const mainSlide = view.closest('.main-slide');
             const mode = mainSlide.dataset.mode;
-            if(dy > 80) { 
+
+            // 🔄 UX INVERSION LOGIC START
+            // SWIPE UP (dy < -80) -> FORWARD / DIVE DEEPER
+            if(dy < -80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
@@ -776,7 +772,9 @@
                     showToast("SELECTED");
                     goToSlide(currentIdx + 1);
                 } else goToSlide(currentIdx + 1);
-            } else if (dy < -80) {
+            } 
+            // SWIPE DOWN (dy > 80) -> BACK
+            else if (dy > 80) {
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
                         ENGINE_STATE.researchPath.pop(); showToast("BACK");
@@ -784,7 +782,10 @@
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
                 } else goToSlide(currentIdx - 1);
-            } else if(Math.abs(dx) > 60) {
+            } 
+            // 🔄 UX INVERSION LOGIC END
+
+            else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
                 const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
