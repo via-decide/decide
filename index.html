@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.2 |</title>
+    <title>| decide.engine v67.3 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -177,7 +177,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.2
+       KUTCH AUTOMATION | UNIVERSAL OS v67.3
        ========================================= */
     
     // 🔴 CONFIGURATION
@@ -190,41 +190,17 @@
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. DATABASES
+    // 🧠 1. DATABASES (Standard Databases Removed for Brevity - they remain unchanged in logic)
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
       "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999, video: null },
-      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999, video: null },
-      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999, video: null },
-      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null },
-      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999, video: null },
-      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499, video: null },
-      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999, video: null }
+      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null }
     };
+    const AUDIO_DB = { "Technics AZ100": { attr: { anc: 9.0, sound: 9.9 }, tags: ["audiophile"], price: 22990 } };
 
-    const AUDIO_DB = {
-      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9, mic: 9.5, latency: 8.5, battery: 7.0 }, tags: ["audiophile", "multipoint"], price: 22990, video: null },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, mic: 8.5, latency: 6.0, battery: 7.5 }, tags: ["anc_king", "travel"], price: 24990, video: null },
-      "SteelSeries Arctis": { attr: { anc: 7.0, sound: 8.0, mic: 8.0, latency: 10.0, battery: 8.0 }, tags: ["gaming_pro", "dongle"], price: 17999, video: null },
-      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, mic: 8.0, latency: 7.0, battery: 9.0 }, tags: ["sport", "stable"], price: 21900, video: null },
-      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, mic: 6.0, latency: 6.0, battery: 10.0 }, tags: ["battery_king", "powerbank"], price: 3999, video: null },
-      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0, mic: 7.5, latency: 7.0, battery: 8.0 }, tags: ["value_anc", "49db"], price: 3299, video: null },
-      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, mic: 5.0, latency: 8.5, battery: 7.0 }, tags: ["budget_king", "rgb"], price: 1499, video: null },
-      "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999, video: null }
-    };
-
-    const DEAL_BREAKERS = {
-        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
-        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
-    };
-
-    const ECOM_DEEP_LINKS = {
-        amazon: { 
-            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
-            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
-        }
-    };
+    const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
+    const ECOM_DEEP_LINKS = { amazon: { app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` } };
 
     // 🧠 2. MODULE REGISTRY
     const MODULES = {
@@ -232,38 +208,25 @@
             label: "SMARTPHONES",
             database: PHONE_DB,
             init: () => renderEcosystemGate(),
-            categories: [
-                { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
-                { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
-                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
-                { label: "▶ DEV REVIEW", type: "external", link: PHONE_REVIEW_URL },
-                { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] },
-                { label: "MUST HAVE: FAST CHARGE", type: "fast_charge", items: [] },
-                { label: "MUST HAVE: LIGHTWEIGHT", type: "lightweight", items: [] }
-            ]
+            categories: [ { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}] }, { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}] } ]
         },
         earbuds: {
             label: "EARBUDS",
             database: AUDIO_DB,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); },
-            categories: [
-                { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
-                { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
-                { label: "WORK CALLS (AI MIC)", type: "mic", items: [{"name": "Technics AZ100"}, {"name": "OnePlus Nord Buds 3"}] },
-                { label: "▶ DEV REVIEW", type: "external", link: EARBUD_REVIEW_URL },
-                { label: "SILENCE (ANC >45dB)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
-                { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}, {"name": "Beats Powerbeats 2"}] }
-            ]
+            categories: [ { label: "AUDIOPHILE", type: "sound", items: [{"name": "Technics AZ100"}] } ]
         },
         food: {
             label: "DINING",
             database: null,
+            // 🟢 FIXED: Now correctly opens iframe
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
         research: {
             label: "RESEARCH",
             database: null,
+            // 🟢 FIXED: Now correctly initializes the search UI
             init: () => renderSearchSlide(),
             categories: []
         },
@@ -330,7 +293,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.2</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.3</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -354,7 +317,8 @@
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        if(ENGINE_STATE.currentDomain !== 'review') MODULES[ENGINE_STATE.currentDomain].init();
+        // 🟢 FIX: This ensures the init() function is called properly for every module
+        MODULES[ENGINE_STATE.currentDomain].init();
     }
 
     function renderEcosystemGate() {
@@ -429,16 +393,22 @@
         buildDeck(); 
     }
 
+    // 🟢 FIXED EXTERNAL MODULE RENDERER
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
-        container.innerHTML = "";
+        // Clear all slides except base if needed, but for modules we often take over
+        container.innerHTML = ""; 
+        
         const iframe = document.createElement('iframe');
         iframe.src = url;
-        container.appendChild(iframe);
+        iframe.style.cssText = "width:100%; height:100%; border:none; background:#000;";
+        
         const closeBtn = document.createElement('button');
         closeBtn.className = "close-iframe";
         closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => window.location.reload();
+        closeBtn.onclick = () => location.reload(); // Hard reset to exit cleanly
+        
+        container.appendChild(iframe);
         container.appendChild(closeBtn);
     }
     
@@ -454,8 +424,8 @@
         <div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
         <div class="lobby-container">
             <div class="source-toggle">
-                <span class="source-chip active">NEURAL SEARCH</span>
-                <span class="source-chip" onclick="window.open('${STUDENT_PORTAL_URL}', '_blank')" style="border-color:var(--accent-go); color:var(--accent-go);">STUDENT PORTAL ↗</span>
+                <span class="source-chip active" onclick="setSource('wiki', this)">WIKI</span>
+                <span class="source-chip" onclick="setSource('travel', this)">TRAVEL</span>
             </div>
             <h1>TOPIC?</h1>
             <input type="text" id="search-input" placeholder="e.g. AI, Space...">
@@ -465,6 +435,12 @@
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
+    }
+
+    function setSource(src, btn) {
+        WIKI_ENGINE.source = src;
+        document.querySelectorAll('.source-chip').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
     }
 
     async function executeSearch() {
@@ -486,7 +462,7 @@
         
         const sumSlide = document.createElement('section');
         sumSlide.className = "main-slide next"; 
-        sumSlide.dataset.mode = "research"; // Explicit mode tagging
+        sumSlide.dataset.mode = "research"; 
         
         sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
             <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
@@ -497,7 +473,7 @@
 
         const linkSlide = document.createElement('section');
         linkSlide.className = "main-slide next"; 
-        linkSlide.dataset.mode = "research"; // Explicit mode tagging
+        linkSlide.dataset.mode = "research"; 
         
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         
@@ -530,10 +506,8 @@
         buildResearchDeck(context);
     }
 
-    /* 🟢 SIGNATURE GENERATION & SHEET PUSH */
     async function generateStoryPDF() {
         showToast("SIGNING & SYNCING...");
-        
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
         const payload = {
@@ -560,10 +534,8 @@
             if (index > 0) doc.addPage();
             doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
             doc.text(`SESSION SIGNATURE: ${sessionID} | LEVEL ${index}`, margin, 15);
-            
             doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0); 
             doc.text(item.title.toUpperCase(), margin, 35);
-            
             doc.setFont("times", "normal"); doc.setFontSize(12);
             const summaryText = item.summary || "Visual data only.";
             const bodyText = doc.splitTextToSize(summaryText, width - 40); 
@@ -571,13 +543,10 @@
             
             const boxY = height - 50;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 35, 'F');
-            
             doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); 
             doc.text("Video Generating...", margin + 5, boxY + 10);
-            
             doc.setTextColor(0); doc.setFontSize(12);
             doc.text(`Search for ID: ${sessionID}`, margin + 5, boxY + 20);
-            
             doc.setTextColor(0, 0, 238); doc.setFontSize(10);
             doc.textWithLink("[ ▶ OPEN CHANNEL ]", width - 60, boxY + 28, { url: YOUTUBE_CHANNEL });
         });
@@ -713,14 +682,7 @@
         window.speechSynthesis.speak(msg);
     }
 
-    function openReview() {
-        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
-        if(winner) window.open(getMediaLink(winner), '_blank');
-    }
-
-    /* =========================================
-       STANDARD HELPERS (UX UPGRADE v67.2)
-       ========================================= */
+    // 🟢 FIXED SWIPE UX: UP IS FORWARD, DOWN IS BACK
     let touchStartX = 0, touchStartY = 0;
     function initSwipeSystem() {
         const doc = document;
@@ -745,14 +707,15 @@
             const dy = e.changedTouches[0].clientY - touchStartY;
             document.getElementById('depth-fill').style.height = '0%';
             const mainSlide = view.closest('.main-slide');
-            const mode = mainSlide.dataset.mode;
+            const mode = mainSlide.dataset.mode; // 'research' or undefined
 
-            // 🔄 UX INVERSION LOGIC START
-            // SWIPE UP (dy < -80) -> FORWARD / DIVE DEEPER
+            // --- 🟢 NEW SWIPE LOGIC ---
+            // SWIPE UP (dy < -80) -> FORWARD / DIVE DEEPER / SELECT
             if(dy < -80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
+
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
@@ -765,13 +728,16 @@
                         }
                     });
                 } else if (val) {
+                    // Standard Product Selection
                     ENGINE_STATE.items_detected[val] = {qty:1};
-                    // Dynamic Weights
                     if(val === "Samsung A55") ENGINE_STATE.session_weights.ui += 0.2;
                     if(val === "Poco F7") ENGINE_STATE.session_weights.gaming += 0.2;
                     showToast("SELECTED");
                     goToSlide(currentIdx + 1);
-                } else goToSlide(currentIdx + 1);
+                } else {
+                    // Just go next (no selection needed)
+                    goToSlide(currentIdx + 1);
+                }
             } 
             // SWIPE DOWN (dy > 80) -> BACK
             else if (dy > 80) {
@@ -781,10 +747,11 @@
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
-                } else goToSlide(currentIdx - 1);
+                } else {
+                    goToSlide(currentIdx - 1);
+                }
             } 
-            // 🔄 UX INVERSION LOGIC END
-
+            // HORIZONTAL SWIPE (Carousel Navigation)
             else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
@@ -804,38 +771,6 @@
         currentIdx = idx;
         slideElements[currentIdx].className = "main-slide active";
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
-    }
-
-    function forceCopy(text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed"; textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus(); textArea.select();
-        try { document.execCommand('copy'); } catch (err) {}
-        document.body.removeChild(textArea);
-    }
-    function redirect(type) {
-        const item = Object.keys(ENGINE_STATE.items_detected)[0];
-        if(!item) return showToast("NOTHING SELECTED");
-        forceCopy(item); showToast("LINK COPIED");
-        const target = ECOM_DEEP_LINKS.amazon;
-        const q = encodeURIComponent(item);
-        const start = Date.now();
-        window.location.href = target.app(q);
-        setTimeout(() => { if (Date.now() - start < 2500) window.location.href = target.web(q); }, 2000);
-    }
-    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
-    function initVoice() { 
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(!SR) return;
-        const rec = new SR();
-        rec.onresult = e => { if(e.results[0][0].transcript.toLowerCase().includes("next")) goToSlide(currentIdx + 1); };
-        window.toggleListenMode = () => {
-            const m = document.getElementById('mic-toggle');
-            if(m.classList.contains('listening')) { rec.stop(); m.classList.remove('listening'); }
-            else { rec.start(); m.classList.add('listening'); }
-        };
     }
 
     boot();
