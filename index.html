@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine |</title>
+    <title>| decide.engine v63 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -180,18 +180,17 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v62.0
+       KUTCH AUTOMATION | UNIVERSAL OS v63.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
-    // 🔗 UPDATED CHANNEL LINK
-    const ENGINE_REVIEW_URL = "https://youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
-    // 🔗 UPDATED PHONE REVIEW LINK
+    const ENGINE_REVIEW_URL = "https://www.youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
     const PHONE_REVIEW_URL = "https://youtu.be/_GQkaY9-jto?si=EiNtzvkHtHG8uiT5";
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     
+    // ⚗️ ALCHEMIST BRIDGE
     const ALCHEMIST_BASE = "https://dharamdaxini.github.io/Alchemist-App/";
 
     // 🧠 1. DATABASES
@@ -240,7 +239,6 @@
                 { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
                 { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
                 { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
-                // 🟢 4TH BUTTON ADDED HERE
                 { label: "▶ DEV REVIEW", type: "external", link: PHONE_REVIEW_URL },
                 { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] },
                 { label: "MUST HAVE: FAST CHARGE", type: "fast_charge", items: [] },
@@ -272,7 +270,6 @@
             init: () => renderSearchSlide(),
             categories: []
         },
-        // 🟢 5TH LOBBY BUTTON: ENGINE REVIEW
         review: {
             label: "ENGINE REVIEW ↗",
             database: null,
@@ -333,7 +330,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v62.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v63.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -402,7 +399,6 @@
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
         
         categories.forEach((cat, idx) => {
-            // 🟢 SMART LINK DETECTION
             if (cat.type === 'external') {
                 html += `<button class="cuisine-btn" style="border-color:#ff4444; color:#ff4444;" onclick="window.open('${cat.link}', '_blank')">${cat.label}</button>`;
             } else {
@@ -509,6 +505,7 @@
         goToSlide(2);
     }
 
+    /* 🟢 UPGRADED PDF ENGINE (MASTER LINK) */
     async function generateStoryPDF() {
         showToast("GENERATING PDF...");
         const { jsPDF } = window.jspdf;
@@ -516,6 +513,11 @@
         const width = doc.internal.pageSize.getWidth();
         const height = doc.internal.pageSize.getHeight();
         const margin = 20;
+
+        // 🧠 MASTER SYLLABUS: Collect all topics researched in this session
+        const syllabus = ENGINE_STATE.researchPath.map(p => p.title).join("|");
+        // 🧠 MASTER LINK: One link to rule them all (Portal Mode)
+        const masterLink = `${ALCHEMIST_BASE}?mode=portal&syllabus=${encodeURIComponent(syllabus)}`;
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
@@ -544,11 +546,10 @@
             doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(50);
             doc.text("ACTIVE RECALL PORTAL", margin + 5, boxY + 10);
             
-            // The Alchemist Link
+            // The Alchemist Link (MASTER LINK ON EVERY PAGE)
             doc.setTextColor(0, 0, 238); doc.setFontSize(12);
             const linkText = "[ 🧪 TRANSMUTE KNOWLEDGE ↗ ]";
-            const alchemistLink = `${ALCHEMIST_BASE}?source=decide&topic=${encodeURIComponent(item.title)}&level=${index}`;
-            doc.textWithLink(linkText, margin + 5, boxY + 22, { url: alchemistLink });
+            doc.textWithLink(linkText, margin + 5, boxY + 22, { url: masterLink });
         });
         
         doc.save(`Alchemist_Report_${Date.now()}.pdf`);
