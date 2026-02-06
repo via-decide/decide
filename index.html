@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v63 |</title>
+    <title>| decide.engine v64 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -180,18 +181,25 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v63.0
+       KUTCH AUTOMATION | UNIVERSAL OS v64.0
        ========================================= */
     
+    // 🌐 CONFIGURATION ZONE
+    // 🔴 YOUR GOOGLE SCRIPT & SHEET CONFIG
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
+    const SHEET_ID = "1MLL4yyhzEebd2-_iMSA90FGJ3VuBrVV2drcGYAsLmnA"; // Reference only
+    
+    // 🔴 STUDENT & ALCHEMIST LINKS
+    const STUDENT_PORTAL_URL = "https://scholar.google.com"; 
+    const ALCHEMIST_BASE = "https://via-decide.github.io/alchemist_app/";
+
+    // --- EXTERNAL LINKS ---
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
     const ENGINE_REVIEW_URL = "https://www.youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
     const PHONE_REVIEW_URL = "https://youtu.be/_GQkaY9-jto?si=EiNtzvkHtHG8uiT5";
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
-    
-    // ⚗️ ALCHEMIST BRIDGE
-    const ALCHEMIST_BASE = "https://dharamdaxini.github.io/Alchemist-App/";
 
     // 🧠 1. DATABASES
     const PHONE_DB = {
@@ -330,7 +338,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v63.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v64.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -442,6 +450,7 @@
         container.appendChild(closeBtn);
     }
     
+    /* 🟢 UPGRADED: HYBRID RESEARCH MODULE */
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -449,19 +458,22 @@
         ENGINE_STATE.researchPath = []; 
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
-                    <div class="lobby-container">
-                        <div class="source-toggle"><span class="source-chip active" onclick="setSource('wiki', this)">WIKI</span><span class="source-chip" onclick="setSource('travel', this)">TRAVEL</span></div>
-                        <h1>TOPIC?</h1><input type="text" id="search-input" placeholder="e.g. AI, Space..."><button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button></div>`;
+        
+        section.innerHTML = `
+        <div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
+        <div class="lobby-container">
+            <div class="source-toggle">
+                <span class="source-chip active">NEURAL SEARCH</span>
+                <span class="source-chip" onclick="window.open('${STUDENT_PORTAL_URL}', '_blank')" style="border-color:var(--accent-go); color:var(--accent-go);">STUDENT PORTAL ↗</span>
+            </div>
+            <h1>TOPIC?</h1>
+            <input type="text" id="search-input" placeholder="e.g. AI, Space...">
+            <button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button>
+        </div>`;
+        
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
-    }
-
-    function setSource(src, btn) {
-        WIKI_ENGINE.source = src;
-        document.querySelectorAll('.source-chip').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
     }
 
     async function executeSearch() {
@@ -471,7 +483,7 @@
         const title = await WIKI_ENGINE.search(query);
         if(!title) return showToast("NOT FOUND");
         const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath.push({ depth: 0, title: context.title, summary: context.full_summary, link: null });
+        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
 
@@ -482,7 +494,7 @@
         const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " books")}&tag=${AMZN_TAG}`;
         
         const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
+        sumSlide.className = "main-slide next"; 
         sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
             <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
             <div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button><a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a></div>
@@ -491,12 +503,12 @@
         slideElements.push(sumSlide);
 
         const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next"; linkSlide.dataset.mode = "research"; 
+        linkSlide.className = "main-slide next"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
-        context.links.forEach((link, i) => {
-             html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${link.name}">
-                        <div class="role-label">FOLLOW UP</div><h1>Tell me about<br><span style="color:var(--accent-go)">${link.name}</span></h1>
-                        <div class="nav-hint"><span>&larr; NEXT</span><span style="color:var(--accent-go)">SELECT &darr;</span></div></div>`;
+        context.links.slice(0,5).forEach((link, i) => {
+             html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${link.name}')">
+                        <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
+                        <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
         });
         html += `</div>`;
         linkSlide.innerHTML = html;
@@ -505,54 +517,66 @@
         goToSlide(2);
     }
 
-    /* 🟢 UPGRADED PDF ENGINE (MASTER LINK) */
+    async function diveDeeper(title) {
+        const context = await WIKI_ENGINE.getContext(title);
+        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
+        buildResearchDeck(context);
+    }
+
+    /* 🟢 DATA SYNC & PDF GENERATOR */
     async function generateStoryPDF() {
-        showToast("GENERATING PDF...");
+        showToast("SYNCING DATA...");
+        
+        // 1. GENERATE UNIQUE ID
+        const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+        
+        // 2. PREPARE PAYLOAD
+        const payload = {
+            event: "PDF_GENERATED",
+            session_id: sessionID,
+            syllabus: ENGINE_STATE.researchPath.map(p => p.title).join("|"), // "Physics|Gravity"
+            user_agent: navigator.userAgent
+        };
+        
+        // 3. SEND TO GOOGLE SHEET (No-CORS Mode)
+        // This creates the row where you will paste the YouTube link later
+        fetch(BACKEND_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        // 4. GENERATE PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const width = doc.internal.pageSize.getWidth();
         const height = doc.internal.pageSize.getHeight();
         const margin = 20;
 
-        // 🧠 MASTER SYLLABUS: Collect all topics researched in this session
-        const syllabus = ENGINE_STATE.researchPath.map(p => p.title).join("|");
-        // 🧠 MASTER LINK: One link to rule them all (Portal Mode)
-        const masterLink = `${ALCHEMIST_BASE}?mode=portal&syllabus=${encodeURIComponent(syllabus)}`;
+        // 5. MASTER LINK (Embedded in PDF)
+        const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(payload.syllabus)}`;
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
-            
-            // Header
             doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
-            doc.text(`RESEARCH SESSION REPORT | LEVEL ${index}`, margin, 15);
+            doc.text(`SESSION: ${sessionID} | LEVEL ${index}`, margin, 15);
             
-            // Title (Question style)
-            doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0);
+            doc.setFontSize(24); doc.setTextColor(0); 
             doc.text(item.title.toUpperCase(), margin, 35);
             
-            // Divider
-            doc.setDrawColor(0); doc.setLineWidth(0.5); doc.line(margin, 42, width - margin, 42);
-
-            // "Theory & Logic" Section (Summary)
-            doc.setFontSize(10); doc.setTextColor(100); doc.text("THEORY & LOGIC", margin, 55);
+            doc.setFont("times", "normal"); doc.setFontSize(12);
+            const bodyText = doc.splitTextToSize(item.summary, width - 40); 
+            doc.text(bodyText, margin, 55);
             
-            doc.setFont("times", "normal"); doc.setFontSize(12); doc.setTextColor(0);
-            const bodyText = doc.splitTextToSize(item.summary, width - 40);
-            doc.text(bodyText, margin, 65);
-
-            // "Execution" Section (Visual Box)
-            const boxY = height - 50;
-            doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 30, 'F');
-            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(50);
-            doc.text("ACTIVE RECALL PORTAL", margin + 5, boxY + 10);
-            
-            // The Alchemist Link (MASTER LINK ON EVERY PAGE)
-            doc.setTextColor(0, 0, 238); doc.setFontSize(12);
-            const linkText = "[ 🧪 TRANSMUTE KNOWLEDGE ↗ ]";
-            doc.textWithLink(linkText, margin + 5, boxY + 22, { url: masterLink });
+            // Footer Link
+            const boxY = height - 40;
+            doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 25, 'F');
+            doc.setTextColor(0, 0, 238); doc.setFontSize(12); doc.setFont("courier", "bold");
+            doc.textWithLink("[ 🧪 OPEN ALCHEMIST PORTAL ↗ ]", margin + 5, boxY + 15, { url: masterLink });
         });
         
-        doc.save(`Alchemist_Report_${Date.now()}.pdf`);
+        doc.save(`Research_${sessionID}.pdf`);
         showToast("PDF DOWNLOADED");
     }
 
