@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v60 |</title>
+    <title>| decide.engine v61 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -62,7 +62,7 @@
             letter-spacing: 1px; font-weight: 700; text-transform: uppercase;
         }
 
-        /* 🎥 CLEANER VIDEO LAYOUT */
+        /* 🎥 VIDEO ENGINE */
         .video-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: -1; opacity: 0.3;
@@ -180,18 +180,20 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v60.0
+       KUTCH AUTOMATION | UNIVERSAL OS v61.0
        ========================================= */
     
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
-    const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
-    
-    // 🔗 EXTERNAL LINKS
-    const CHANNEL_URL = "https://youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
+    const ENGINE_REVIEW_URL = "https://www.youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
     const PHONE_REVIEW_URL = "https://youtu.be/_GQkaY9-jto?si=EiNtzvkHtHG8uiT5";
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
+    const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
+    
+    // ⚗️ ALCHEMIST BRIDGE
+    const ALCHEMIST_BASE = "https://dharamdaxini.github.io/Alchemist-App/";
 
+    // 🧠 1. DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
@@ -237,7 +239,6 @@
                 { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
                 { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
                 { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
-                // 🟢 4TH BUTTON: DEV REVIEW
                 { label: "▶ DEV REVIEW", type: "external", link: PHONE_REVIEW_URL },
                 { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] },
                 { label: "MUST HAVE: FAST CHARGE", type: "fast_charge", items: [] },
@@ -252,7 +253,6 @@
                 { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
                 { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
                 { label: "WORK CALLS (AI MIC)", type: "mic", items: [{"name": "Technics AZ100"}, {"name": "OnePlus Nord Buds 3"}] },
-                // 🟢 4TH BUTTON: DEV REVIEW
                 { label: "▶ DEV REVIEW", type: "external", link: EARBUD_REVIEW_URL },
                 { label: "SILENCE (ANC >45dB)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
                 { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}, {"name": "Beats Powerbeats 2"}] }
@@ -273,7 +273,7 @@
         review: {
             label: "ENGINE REVIEW ↗",
             database: null,
-            init: () => window.open(CHANNEL_URL, '_blank'),
+            init: () => window.open(ENGINE_REVIEW_URL, '_blank'),
             categories: []
         }
     };
@@ -330,7 +330,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v60.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v61.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -357,7 +357,6 @@
         if(ENGINE_STATE.currentDomain !== 'review') MODULES[ENGINE_STATE.currentDomain].init();
     }
 
-    /* 🟢 MODULE: SMARTPHONES */
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -506,8 +505,9 @@
         goToSlide(2);
     }
 
+    /* 🟢 UPGRADED PDF ENGINE (ALCHEMIST STYLE) */
     async function generateStoryPDF() {
-        showToast("GENERATING STORY...");
+        showToast("GENERATING PDF...");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const width = doc.internal.pageSize.getWidth();
@@ -516,19 +516,40 @@
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
-            doc.setFontSize(10); doc.setTextColor(100); doc.text(`LEVEL ${index} | ${new Date().toLocaleDateString()}`, margin, 15);
-            doc.setTextColor(0); doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text(item.title, margin, 40);
-            doc.setFontSize(12); doc.setFont("helvetica", "normal");
-            const bodyText = doc.splitTextToSize(item.summary, width - 40); doc.text(bodyText, margin, 60);
-            const footerY = height - 30;
-            if (item.link) {
-                doc.setDrawColor(255, 103, 31); doc.setLineWidth(0.5); doc.line(margin, footerY - 10, width - margin, footerY - 10);
-                doc.setFontSize(10); doc.setTextColor(100); doc.text("You asked:", margin, footerY);
-                doc.setFontSize(14); doc.setTextColor(255, 103, 31); doc.text(`"Tell me more about ${item.link}..."`, margin, footerY + 8);
-            } else { doc.setFontSize(12); doc.setTextColor(0, 200, 0); doc.text("[ CURRENT FOCUS ]", margin, footerY); }
+            
+            // Header
+            doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
+            doc.text(`RESEARCH SESSION REPORT | LEVEL ${index}`, margin, 15);
+            
+            // Title (Question style)
+            doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0);
+            doc.text(item.title.toUpperCase(), margin, 35);
+            
+            // Divider
+            doc.setDrawColor(0); doc.setLineWidth(0.5); doc.line(margin, 42, width - margin, 42);
+
+            // "Theory & Logic" Section (Summary)
+            doc.setFontSize(10); doc.setTextColor(100); doc.text("THEORY & LOGIC", margin, 55);
+            
+            doc.setFont("times", "normal"); doc.setFontSize(12); doc.setTextColor(0);
+            const bodyText = doc.splitTextToSize(item.summary, width - 40);
+            doc.text(bodyText, margin, 65);
+
+            // "Execution" Section (Visual Box)
+            const boxY = height - 50;
+            doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 30, 'F');
+            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(50);
+            doc.text("ACTIVE RECALL PORTAL", margin + 5, boxY + 10);
+            
+            // The Alchemist Link
+            doc.setTextColor(0, 0, 238); doc.setFontSize(12);
+            const linkText = "[ 🧪 TRANSMUTE KNOWLEDGE ↗ ]";
+            const alchemistLink = `${ALCHEMIST_BASE}?source=decide&topic=${encodeURIComponent(item.title)}&level=${index}`;
+            doc.textWithLink(linkText, margin + 5, boxY + 22, { url: alchemistLink });
         });
-        doc.save(`${ENGINE_STATE.researchPath[0].title}_Story.pdf`);
-        showToast("DOWNLOAD STARTED");
+        
+        doc.save(`Alchemist_Report_${Date.now()}.pdf`);
+        showToast("PDF DOWNLOADED");
     }
 
     function getMediaLink(itemName) {
