@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v64.1 |</title>
+    <title>| decide.engine v65.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -181,7 +181,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v64.1 (Stable)
+       KUTCH AUTOMATION | UNIVERSAL OS v65.0
        ========================================= */
     
     // 🌐 CONFIGURATION ZONE
@@ -308,7 +308,6 @@
                 if(pageId === "-1") return null;
                 const p = pages[pageId];
                 
-                // 🟢 FIX: Handle undefined/missing links safely
                 const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
                 
                 return {
@@ -341,7 +340,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v64.1</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v65.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -508,7 +507,6 @@
         linkSlide.className = "main-slide next"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         
-        // 🟢 FIX: Handle empty links safely
         if(context.links && context.links.length > 0) {
             context.links.slice(0,5).forEach((link, i) => {
                  html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${link.name}')">
@@ -529,27 +527,27 @@
     async function diveDeeper(title) {
         showToast("ACCESSING NODE...");
         const context = await WIKI_ENGINE.getContext(title);
-        
-        // 🟢 FIX: Prevent crash if context is null
         if (!context) {
             showToast("DATA CORRUPTED");
             return;
         }
-        
         ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
 
-    /* 🟢 DATA SYNC & PDF GENERATOR */
+    /* 🟢 UPGRADED STRETCH LOGIC (v65.0) */
     async function generateStoryPDF() {
         showToast("SYNCING DATA...");
         
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
+        // 🛠️ CHANGED: Use Raw User Input for Syllabus
+        const rawTopic = document.getElementById('search-input') ? document.getElementById('search-input').value : "General Knowledge";
+        
         const payload = {
             event: "PDF_GENERATED",
             session_id: sessionID,
-            syllabus: ENGINE_STATE.researchPath.map(p => p.title).join("|"), 
+            syllabus: rawTopic, // <-- 🔑 STRETCH MODE ACTIVATED
             user_agent: navigator.userAgent
         };
         
@@ -566,7 +564,7 @@
         const height = doc.internal.pageSize.getHeight();
         const margin = 20;
 
-        const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(payload.syllabus)}`;
+        const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(rawTopic)}`;
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
@@ -577,7 +575,6 @@
             doc.text(item.title.toUpperCase(), margin, 35);
             
             doc.setFont("times", "normal"); doc.setFontSize(12);
-            // 🟢 FIX: Handle empty summary safely for PDF
             const summaryText = item.summary || "No textual data available for this node.";
             const bodyText = doc.splitTextToSize(summaryText, width - 40); 
             doc.text(bodyText, margin, 55);
@@ -585,7 +582,7 @@
             const boxY = height - 40;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 25, 'F');
             doc.setTextColor(0, 0, 238); doc.setFontSize(12); doc.setFont("courier", "bold");
-            doc.textWithLink("[ 🧪 OPEN ALCHEMIST PORTAL ↗ ]", margin + 5, boxY + 15, { url: masterLink });
+            doc.textWithLink("[ 🧪 START STRETCH SESSION ↗ ]", margin + 5, boxY + 15, { url: masterLink });
         });
         
         doc.save(`Research_${sessionID}.pdf`);
