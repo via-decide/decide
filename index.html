@@ -345,18 +345,30 @@
     }
 
 function handleStart() {
-        if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        
-        // 🟢 FIX: Ensure slides are reset so the Research slide can append correctly
-        const container = document.getElementById('master-container');
-        if (ENGINE_STATE.currentDomain === 'research') {
-            while(container.children.length > 1) container.removeChild(container.lastChild);
-            slideElements = [slideElements[0]];
-        }
-
-        // 🟢 ACTION: Trigger the specific module's init function
-        MODULES[ENGINE_STATE.currentDomain].init();
+    if (!ENGINE_STATE.currentDomain) {
+        showToast("SELECT DOMAIN");
+        return;
     }
+
+    const container = document.getElementById('master-container');
+
+    // 🔧 HARD RESET slides before research
+    while (container.children.length > 1) {
+        container.removeChild(container.lastChild);
+    }
+    slideElements = [slideElements[0]];
+    currentIdx = 0;
+
+    // 🔧 FORCE research path reset
+    if (ENGINE_STATE.currentDomain === 'research') {
+        ENGINE_STATE.researchPath = [];
+        renderSearchSlide();
+        return;
+    }
+
+    // Normal modules
+    MODULES[ENGINE_STATE.currentDomain].init();
+}
     
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
@@ -468,7 +480,7 @@ function handleStart() {
             </div>
             <h1>TOPIC?</h1>
             <input type="text" id="search-input" placeholder="e.g. AI, Space...">
-            <button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button>
+        <button class="btn btn-auto btn-full" onclick="executeSearch();">START RESEARCH</button>
         </div>`;
         
         container.appendChild(section);
@@ -492,7 +504,10 @@ function handleStart() {
         ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
-
+if (!context || !context.title) {
+    showToast("NO DATA FROM WIKIPEDIA");
+    return;
+}
     function buildResearchDeck(context) {
         const container = document.getElementById('master-container');
         while(container.children.length > 2) container.removeChild(container.lastChild);
