@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine |</title>
+    <title>| decide.engine v67.2 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -178,7 +177,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.3
+       KUTCH AUTOMATION | UNIVERSAL OS v67.2
        ========================================= */
     
     // 🔴 CONFIGURATION
@@ -191,6 +190,7 @@
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
+    // 🧠 1. DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
@@ -214,10 +214,19 @@
       "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999, video: null }
     };
 
-    const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
-    const ECOM_DEEP_LINKS = { amazon: { app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` } };
+    const DEAL_BREAKERS = {
+        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
+        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
+    };
 
-    // 🧠 2. MODULE REGISTRY (Fixed Research & Dining)
+    const ECOM_DEEP_LINKS = {
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
+        }
+    };
+
+    // 🧠 2. MODULE REGISTRY (Patched)
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
@@ -249,17 +258,17 @@
         food: {
             label: "DINING",
             database: null,
-            // 🟢 FIXED: Now correctly opens iframe
+            // 🟢 FIX: Uses correct renderer so it doesn't get stuck
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
-      research: {
+        research: {
             label: "RESEARCH",
             database: null,
+            // 🟢 FIX: Properly calls the internal search engine
             init: () => renderSearchSlide(),
             categories: []
         },
-        
         review: {
             label: "ENGINE REVIEW ↗",
             database: null,
@@ -323,7 +332,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.3</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.2</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -345,20 +354,11 @@
         if(id === 'review') MODULES[id].init();
     }
 
-function handleStart() {
+    function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        
-        // 🟢 FIX: Ensure slides are reset so the Research slide can append correctly
-        const container = document.getElementById('master-container');
-        if (ENGINE_STATE.currentDomain === 'research') {
-            while(container.children.length > 1) container.removeChild(container.lastChild);
-            slideElements = [slideElements[0]];
-        }
-
-        // 🟢 ACTION: Trigger the specific module's init function
-        MODULES[ENGINE_STATE.currentDomain].init();
+        if(ENGINE_STATE.currentDomain !== 'review') MODULES[ENGINE_STATE.currentDomain].init();
     }
-    
+
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -431,32 +431,24 @@ function handleStart() {
         buildDeck(); 
     }
 
-    // 🟢 FIXED: External Module Renderer (Dining)
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
-        container.innerHTML = ""; 
-        
+        container.innerHTML = "";
         const iframe = document.createElement('iframe');
         iframe.src = url;
-        iframe.style.cssText = "width:100%; height:100%; border:none; background:#000;";
-        
+        container.appendChild(iframe);
         const closeBtn = document.createElement('button');
         closeBtn.className = "close-iframe";
         closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => location.reload(); // Reset to exit cleanly
-        
-        container.appendChild(iframe);
+        closeBtn.onclick = () => window.location.reload();
         container.appendChild(closeBtn);
     }
     
-    // 🟢 FIXED: Research Module Renderer
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
-        // Clear all except lobby? No, Research takes over.
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         ENGINE_STATE.researchPath = []; 
-        
         const section = document.createElement('section');
         section.className = "main-slide next";
         
@@ -464,8 +456,8 @@ function handleStart() {
         <div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
         <div class="lobby-container">
             <div class="source-toggle">
-                <span class="source-chip active" onclick="setSource('wiki', this)">WIKI</span>
-                <span class="source-chip" onclick="setSource('travel', this)">TRAVEL</span>
+                <span class="source-chip active">NEURAL SEARCH</span>
+                <span class="source-chip" onclick="window.open('${STUDENT_PORTAL_URL}', '_blank')" style="border-color:var(--accent-go); color:var(--accent-go);">STUDENT PORTAL ↗</span>
             </div>
             <h1>TOPIC?</h1>
             <input type="text" id="search-input" placeholder="e.g. AI, Space...">
@@ -475,12 +467,6 @@ function handleStart() {
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
-    }
-
-    function setSource(src, btn) {
-        WIKI_ENGINE.source = src;
-        document.querySelectorAll('.source-chip').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
     }
 
     async function executeSearch() {
@@ -502,7 +488,7 @@ function handleStart() {
         
         const sumSlide = document.createElement('section');
         sumSlide.className = "main-slide next"; 
-        sumSlide.dataset.mode = "research"; 
+        sumSlide.dataset.mode = "research"; // Explicit mode tagging
         
         sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
             <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
@@ -513,7 +499,7 @@ function handleStart() {
 
         const linkSlide = document.createElement('section');
         linkSlide.className = "main-slide next"; 
-        linkSlide.dataset.mode = "research"; 
+        linkSlide.dataset.mode = "research"; // Explicit mode tagging
         
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         
@@ -546,8 +532,10 @@ function handleStart() {
         buildResearchDeck(context);
     }
 
+    /* 🟢 SIGNATURE GENERATION & SHEET PUSH */
     async function generateStoryPDF() {
         showToast("SIGNING & SYNCING...");
+        
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
         const payload = {
@@ -574,8 +562,10 @@ function handleStart() {
             if (index > 0) doc.addPage();
             doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
             doc.text(`SESSION SIGNATURE: ${sessionID} | LEVEL ${index}`, margin, 15);
+            
             doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0); 
             doc.text(item.title.toUpperCase(), margin, 35);
+            
             doc.setFont("times", "normal"); doc.setFontSize(12);
             const summaryText = item.summary || "Visual data only.";
             const bodyText = doc.splitTextToSize(summaryText, width - 40); 
@@ -583,10 +573,13 @@ function handleStart() {
             
             const boxY = height - 50;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 35, 'F');
+            
             doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); 
             doc.text("Video Generating...", margin + 5, boxY + 10);
+            
             doc.setTextColor(0); doc.setFontSize(12);
             doc.text(`Search for ID: ${sessionID}`, margin + 5, boxY + 20);
+            
             doc.setTextColor(0, 0, 238); doc.setFontSize(10);
             doc.textWithLink("[ ▶ OPEN CHANNEL ]", width - 60, boxY + 28, { url: YOUTUBE_CHANNEL });
         });
@@ -659,8 +652,10 @@ function handleStart() {
     function calculateVerdict() {
         const activeModule = MODULES[ENGINE_STATE.currentDomain];
         if(!activeModule.database) return {name: "Error", price: 0};
+
         let DB = activeModule.database;
         let scores = [];
+        
         const bannedTags = [];
         if(ENGINE_STATE.active_filters.some(f => f.includes("FAST CHARGE"))) bannedTags.push(DEAL_BREAKERS["Fast Charging"]);
         if(ENGINE_STATE.active_filters.some(f => f.includes("LIGHTWEIGHT"))) bannedTags.push(DEAL_BREAKERS["Lightweight"]);
@@ -669,10 +664,20 @@ function handleStart() {
         for (let name in DB) {
             let item = DB[name];
             const tags = item.tags || [];
-            if(tags.some(t => bannedTags.includes(t))) continue; 
-            let score = 0;
-            for(let attr in item.attr) { score += item.attr[attr] * 0.1; }
+            const hasDeadlyTag = tags.some(t => bannedTags.includes(t));
+            if(hasDeadlyTag) continue; 
+
+            let ecoScore = 0;
+            if(ENGINE_STATE.ecosystem === 'specs' && (tags.includes('value') || tags.includes('performance'))) ecoScore += 2;
+            if(ENGINE_STATE.ecosystem === 'peace' && (tags.includes('trust') || tags.includes('service_king'))) ecoScore += 2;
+
+            let score = ecoScore;
+            for(let attr in item.attr) {
+                let w = ENGINE_STATE.session_weights[attr] || 0.1;
+                score += item.attr[attr] * w;
+            }
             if(ENGINE_STATE.items_detected[name]) score += 10;
+            
             scores.push({name, score, price: item.price});
         }
         scores.sort((a, b) => b.score - a.score);
@@ -682,77 +687,142 @@ function handleStart() {
     function updateFinal() {
         const list = document.getElementById('final-list');
         const winner = calculateVerdict();
-        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff;">${winner.name}</div><p style="color:#eee;">Est. Price: ₹${winner.price}</p></div>`;
-        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = {qty:1};
+        
+        let html = "";
+        if (winner.price === 0) {
+            html = `<div style="text-align:center; padding:20px; color:#aaa">Your filters were too strict.<br>Try removing some conditions.</div>`;
+        } else {
+            html = `
+            <div style="text-align:left;">
+                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">THE CHAMPION</span>
+                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.8); line-height:1.1">${winner.name}</div>
+                <p style="color:#eee; font-size:1.1rem; text-shadow:0 1px 2px rgba(0,0,0,0.8);">Est. Price: ₹${winner.price}</p>
+            </div>`;
+            ENGINE_STATE.items_detected = {};
+            ENGINE_STATE.items_detected[winner.name] = {qty:1};
+        }
+        list.innerHTML = html;
         setTimeout(() => triggerVerdictSpeech(), 1000);
     }
 
-    // 🟢 GLOBAL SWIPE SYSTEM (Final Fixed UX: Up=Forward, Down=Back)
+    function triggerVerdictSpeech() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!winner) return;
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = `The winner is ${winner}. Based on your priorities, this is the best choice.`;
+        msg.lang = 'en-US';
+        msg.rate = 1.0;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function openReview() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(winner) window.open(getMediaLink(winner), '_blank');
+    }
+
+    /* =========================================
+       STANDARD HELPERS (UX UPGRADE v67.2)
+       ========================================= */
     let touchStartX = 0, touchStartY = 0;
+    /* =========================================
+       GLOBAL SWIPE SYSTEM (Up=Forward, Down=Back)
+       ========================================= */
+    let touchStartX = 0, touchStartY = 0;
+    
     function initSwipeSystem() {
         const doc = document;
+        
         doc.addEventListener('touchstart', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
-            touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX; 
+            touchStartY = e.touches[0].clientY;
         }, {passive: true});
+
         doc.addEventListener('touchmove', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
-            // 🟢 IFRAME CHECK: Stop standard swipes if an iframe is open
-            if(document.querySelector('iframe')) return; 
+            // 🟢 CRITICAL FIX: Disable swipe if Dining Module (iframe) is open
+            if(document.querySelector('iframe')) return;
 
             const dy = e.touches[0].clientY - touchStartY;
+            // Visual feedback for pull
             if(Math.abs(dy) > Math.abs(e.touches[0].clientX - touchStartX)) {
                 if (e.cancelable) e.preventDefault(); 
                 document.getElementById('depth-fill').style.height = Math.min((Math.abs(dy)/150)*100, 100) + '%';
             }
         }, {passive: false});
+
         doc.addEventListener('touchend', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
-            if(document.querySelector('iframe')) return;
+            if(document.querySelector('iframe')) return; // Exit if in Dining mode
 
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             document.getElementById('depth-fill').style.height = '0%';
+            
             const mainSlide = view.closest('.main-slide');
-            const mode = mainSlide.dataset.mode;
+            const mode = mainSlide.dataset.mode; 
 
-            // SWIPE UP (Forward)
+            // 🟢 SWIPE UP (Forward / Select / Dig Deeper)
             if(dy < -80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
+
+                // Research Mode Logic
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     WIKI_ENGINE.getContext(val).then(ctx => {
                         if(ctx) {
-                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary });
+                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
                             buildResearchDeck(ctx);
+                        } else {
+                            showToast("LINK BROKEN");
                         }
                     });
-                } else if (val) {
+                } 
+                // Product Mode Logic
+                else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
+                    // Simple dynamic weighting example
+                    if(val.includes("Samsung")) ENGINE_STATE.session_weights.ui += 0.2;
+                    showToast("SELECTED");
                     goToSlide(currentIdx + 1);
-                } else goToSlide(currentIdx + 1);
+                } 
+                // Default Navigation
+                else {
+                    goToSlide(currentIdx + 1);
+                }
             } 
-            // SWIPE DOWN (Back)
+            
+            // 🟢 SWIPE DOWN (Back / Previous)
             else if (dy > 80) {
+                // Research Mode Back Logic
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
-                        ENGINE_STATE.researchPath.pop(); showToast("BACK");
+                        ENGINE_STATE.researchPath.pop(); 
+                        showToast("BACK");
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
-                    } else showToast("ROOT LEVEL");
-                } else goToSlide(currentIdx - 1);
+                    } else {
+                        showToast("ROOT LEVEL");
+                    }
+                } 
+                // Default Navigation
+                else {
+                    goToSlide(currentIdx - 1);
+                }
             } 
-            // SIDE SWIPE
+            
+            // 🟢 HORIZONTAL SWIPE (Carousel Options)
             else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
                 const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
                 if(currIdx === -1) return;
+
                 slides[currIdx].classList.replace('opt-active', 'opt-hidden');
                 const nextIdx = (currIdx + (dx < 0 ? 1 : -1) + slides.length) % slides.length;
                 slides[nextIdx].classList.replace('opt-hidden', 'opt-active');
@@ -766,6 +836,38 @@ function handleStart() {
         currentIdx = idx;
         slideElements[currentIdx].className = "main-slide active";
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
+    }
+
+    function forceCopy(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try { document.execCommand('copy'); } catch (err) {}
+        document.body.removeChild(textArea);
+    }
+    function redirect(type) {
+        const item = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!item) return showToast("NOTHING SELECTED");
+        forceCopy(item); showToast("LINK COPIED");
+        const target = ECOM_DEEP_LINKS.amazon;
+        const q = encodeURIComponent(item);
+        const start = Date.now();
+        window.location.href = target.app(q);
+        setTimeout(() => { if (Date.now() - start < 2500) window.location.href = target.web(q); }, 2000);
+    }
+    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
+    function initVoice() { 
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SR) return;
+        const rec = new SR();
+        rec.onresult = e => { if(e.results[0][0].transcript.toLowerCase().includes("next")) goToSlide(currentIdx + 1); };
+        window.toggleListenMode = () => {
+            const m = document.getElementById('mic-toggle');
+            if(m.classList.contains('listening')) { rec.stop(); m.classList.remove('listening'); }
+            else { rec.start(); m.classList.add('listening'); }
+        };
     }
 
     boot();
