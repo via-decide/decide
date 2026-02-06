@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decide Studio | Content Forge</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --bg: #050505; --panel: #111; --text: #eee; --accent: #00e676; --border: #333; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 90vh; }
+        .console { width: 100%; max-width: 500px; background: var(--panel); border: 1px solid var(--border); padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { margin-top: 0; color: var(--accent); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        
+        .input-group { margin: 20px 0; }
+        label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 8px; }
+        input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 15px; font-family: inherit; font-size: 1rem; border-radius: 6px; box-sizing: border-box; }
+        input:focus { outline: none; border-color: var(--accent); }
+
+        .btn-action { width: 100%; padding: 15px; background: var(--text); color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; margin-top: 10px; transition: 0.2s; }
+        .btn-action:hover { background: var(--accent); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .status-log { margin-top: 20px; padding: 15px; background: #000; border: 1px dashed var(--border); font-size: 0.75rem; color: #666; height: 100px; overflow-y: auto; }
+        .log-item { margin-bottom: 5px; }
+        .success { color: var(--accent); }
+        .error { color: #ff4444; }
+    </style>
+</head>
+<body>
+
+    <div class="console">
+        <h1>⚗️ Content Forge</h1>
+        
+        <div class="input-group">
+            <label>TARGET TOPIC</label>
+            <input type="text" id="topicInput" placeholder="e.g. Black Holes">
+        </div>
+
+        <button class="btn-action" onclick="runSequence()" id="runBtn">INITIATE SEQUENCE</button>
+
+        <div class="status-log" id="consoleLog">
+            <div class="log-item">> System Ready...</div>
+        </div>
+    </div>
+
+<script>
+    // 🔴 CONFIGURATION
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
+    const ALCHEMIST_BASE = "https://via-decide.github.io/alchemist_app/";
+
+    // 🧠 WIKI ENGINE (Simplified for Studio)
+    const log = (msg, type='') => {
+        const d = document.getElementById('consoleLog');
+        d.innerHTML += `<div class="log-item ${type}">> ${msg}</div>`;
+        d.scrollTop = d.scrollHeight;
+    };
+
+    async function runSequence() {
+        const topic = document.getElementById('topicInput').value.trim();
+        if(!topic) return log("Error: Input required", "error");
+
+        const btn = document.getElementById('runBtn');
+        btn.disabled = true;
+        btn.innerText = "PROCESSING...";
+
+        try {
+            // 1. SEARCH WIKIPEDIA
+            log(`Scanning Neural Net for: ${topic}...`);
+            const searchUrl = `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(topic)}&limit=1&format=json`;
+            const searchRes = await fetch(searchUrl).then(r => r.json());
+            
+            if(!searchRes[1][0]) throw new Error("Topic not found in database.");
+            const officialTitle = searchRes[1][0];
+            log(`Target Locked: ${officialTitle}`, "success");
+
+            // 2. GET SUMMARY
+            log("Extracting knowledge context...");
+            const contextUrl = `https://en.wikipedia.org/w/api.php?origin=*&action=query&prop=extracts&titles=${encodeURIComponent(officialTitle)}&exintro=1&explaintext=1&format=json`;
+            const contextRes = await fetch(contextUrl).then(r => r.json());
+            const pageId = Object.keys(contextRes.query.pages)[0];
+            const summary = contextRes.query.pages[pageId].extract;
+
+            if(!summary) throw new Error("No text data available.");
+
+            // 3. GENERATE SESSION ID & SYNC
+            const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+            log(`Session Generated: ${sessionID}`, "success");
+            
+            log("Syncing with Google Grid...");
+            await fetch(BACKEND_URL, {
+                method: "POST",
+                mode: "no-cors", // Fire and forget
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    event: "PDF_GENERATED",
+                    session_id: sessionID,
+                    syllabus: officialTitle,
+                    user_agent: "Decide_Studio_v1"
+                })
+            });
+
+            // 4. BUILD PDF
+            log("Fabricating PDF Document...");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const width = doc.internal.pageSize.getWidth();
+            const height = doc.internal.pageSize.getHeight();
+            
+            // PDF Content
+            doc.setFont("courier", "bold");
+            doc.setFontSize(10); doc.text(`SESSION: ${sessionID}`, 20, 20);
+            doc.setFont("times", "bold");
+            doc.setFontSize(24); doc.text(officialTitle.toUpperCase(), 20, 40);
+            
+            doc.setFont("times", "normal");
+            doc.setFontSize(12);
+            const bodyLines = doc.splitTextToSize(summary, width - 40);
+            doc.text(bodyLines, 20, 60);
+
+            // Alchemist Link
+            const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(officialTitle)}`;
+            
+            // Footer Box
+            doc.setFillColor(240, 240, 240);
+            doc.rect(20, height - 40, width - 40, 25, 'F');
+            doc.setTextColor(0, 0, 200);
+            doc.textWithLink("[ CLICK TO START ALCHEMIST SESSION ↗ ]", 25, height - 25, { url: masterLink });
+
+            doc.save(`${sessionID}_${officialTitle}.pdf`);
+            log("PDF Downloaded. Sequence Complete.", "success");
+
+        } catch (e) {
+            log(e.message, "error");
+        }
+
+        btn.disabled = false;
+        btn.innerText = "INITIATE SEQUENCE";
+    }
+</script>
+</body>
+</html>
