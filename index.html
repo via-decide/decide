@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.5 |</title>
+    <title>| decide.engine v67.9 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -93,16 +93,20 @@
             margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
             text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
         }
-        .support-link {
-            text-align: center; font-size: 0.7rem; color: #666; text-decoration: none; 
-            display: block; margin-top: 10px; font-family: var(--font-tech); opacity: 0.7;
-        }
         .pdf-btn { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
 
         .role-label {
             font-family: var(--font-tech); font-size: 0.6rem; color: #000;
             background: var(--accent-go); padding: 4px 8px; border-radius: 4px;
             width: fit-content; margin-bottom: 15px; font-weight: bold;
+        }
+
+        .video-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(255,0,0,0.15); color: #ff4444; border: 1px solid #ff4444;
+            padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; 
+            font-family: var(--font-tech); cursor: pointer; margin-left: 10px;
+            vertical-align: middle;
         }
 
         .nav-hint {
@@ -114,9 +118,11 @@
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
         .btn-full { grid-column: span 2; }
-        .btn-amazon { background: #232f3e; border: none; color: #ff9900; }
-        .btn-yt { background: #cc0000; color: #fff; border: none; }
+        .btn-amazon { background: #2d3436; color: #fab1a0; border-color: #fab1a0; }
+        .btn-yt { background: #cc0000; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-speak { background: #333; color: #aaa; border: 1px solid #444; }
         
+        /* 🟢 SCROLLABLE LOBBY */
         .lobby-container { 
             display: flex; flex-direction: column; gap: 15px; padding: 30px; height: 100%; 
             overflow-y: auto; justify-content: flex-start; 
@@ -149,68 +155,64 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.5
+       KUTCH AUTOMATION | UNIVERSAL OS v67.9
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
+    
+    // 🟢 UPDATED SMARTPHONE LINK (From Prompt)
+    const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
+    
+    const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
     const AMZN_TAG = "decideos-21";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🧠 1. DATABASES (RESTORED FULL)
+    // 🧠 1. DATABASES (RESTORED 8-FACTOR)
     const PHONE_DB = {
-      "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
-      "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
-      "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999 },
-      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999 },
-      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light"], price: 28999 },
-      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "updates", "bloatware"], price: 33999 },
-      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "120w"], price: 31999 },
-      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499 },
-      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999 }
+      "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
+      "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
+      "Nothing 3a Pro": { attr: { cam: 8, gam: 7, bat: 8, ui: 10, dis: 9, srv: 9, thm: 8, dur: 8 }, tags: ["clean_ui", "no_charger"], price: 27999 },
+      "Xiaomi 14 Civi": { attr: { cam: 10, gam: 6, bat: 6, ui: 6, dis: 10, srv: 6, thm: 6, dur: 7 }, tags: ["camera_king", "compact"], price: 32999 },
+      "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999 },
+      "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999 },
+      "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999 },
+      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust"], price: 7499 },
+      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value"], price: 7999 }
     };
 
     const AUDIO_DB = {
-      "Technics AZ100": { attr: { anc: 9.5, sound: 10.0, battery: 7.0 }, tags: ["audiophile", "multipoint"], price: 22990 },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, battery: 8.0 }, tags: ["anc_king", "travel"], price: 24990 },
-      "SteelSeries Arctis": { attr: { anc: 7.0, latency: 10.0, battery: 8.5 }, tags: ["gaming_pro", "low_latency"], price: 17999 },
-      "OnePlus Nord Buds 3": { attr: { anc: 8.5, sound: 8.0, battery: 9.0 }, tags: ["value_king"], price: 3299 },
-      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, battery: 10.0 }, tags: ["battery_king"], price: 3999 },
-      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, battery: 9.0 }, tags: ["sport"], price: 21900 },
-      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, battery: 7.0 }, tags: ["budget"], price: 1499 }
+      "Technics AZ100": { attr: { anc: 9.5, snd: 10.0, mic: 9, lat: 8, bat: 7, fit: 10, bld: 9, app: 9 }, price: 22990 },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, snd: 9.5, mic: 8, lat: 6, bat: 8, fit: 8, bld: 9, app: 10 }, price: 24990 },
+      "SteelSeries Arctis": { attr: { anc: 7.0, snd: 8.0, mic: 8, lat: 10, bat: 9, fit: 8, bld: 7, app: 7 }, price: 17999 },
+      "OnePlus Nord Buds 3": { attr: { anc: 8.5, snd: 8.0, mic: 8, lat: 7, bat: 8, fit: 9, bld: 8, app: 8 }, price: 3299 },
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, snd: 6, mic: 6, lat: 6, bat: 10, fit: 7, bld: 7, app: 5 }, price: 3999 }
     };
 
-    // Deal breaker mapping for v67.0 logic
-    const DEAL_BREAKERS = { 
-        "CLEAN UI": "bloatware", 
-        "LIGHTWEIGHT": "heavy", 
-        "FAST CHARGE": "slow_charge",
-        "IN-BOX VALUE": "no_charger"
-    };
+    const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy", "FAST CHARGE": "slow_charge" };
 
-    // 🧠 2. MODULE REGISTRY (RESTORED FULL)
     const MODULES = {
         smartphones: { 
             label: "SMARTPHONES", 
             database: PHONE_DB, 
+            review: PHONE_REVIEW_URL,
             init: () => renderEcosystemGate(), 
             categories: [
-                { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] }, 
-                { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] }, 
-                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
-                { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy F07"}] },
-                { label: "MUST HAVE: LIGHTWEIGHT", type: "lightweight", items: [] }
+                { label: "CAMERA-FIRST", type: "cam", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}] }, 
+                { label: "PRO GAMER", type: "gam", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] }, 
+                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] },
+                { label: "BATTERY KING", type: "bat", items: [{"name": "Realme GT 7T"}] }
             ] 
         },
         earbuds: { 
             label: "EARBUDS", 
             database: AUDIO_DB, 
+            review: AUDIO_REVIEW_URL,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, 
             categories: [
-                { label: "AUDIOPHILE", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] }, 
-                { label: "ZERO LATENCY", type: "latency", items: [{"name": "SteelSeries Arctis"}] },
-                { label: "SILENCE (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
-                { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}] }
+                { label: "AUDIOPHILE", type: "snd", items: [{"name": "Technics AZ100"}] }, 
+                { label: "SILENCE (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}] },
+                { label: "LOW LATENCY", type: "lat", items: [{"name": "SteelSeries Arctis"}] }
             ] 
         },
         food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
@@ -232,7 +234,7 @@
             const res = await fetch(url);
             const data = await res.json();
             const page = Object.values(data.query.pages)[0];
-            return { title: page.title, summary: page.extract || "No data available.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
+            return { title: page.title, summary: page.extract || "No data.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
         }
     };
 
@@ -247,7 +249,7 @@
         container.innerHTML = "";
         const section = document.createElement('section');
         section.className = "main-slide active";
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.5</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.9</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -282,8 +284,8 @@
         <div class="lobby-container">
             <h1 style="text-align:center">WHAT MATTERS?</h1>
             <div style="display:grid; gap:20px;">
-                <button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, 120W Charge</span></button>
-                <button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Cameras</span></button>
+                <button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, Thermal resilience</span></button>
+                <button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Service reach</span></button>
             </div>
         </div>`;
         container.appendChild(section);
@@ -326,9 +328,12 @@
 
     function startHunt() {
         if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
-        // Full Score Initiation
-        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1, anc:0.1, sound:0.1, latency:0.1 };
+        ENGINE_STATE.session_weights = { cam:0.1, gam:0.1, bat:0.1, ui:0.1, dis:0.1, srv:0.1, thm:0.1, dur:0.1, anc:0.1, snd:0.1, mic:0.1, lat:0.1, fit:0.1, bld:0.1, app:0.1 };
         buildDeck();
+    }
+
+    function getMediaLink(q) {
+        return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + " review 2026")}`;
     }
 
     function buildDeck() {
@@ -340,13 +345,11 @@
             const el = document.createElement('section');
             el.className = `main-slide next`;
             let html = `<div class="slide-header"><span class="header-title">${cat.label}</span></div><div class="carousel-viewport">`;
-            
-            // Handle categories without static items (must-haves)
-            const items = cat.items && cat.items.length > 0 ? cat.items : [{name: cat.label + " Applied"}];
-            
+            const items = cat.items.length > 0 ? cat.items : [{name: cat.label + " Optimized"}];
             items.forEach((item, i) => {
                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}">
-                         <div class="role-label">OPTION</div><h1>${item.name}</h1>
+                         <div class="role-label">PROPOSAL</div>
+                         <h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1>
                          <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
             html += `</div>`;
@@ -357,19 +360,78 @@
 
         const final = document.createElement('section');
         final.className = "main-slide next";
-        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
-            <div class="winner-container"><div id="final-list"></div>
-            <div class="final-actions"><button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-full" onclick="location.reload()">RESTART</button></div></div>`;
+        
+        // 🟢 RESTORED UI GRID (Like Image 1000205310.jpg)
+        final.innerHTML = `
+            <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
+            <div class="winner-container">
+                <div id="final-list"></div>
+                <div class="final-actions">
+                    <button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button>
+                    <button class="btn btn-yt" onclick="window.open('${currentMod.review}', '_blank')">▶ REVIEW</button>
+                    <button class="btn btn-full btn-speak" onclick="triggerVerdictSpeech()">🔊 VERDICT</button>
+                    <button class="btn btn-full" onclick="location.reload()">RESTART</button>
+                </div>
+            </div>`;
         container.appendChild(final);
         slideElements.push(final);
         goToSlide(currentIdx + 1);
+    }
+
+    function calculateVerdict() {
+        const activeModule = MODULES[ENGINE_STATE.currentDomain];
+        if(!activeModule.database) return {name: "Ready", price: "---"};
+        let DB = activeModule.database;
+        let scores = [];
+        const bannedTags = [];
+        ENGINE_STATE.active_filters.forEach(f => { if(DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]); });
+
+        for (let name in DB) {
+            let item = DB[name];
+            if(item.tags && item.tags.some(t => bannedTags.includes(t))) continue;
+
+            let score = 0;
+            if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
+            if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
+
+            for(let attr in item.attr) {
+                let w = ENGINE_STATE.session_weights[attr] || 0.1;
+                score += item.attr[attr] * w;
+            }
+            if(ENGINE_STATE.items_detected[name]) score += 10;
+            scores.push({name, score, price: item.price});
+        }
+        scores.sort((a, b) => b.score - a.score);
+        return scores[0] || {name: "No Match", price: 0};
+    }
+
+    function updateFinal() {
+        const list = document.getElementById('final-list');
+        const winner = calculateVerdict();
+        
+        // 🟢 UI MATCH: "THE CHAMPION" in green, white product name
+        list.innerHTML = `
+            <div style="text-align:left;">
+                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span>
+                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div>
+                <p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p>
+            </div>`;
+        
+        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true;
+    }
+
+    function triggerVerdictSpeech() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!winner) return;
+        const msg = new SpeechSynthesisUtterance(`The engine has spoken. The champion is the ${winner}. Based on your priorities, this is the perfect match.`);
+        window.speechSynthesis.speak(msg);
     }
 
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div><div class="lobby-container"><h1>TOPIC?</h1><input type="text" id="search-input" placeholder="e.g. AI..."><button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button></div>`;
+        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH ENGINE</span></div><div class="lobby-container"><h1>TOPIC?</h1><input type="text" id="search-input" placeholder="e.g. AI..."><button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button></div>`;
         container.appendChild(section);
         slideElements.push(section);
         goToSlide(1);
@@ -400,10 +462,9 @@
         let html = `<div class="slide-header"><span class="header-title">RELATED</span></div><div class="carousel-viewport">`;
         if(ctx.links.length > 0) {
             ctx.links.slice(0,5).forEach((l, i) => {
-                const safe = l.name.replace(/'/g, "\\'");
-                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${safe}')"><h1>${l.name}</h1><div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${l.name.replace(/'/g, "\\'")}')"><h1>${l.name}</h1><div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
-        } else { html += `<div class="sub-slide opt-active"><h1>No links available.</h1></div>`; }
+        } else { html += `<div class="sub-slide opt-active"><h1>No links.</h1></div>`; }
         html += `</div>`;
         linkSlide.innerHTML = html;
         container.appendChild(linkSlide);
@@ -412,7 +473,6 @@
     }
 
     async function diveDeeper(t) {
-        showToast("DIVING...");
         const ctx = await WIKI_ENGINE.getContext(t);
         ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
         buildResearchDeck(ctx);
@@ -433,59 +493,6 @@
         showToast("PDF SAVED");
     }
 
-    // 🏆 FULL RESTORED VERDICT LOGIC (v67.0 Logic)
-    function calculateVerdict() {
-        const activeModule = MODULES[ENGINE_STATE.currentDomain];
-        if(!activeModule.database) return {name: "Selection Ready", price: "---"};
-        let DB = activeModule.database;
-        let scores = [];
-
-        // Identify Deal Breakers
-        const bannedTags = [];
-        ENGINE_STATE.active_filters.forEach(f => {
-            if (DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]);
-        });
-
-        for (let name in DB) {
-            let item = DB[name];
-            const tags = item.tags || [];
-            
-            // 1. Exclude Deal Breakers
-            if(tags.some(t => bannedTags.includes(t))) continue;
-
-            // 2. Ecosystem Bonus
-            let score = 0;
-            if(ENGINE_STATE.ecosystem === 'specs' && (tags.includes('value') || tags.includes('performance'))) score += 2;
-            if(ENGINE_STATE.ecosystem === 'peace' && (tags.includes('trust') || tags.includes('service_king'))) score += 2;
-
-            // 3. Attribute Calculation
-            for(let attr in item.attr) {
-                let weight = ENGINE_STATE.session_weights[attr] || 0.1;
-                score += item.attr[attr] * weight;
-            }
-
-            // 4. Detected/Swipe Bonus
-            if(ENGINE_STATE.items_detected[name]) score += 10;
-            
-            scores.push({name, score, price: item.price});
-        }
-        scores.sort((a, b) => b.score - a.score);
-        return scores.length > 0 ? scores[0] : {name: "No Match Found", price: 0};
-    }
-
-    function updateFinal() {
-        const list = document.getElementById('final-list');
-        const winner = calculateVerdict();
-        list.innerHTML = `
-            <div style="text-align:left;">
-                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span>
-                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1">${winner.name}</div>
-                <p style="color:#eee; font-size:1.1rem;">Estimated Price: ₹${winner.price}</p>
-            </div>`;
-        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true;
-    }
-
-    // 🟢 GLOBAL SWIPE SYSTEM (Restored interaction weights)
     let touchStartY = 0, touchStartX = 0;
     function initSwipeSystem() {
         document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; touchStartX = e.touches[0].clientX; }, {passive: true});
@@ -499,15 +506,12 @@
             if(dy < -80) { // UP -> FORWARD
                 const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 const val = active ? active.dataset.val : null;
-                
-                if(mode === "research" && val) diveDeeper(val);
+                if(mode === "research" && active.onclick) active.onclick();
                 else {
                     if(val) {
                         ENGINE_STATE.items_detected[val] = true;
-                        // Dynamic Weight Adjustment (v67.0 style)
-                        if(val.includes("Poco")) ENGINE_STATE.session_weights.gaming += 0.2;
-                        if(val.includes("Nothing")) ENGINE_STATE.session_weights.ui += 0.2;
-                        if(val.includes("Sony")) ENGINE_STATE.session_weights.anc += 0.2;
+                        if(val.includes("Poco") || val.includes("iQOO")) ENGINE_STATE.session_weights.gam += 0.3;
+                        if(val.includes("Nothing")) ENGINE_STATE.session_weights.ui += 0.3;
                     }
                     goToSlide(currentIdx + 1);
                 }
