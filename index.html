@@ -252,13 +252,13 @@
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
-       research: {
+      research: {
             label: "RESEARCH",
             database: null,
-            // 🟢 PATCH: Point back to internal search function
-            init: () => renderSearchSlide(), 
+            init: () => renderSearchSlide(),
             categories: []
         },
+        
         review: {
             label: "ENGINE REVIEW ↗",
             database: null,
@@ -344,11 +344,20 @@
         if(id === 'review') MODULES[id].init();
     }
 
-   function handleStart() {
+function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🟢 PATCH: Run the init() function for WHATEVER domain is selected
+        
+        // 🟢 FIX: Ensure slides are reset so the Research slide can append correctly
+        const container = document.getElementById('master-container');
+        if (ENGINE_STATE.currentDomain === 'research') {
+            while(container.children.length > 1) container.removeChild(container.lastChild);
+            slideElements = [slideElements[0]];
+        }
+
+        // 🟢 ACTION: Trigger the specific module's init function
         MODULES[ENGINE_STATE.currentDomain].init();
     }
+    
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
