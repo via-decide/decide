@@ -261,10 +261,11 @@
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
-        research: {
+       research: {
             label: "RESEARCH",
             database: null,
-            init: () => renderSearchSlide(),
+            // 🟢 PATCH: Pointing back to the internal wiki engine
+            init: () => renderSearchSlide(), 
             categories: []
         },
         review: {
