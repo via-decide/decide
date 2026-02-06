@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v65.0 |</title>
+    <title>| decide.engine v65.1 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -181,7 +180,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v65.0
+       KUTCH AUTOMATION | UNIVERSAL OS v65.1 (Patched)
        ========================================= */
     
     // 🌐 CONFIGURATION ZONE
@@ -284,7 +283,6 @@
         }
     };
 
-    /* 🟢 UPGRADED WIKI ENGINE WITH CRASH PROTECTION */
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
@@ -340,7 +338,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v65.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v65.1</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -478,11 +476,15 @@
     }
 
     async function executeSearch() {
-        const query = document.getElementById('search-input').value;
-        if(!query) return showToast("ENTER TOPIC");
+        const rawInput = document.getElementById('search-input').value;
+        if(!rawInput) return showToast("ENTER TOPIC");
+        
         showToast("EXTRACTING...");
-        const title = await WIKI_ENGINE.search(query);
+        
+        // 🟢 FIX 1: Send the exact raw input to Wikipedia first
+        const title = await WIKI_ENGINE.search(rawInput);
         if(!title) return showToast("NOT FOUND");
+        
         const context = await WIKI_ENGINE.getContext(title);
         ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
@@ -509,7 +511,9 @@
         
         if(context.links && context.links.length > 0) {
             context.links.slice(0,5).forEach((link, i) => {
-                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${link.name}')">
+                 // 🟢 FIX 2: ESCAPE SINGLE QUOTES TO PREVENT CRASH
+                 const safeTitle = link.name.replace(/'/g, "\\'");
+                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${safeTitle}')">
                             <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
                             <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
             });
@@ -527,27 +531,29 @@
     async function diveDeeper(title) {
         showToast("ACCESSING NODE...");
         const context = await WIKI_ENGINE.getContext(title);
+        
         if (!context) {
             showToast("DATA CORRUPTED");
             return;
         }
+        
         ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
 
-    /* 🟢 UPGRADED STRETCH LOGIC (v65.0) */
+    /* 🟢 STRETCH LOGIC (Using Raw Input) */
     async function generateStoryPDF() {
         showToast("SYNCING DATA...");
         
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
-        // 🛠️ CHANGED: Use Raw User Input for Syllabus
+        // 🟢 FIX 3: USE RAW INPUT FOR SYLLABUS
         const rawTopic = document.getElementById('search-input') ? document.getElementById('search-input').value : "General Knowledge";
         
         const payload = {
             event: "PDF_GENERATED",
             session_id: sessionID,
-            syllabus: rawTopic, // <-- 🔑 STRETCH MODE ACTIVATED
+            syllabus: rawTopic, 
             user_agent: navigator.userAgent
         };
         
