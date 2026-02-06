@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v64 |</title>
+    <title>| decide.engine v64.1 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -181,15 +181,13 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v64.0
+       KUTCH AUTOMATION | UNIVERSAL OS v64.1 (Stable)
        ========================================= */
     
     // 🌐 CONFIGURATION ZONE
-    // 🔴 YOUR GOOGLE SCRIPT & SHEET CONFIG
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
-    const SHEET_ID = "1MLL4yyhzEebd2-_iMSA90FGJ3VuBrVV2drcGYAsLmnA"; // Reference only
+    const SHEET_ID = "1MLL4yyhzEebd2-_iMSA90FGJ3VuBrVV2drcGYAsLmnA"; 
     
-    // 🔴 STUDENT & ALCHEMIST LINKS
     const STUDENT_PORTAL_URL = "https://scholar.google.com"; 
     const ALCHEMIST_BASE = "https://via-decide.github.io/alchemist_app/";
 
@@ -286,6 +284,7 @@
         }
     };
 
+    /* 🟢 UPGRADED WIKI ENGINE WITH CRASH PROTECTION */
     const WIKI_ENGINE = {
         source: "wiki", 
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
@@ -308,11 +307,15 @@
                 const pageId = Object.keys(pages)[0];
                 if(pageId === "-1") return null;
                 const p = pages[pageId];
+                
+                // 🟢 FIX: Handle undefined/missing links safely
+                const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
+                
                 return {
                     title: p.title,
                     summary: p.extract ? p.extract.split('. ')[0] + '.' : "No summary available.",
                     full_summary: p.extract || "",
-                    links: p.links ? p.links.map(l => ({ name: l.title })) : []
+                    links: safeLinks
                 };
             } catch(e) { return null; }
         }
@@ -338,7 +341,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v64.0</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v64.1</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -450,7 +453,6 @@
         container.appendChild(closeBtn);
     }
     
-    /* 🟢 UPGRADED: HYBRID RESEARCH MODULE */
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -505,11 +507,18 @@
         const linkSlide = document.createElement('section');
         linkSlide.className = "main-slide next"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
-        context.links.slice(0,5).forEach((link, i) => {
-             html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${link.name}')">
-                        <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
-                        <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
-        });
+        
+        // 🟢 FIX: Handle empty links safely
+        if(context.links && context.links.length > 0) {
+            context.links.slice(0,5).forEach((link, i) => {
+                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${link.name}')">
+                            <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
+                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
+            });
+        } else {
+            html += `<div class="sub-slide opt-active"><h1>No further links available.</h1></div>`;
+        }
+        
         html += `</div>`;
         linkSlide.innerHTML = html;
         container.appendChild(linkSlide);
@@ -518,7 +527,15 @@
     }
 
     async function diveDeeper(title) {
+        showToast("ACCESSING NODE...");
         const context = await WIKI_ENGINE.getContext(title);
+        
+        // 🟢 FIX: Prevent crash if context is null
+        if (!context) {
+            showToast("DATA CORRUPTED");
+            return;
+        }
+        
         ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
         buildResearchDeck(context);
     }
@@ -527,19 +544,15 @@
     async function generateStoryPDF() {
         showToast("SYNCING DATA...");
         
-        // 1. GENERATE UNIQUE ID
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
-        // 2. PREPARE PAYLOAD
         const payload = {
             event: "PDF_GENERATED",
             session_id: sessionID,
-            syllabus: ENGINE_STATE.researchPath.map(p => p.title).join("|"), // "Physics|Gravity"
+            syllabus: ENGINE_STATE.researchPath.map(p => p.title).join("|"), 
             user_agent: navigator.userAgent
         };
         
-        // 3. SEND TO GOOGLE SHEET (No-CORS Mode)
-        // This creates the row where you will paste the YouTube link later
         fetch(BACKEND_URL, {
             method: "POST",
             mode: "no-cors",
@@ -547,14 +560,12 @@
             body: JSON.stringify(payload)
         });
 
-        // 4. GENERATE PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const width = doc.internal.pageSize.getWidth();
         const height = doc.internal.pageSize.getHeight();
         const margin = 20;
 
-        // 5. MASTER LINK (Embedded in PDF)
         const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(payload.syllabus)}`;
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
@@ -566,10 +577,11 @@
             doc.text(item.title.toUpperCase(), margin, 35);
             
             doc.setFont("times", "normal"); doc.setFontSize(12);
-            const bodyText = doc.splitTextToSize(item.summary, width - 40); 
+            // 🟢 FIX: Handle empty summary safely for PDF
+            const summaryText = item.summary || "No textual data available for this node.";
+            const bodyText = doc.splitTextToSize(summaryText, width - 40); 
             doc.text(bodyText, margin, 55);
             
-            // Footer Link
             const boxY = height - 40;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 25, 'F');
             doc.setTextColor(0, 0, 238); doc.setFontSize(12); doc.setFont("courier", "bold");
@@ -748,8 +760,12 @@
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
                     WIKI_ENGINE.getContext(val).then(ctx => {
-                        ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
-                        buildResearchDeck(ctx);
+                        if(ctx) {
+                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
+                            buildResearchDeck(ctx);
+                        } else {
+                            showToast("LINK BROKEN");
+                        }
                     });
                 } else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
