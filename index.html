@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.3 |</title>
+    <title>| decide.engine v67.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -177,11 +177,13 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.3
+       KUTCH AUTOMATION | UNIVERSAL OS v67.0
        ========================================= */
     
     // 🔴 CONFIGURATION
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
+    
+    // 🔴 CHANNEL LINK (The new destination)
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
 
     const AMZN_TAG = "decideos-21";
@@ -190,29 +192,70 @@
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
+    // 🧠 1. DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
       "Nothing 3a Pro": { attr: { camera: 8.5, gaming: 7.0, battery: 7.5, ui: 10.0 }, tags: ["clean_ui", "no_charger", "service_king"], price: 27999, video: null },
-      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null }
+      "Xiaomi 14 Civi": { attr: { camera: 9.5, gaming: 6.0, battery: 6.5, ui: 6.0 }, tags: ["camera_king", "compact"], price: 32999, video: null },
+      "Vivo V60e": { attr: { camera: 10.0, gaming: 5.0, battery: 7.5, ui: 7.0 }, tags: ["camera_king", "aura_light", "weak_chip"], price: 28999, video: null },
+      "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null },
+      "Realme GT 7T": { attr: { camera: 6.0, gaming: 9.0, battery: 10.0, ui: 5.0 }, tags: ["battery_king", "plastic_build", "120w"], price: 31999, video: null },
+      "Samsung Galaxy F07": { attr: { camera: 6.0, gaming: 3.0, battery: 9.0, ui: 7.0 }, tags: ["budget", "trust"], price: 7499, video: null },
+      "Realme Note 60": { attr: { camera: 5.0, gaming: 4.0, battery: 8.0, ui: 6.0 }, tags: ["budget", "value"], price: 7999, video: null }
     };
-    const AUDIO_DB = { "Technics AZ100": { attr: { anc: 9.0, sound: 9.9 }, tags: ["audiophile"], price: 22990 } };
-    const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
-    const ECOM_DEEP_LINKS = { amazon: { app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` } };
 
-    // 🧠 MODULE REGISTRY
+    const AUDIO_DB = {
+      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9, mic: 9.5, latency: 8.5, battery: 7.0 }, tags: ["audiophile", "multipoint"], price: 22990, video: null },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, mic: 8.5, latency: 6.0, battery: 7.5 }, tags: ["anc_king", "travel"], price: 24990, video: null },
+      "SteelSeries Arctis": { attr: { anc: 7.0, sound: 8.0, mic: 8.0, latency: 10.0, battery: 8.0 }, tags: ["gaming_pro", "dongle"], price: 17999, video: null },
+      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, mic: 8.0, latency: 7.0, battery: 9.0 }, tags: ["sport", "stable"], price: 21900, video: null },
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, mic: 6.0, latency: 6.0, battery: 10.0 }, tags: ["battery_king", "powerbank"], price: 3999, video: null },
+      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0, mic: 7.5, latency: 7.0, battery: 8.0 }, tags: ["value_anc", "49db"], price: 3299, video: null },
+      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, mic: 5.0, latency: 8.5, battery: 7.0 }, tags: ["budget_king", "rgb"], price: 1499, video: null },
+      "Shure Aonic 215": { attr: { anc: 8.0, sound: 10.0, mic: 7.0, latency: 7.0, battery: 7.0 }, tags: ["audiophile", "eq_master"], price: 18999, video: null }
+    };
+
+    const DEAL_BREAKERS = {
+        "Lightweight": "heavy", "Clean UI": "bloatware", "Fast Charging": "slow_charge",
+        "In-Box Value": "no_charger", "Instant Camera": "shutter_lag", "Premium Build": "plastic_build"
+    };
+
+    const ECOM_DEEP_LINKS = {
+        amazon: { 
+            app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, 
+            web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` 
+        }
+    };
+
+    // 🧠 2. MODULE REGISTRY
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
             database: PHONE_DB,
             init: () => renderEcosystemGate(),
-            categories: [ { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}] } ]
+            categories: [
+                { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}, {"name": "Samsung A55"}] },
+                { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] },
+                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung Galaxy F07"}] },
+                { label: "▶ DEV REVIEW", type: "external", link: PHONE_REVIEW_URL },
+                { label: "BATTERY KING", type: "battery", items: [{"name": "Realme GT 7T"}, {"name": "Samsung Galaxy M07"}] },
+                { label: "MUST HAVE: FAST CHARGE", type: "fast_charge", items: [] },
+                { label: "MUST HAVE: LIGHTWEIGHT", type: "lightweight", items: [] }
+            ]
         },
         earbuds: {
             label: "EARBUDS",
             database: AUDIO_DB,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); },
-            categories: [ { label: "AUDIOPHILE", type: "sound", items: [{"name": "Technics AZ100"}] } ]
+            categories: [
+                { label: "AUDIOPHILE (HI-RES)", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] },
+                { label: "ZERO LATENCY (GAMING)", type: "latency", items: [{"name": "SteelSeries Arctis"}, {"name": "GoBoult Z40 Pro"}] },
+                { label: "WORK CALLS (AI MIC)", type: "mic", items: [{"name": "Technics AZ100"}, {"name": "OnePlus Nord Buds 3"}] },
+                { label: "▶ DEV REVIEW", type: "external", link: EARBUD_REVIEW_URL },
+                { label: "SILENCE (ANC >45dB)", type: "anc", items: [{"name": "Sony WF-1000XM6"}, {"name": "OnePlus Nord Buds 3"}] },
+                { label: "MARATHON BATTERY", type: "battery", items: [{"name": "Tribit FlyBuds 3"}, {"name": "Beats Powerbeats 2"}] }
+            ]
         },
         food: {
             label: "DINING",
@@ -223,7 +266,6 @@
         research: {
             label: "RESEARCH",
             database: null,
-            // 🟢 FIXED: Properly mapped to the search function
             init: () => renderSearchSlide(),
             categories: []
         },
@@ -259,12 +301,26 @@
                 const p = pages[pageId];
                 
                 const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
-                return { title: p.title, summary: p.extract || "No data.", full_summary: p.extract || "", links: safeLinks };
+                
+                return {
+                    title: p.title,
+                    summary: p.extract ? p.extract.split('. ')[0] + '.' : "No summary available.",
+                    full_summary: p.extract || "",
+                    links: safeLinks
+                };
             } catch(e) { return null; }
         }
     };
 
-    let ENGINE_STATE = { currentDomain: null, items_detected: {}, session_weights: {}, active_filters: [], researchPath: [], ecosystem: null };
+    let ENGINE_STATE = { 
+        currentDomain: null,
+        items_detected: {}, 
+        session_weights: {}, 
+        active_filters: [],
+        researchPath: [],
+        ecosystem: null 
+    };
+    
     let slideElements = [];
     let currentIdx = 0;
 
@@ -276,7 +332,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.3</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -300,8 +356,7 @@
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🟢 ACTION: Actually Launch the Module
-        MODULES[ENGINE_STATE.currentDomain].init();
+        if(ENGINE_STATE.currentDomain !== 'review') MODULES[ENGINE_STATE.currentDomain].init();
     }
 
     function renderEcosystemGate() {
@@ -336,15 +391,21 @@
         const depth = domain === 'smartphones' ? 2 : 1; 
         while(container.children.length > depth) container.removeChild(container.lastChild);
         slideElements = slideElements.slice(0, depth);
+
         const section = document.createElement('section');
         section.className = "main-slide next"; 
         const module = MODULES[domain];
-        
+        const categories = module.categories;
+
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
         
-        module.categories.forEach((cat, idx) => {
-            html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+        categories.forEach((cat, idx) => {
+            if (cat.type === 'external') {
+                html += `<button class="cuisine-btn" style="border-color:#ff4444; color:#ff4444;" onclick="window.open('${cat.link}', '_blank')">${cat.label}</button>`;
+            } else {
+                html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+            }
         });
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html;
@@ -370,32 +431,25 @@
         buildDeck(); 
     }
 
-    // 🟢 FIXED: External Module Renderer (Dining)
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
-        container.innerHTML = ""; 
-        
+        container.innerHTML = "";
         const iframe = document.createElement('iframe');
         iframe.src = url;
-        iframe.style.cssText = "width:100%; height:100%; border:none; background:#000;";
-        
+        container.appendChild(iframe);
         const closeBtn = document.createElement('button');
         closeBtn.className = "close-iframe";
         closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => location.reload(); // Reset to exit cleanly
-        
-        container.appendChild(iframe);
+        closeBtn.onclick = () => window.location.reload();
         container.appendChild(closeBtn);
     }
     
-    // 🟢 FIXED: Research Module Renderer
+    // --- 🟢 WIKI RESEARCH MODULE ---
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
-        // Clear all except lobby? No, Research takes over.
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         ENGINE_STATE.researchPath = []; 
-        
         const section = document.createElement('section');
         section.className = "main-slide next";
         
@@ -429,7 +483,7 @@
         const title = await WIKI_ENGINE.search(query);
         if(!title) return showToast("NOT FOUND");
         const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
+        ENGINE_STATE.researchPath.push({ depth: 0, title: context.title, summary: context.full_summary, link: null });
         buildResearchDeck(context);
     }
 
@@ -440,20 +494,16 @@
         const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " books")}&tag=${AMZN_TAG}`;
         
         const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next"; 
-        sumSlide.dataset.mode = "research"; 
-        
+        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
         sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
             <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
             <div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button><a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a></div>
-            <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div></div>`;
+            <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div></div></div>`;
         container.appendChild(sumSlide);
         slideElements.push(sumSlide);
 
         const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next"; 
-        linkSlide.dataset.mode = "research"; 
-        
+        linkSlide.className = "main-slide next"; linkSlide.dataset.mode = "research"; 
         let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
         
         if(context.links && context.links.length > 0) {
@@ -461,10 +511,10 @@
                  const safeTitle = link.name.replace(/'/g, "\\'");
                  html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${safeTitle}')">
                             <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
-                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
             });
         } else {
-            html += `<div class="sub-slide opt-active"><h1>No further links available.</h1></div>`;
+            html += `<div class="sub-slide opt-active"><h1>End of the line.</h1></div>`;
         }
         
         html += `</div>`;
@@ -477,18 +527,19 @@
     async function diveDeeper(title) {
         showToast("ACCESSING NODE...");
         const context = await WIKI_ENGINE.getContext(title);
-        if (!context) {
-            showToast("DATA CORRUPTED");
-            return;
-        }
-        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
+        if(!context) return showToast("DATA CORRUPTED");
+        ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: context.title, summary: context.full_summary, link: null });
         buildResearchDeck(context);
     }
 
+    /* 🟢 SIGNATURE GENERATION & SHEET PUSH */
     async function generateStoryPDF() {
         showToast("SIGNING & SYNCING...");
+        
+        // 1. MINT SESSION SIGNATURE
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
         
+        // 2. PUSH TO BACKEND (Your Creator Dashboard)
         const payload = {
             event: "PDF_GENERATED",
             session_id: sessionID,
@@ -503,6 +554,7 @@
             body: JSON.stringify(payload)
         });
 
+        // 3. GENERATE PDF (USER TICKET)
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const width = doc.internal.pageSize.getWidth();
@@ -511,21 +563,28 @@
 
         ENGINE_STATE.researchPath.forEach((item, index) => {
             if (index > 0) doc.addPage();
+            
             doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
             doc.text(`SESSION SIGNATURE: ${sessionID} | LEVEL ${index}`, margin, 15);
+            
             doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0); 
             doc.text(item.title.toUpperCase(), margin, 35);
+            
             doc.setFont("times", "normal"); doc.setFontSize(12);
             const summaryText = item.summary || "Visual data only.";
             const bodyText = doc.splitTextToSize(summaryText, width - 40); 
             doc.text(bodyText, margin, 55);
             
+            // 🟥 THE NEW FOOTER: DIRECTS TO YOUTUBE WITH SIGNATURE
             const boxY = height - 50;
             doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 35, 'F');
-            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); 
+            
+            doc.setFont("courier", "bold"); doc.setFontSize(10); doc.setTextColor(200, 0, 0); // YouTube Red
             doc.text("Video Generating...", margin + 5, boxY + 10);
+            
             doc.setTextColor(0); doc.setFontSize(12);
             doc.text(`Search for ID: ${sessionID}`, margin + 5, boxY + 20);
+            
             doc.setTextColor(0, 0, 238); doc.setFontSize(10);
             doc.textWithLink("[ ▶ OPEN CHANNEL ]", width - 60, boxY + 28, { url: YOUTUBE_CHANNEL });
         });
@@ -598,8 +657,10 @@
     function calculateVerdict() {
         const activeModule = MODULES[ENGINE_STATE.currentDomain];
         if(!activeModule.database) return {name: "Error", price: 0};
+
         let DB = activeModule.database;
         let scores = [];
+        
         const bannedTags = [];
         if(ENGINE_STATE.active_filters.some(f => f.includes("FAST CHARGE"))) bannedTags.push(DEAL_BREAKERS["Fast Charging"]);
         if(ENGINE_STATE.active_filters.some(f => f.includes("LIGHTWEIGHT"))) bannedTags.push(DEAL_BREAKERS["Lightweight"]);
@@ -608,10 +669,20 @@
         for (let name in DB) {
             let item = DB[name];
             const tags = item.tags || [];
-            if(tags.some(t => bannedTags.includes(t))) continue; 
-            let score = 0;
-            for(let attr in item.attr) { score += item.attr[attr] * 0.1; }
+            const hasDeadlyTag = tags.some(t => bannedTags.includes(t));
+            if(hasDeadlyTag) continue; 
+
+            let ecoScore = 0;
+            if(ENGINE_STATE.ecosystem === 'specs' && (tags.includes('value') || tags.includes('performance'))) ecoScore += 2;
+            if(ENGINE_STATE.ecosystem === 'peace' && (tags.includes('trust') || tags.includes('service_king'))) ecoScore += 2;
+
+            let score = ecoScore;
+            for(let attr in item.attr) {
+                let w = ENGINE_STATE.session_weights[attr] || 0.1;
+                score += item.attr[attr] * w;
+            }
             if(ENGINE_STATE.items_detected[name]) score += 10;
+            
             scores.push({name, score, price: item.price});
         }
         scores.sort((a, b) => b.score - a.score);
@@ -621,12 +692,42 @@
     function updateFinal() {
         const list = document.getElementById('final-list');
         const winner = calculateVerdict();
-        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff;">${winner.name}</div><p style="color:#eee;">Est. Price: ₹${winner.price}</p></div>`;
-        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = {qty:1};
+        
+        let html = "";
+        if (winner.price === 0) {
+            html = `<div style="text-align:center; padding:20px; color:#aaa">Your filters were too strict.<br>Try removing some conditions.</div>`;
+        } else {
+            html = `
+            <div style="text-align:left;">
+                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">THE CHAMPION</span>
+                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.8); line-height:1.1">${winner.name}</div>
+                <p style="color:#eee; font-size:1.1rem; text-shadow:0 1px 2px rgba(0,0,0,0.8);">Est. Price: ₹${winner.price}</p>
+            </div>`;
+            ENGINE_STATE.items_detected = {};
+            ENGINE_STATE.items_detected[winner.name] = {qty:1};
+        }
+        list.innerHTML = html;
         setTimeout(() => triggerVerdictSpeech(), 1000);
     }
 
-    // 🟢 GLOBAL SWIPE SYSTEM (Final Fixed UX: Up=Forward, Down=Back)
+    function triggerVerdictSpeech() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!winner) return;
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = `The winner is ${winner}. Based on your priorities, this is the best choice.`;
+        msg.lang = 'en-US';
+        msg.rate = 1.0;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function openReview() {
+        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(winner) window.open(getMediaLink(winner), '_blank');
+    }
+
+    /* =========================================
+       STANDARD HELPERS
+       ========================================= */
     let touchStartX = 0, touchStartY = 0;
     function initSwipeSystem() {
         const doc = document;
@@ -638,9 +739,6 @@
         doc.addEventListener('touchmove', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
-            // 🟢 IFRAME CHECK: Stop standard swipes if an iframe is open
-            if(document.querySelector('iframe')) return; 
-
             const dy = e.touches[0].clientY - touchStartY;
             if(Math.abs(dy) > Math.abs(e.touches[0].clientX - touchStartX)) {
                 if (e.cancelable) e.preventDefault(); 
@@ -650,34 +748,35 @@
         doc.addEventListener('touchend', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
-            if(document.querySelector('iframe')) return;
-
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             document.getElementById('depth-fill').style.height = '0%';
             const mainSlide = view.closest('.main-slide');
             const mode = mainSlide.dataset.mode;
-
-            // SWIPE UP (Forward)
-            if(dy < -80) { 
+            if(dy > 80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
+                    ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
                     WIKI_ENGINE.getContext(val).then(ctx => {
                         if(ctx) {
-                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary });
+                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
                             buildResearchDeck(ctx);
+                        } else {
+                            showToast("LINK BROKEN");
                         }
                     });
                 } else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
+                    // Dynamic Weights
+                    if(val === "Samsung A55") ENGINE_STATE.session_weights.ui += 0.2;
+                    if(val === "Poco F7") ENGINE_STATE.session_weights.gaming += 0.2;
+                    showToast("SELECTED");
                     goToSlide(currentIdx + 1);
                 } else goToSlide(currentIdx + 1);
-            } 
-            // SWIPE DOWN (Back)
-            else if (dy > 80) {
+            } else if (dy < -80) {
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
                         ENGINE_STATE.researchPath.pop(); showToast("BACK");
@@ -685,13 +784,12 @@
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
                 } else goToSlide(currentIdx - 1);
-            } 
-            // SIDE SWIPE
-            else if(Math.abs(dx) > 60) {
+            } else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
                 const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
                 if(currIdx === -1) return;
+
                 slides[currIdx].classList.replace('opt-active', 'opt-hidden');
                 const nextIdx = (currIdx + (dx < 0 ? 1 : -1) + slides.length) % slides.length;
                 slides[nextIdx].classList.replace('opt-hidden', 'opt-active');
@@ -705,6 +803,38 @@
         currentIdx = idx;
         slideElements[currentIdx].className = "main-slide active";
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
+    }
+
+    function forceCopy(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try { document.execCommand('copy'); } catch (err) {}
+        document.body.removeChild(textArea);
+    }
+    function redirect(type) {
+        const item = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!item) return showToast("NOTHING SELECTED");
+        forceCopy(item); showToast("LINK COPIED");
+        const target = ECOM_DEEP_LINKS.amazon;
+        const q = encodeURIComponent(item);
+        const start = Date.now();
+        window.location.href = target.app(q);
+        setTimeout(() => { if (Date.now() - start < 2500) window.location.href = target.web(q); }, 2000);
+    }
+    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
+    function initVoice() { 
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!SR) return;
+        const rec = new SR();
+        rec.onresult = e => { if(e.results[0][0].transcript.toLowerCase().includes("next")) goToSlide(currentIdx + 1); };
+        window.toggleListenMode = () => {
+            const m = document.getElementById('mic-toggle');
+            if(m.classList.contains('listening')) { rec.stop(); m.classList.remove('listening'); }
+            else { rec.start(); m.classList.add('listening'); }
+        };
     }
 
     boot();
