@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.3 |</title>
+    <title>| decide.engine v67.4 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -59,6 +60,7 @@
             letter-spacing: 1px; font-weight: 700; text-transform: uppercase;
         }
 
+        /* 🎥 VIDEO ENGINE */
         .video-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: -1; opacity: 0.3;
@@ -83,7 +85,7 @@
         .sub-slide.static { z-index: 30; opacity: 1; pointer-events: auto; transform: none; }
 
         h1 { font-size: 1.8rem; margin: 0 0 15px 0; line-height: 1; letter-spacing: -1px; color: var(--brand-orange); }
-        .wiki-summary { font-size: 0.9rem; color: #aaa; line-height: 1.6; max-height: 180px; overflow-y: auto; margin-bottom: 20px; }
+        .wiki-summary { font-size: 0.9rem; color: #aaa; line-height: 1.6; max-height: 250px; overflow-y: auto; margin-bottom: 20px; }
 
         .resources-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333; }
         .book-btn {
@@ -113,6 +115,8 @@
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
         .btn-full { grid-column: span 2; }
+        .btn-amazon { background: #232f3e; border: none; color: #ff9900; }
+        .btn-yt { background: #cc0000; color: #fff; border: none; }
         
         .lobby-container { 
             display: flex; flex-direction: column; gap: 15px; padding: 30px; height: 100%; 
@@ -126,9 +130,6 @@
         .toast-msg { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #222; color: #00e676; padding: 10px 20px; border: 1px solid #00e676; border-radius: 20px; font-size: 0.8rem; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 3000; font-family: var(--font-tech); }
         .toast-msg.visible { opacity: 1; }
 
-        #mic-toggle { position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background: #111; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid #444; z-index: 2000; cursor: pointer; }
-        #mic-toggle.listening { border-color: var(--accent-go); box-shadow: 0 0 15px rgba(0,230,118,0.3); }
-        #mic-toggle svg { fill: #666; width: 24px; }
         #depth-fill { position: fixed; right: 0; top: 0; bottom: 0; width: 4px; background: #333; z-index: 900; height: 0%; transition: height 0.05s linear; }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
         .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 100; background: #000; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-family: var(--font-tech); font-weight: bold; }
@@ -141,11 +142,16 @@
 <div id="toast" class="toast-msg"></div>
 
 <script>
+    /* =========================================
+       KUTCH AUTOMATION | UNIVERSAL OS v67.4
+       ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
     const AMZN_TAG = "decideos-21";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
+    const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
+    // 🧠 1. DATABASES (RESTORED FULL)
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999 },
@@ -159,15 +165,38 @@
     };
 
     const AUDIO_DB = {
-      "Technics AZ100": { attr: { anc: 9.0, sound: 9.9 }, price: 22990 },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5 }, price: 24990 },
-      "SteelSeries Arctis": { attr: { anc: 7.0, latency: 10.0 }, price: 17999 },
-      "OnePlus Nord Buds 3": { attr: { anc: 9.5, sound: 8.0 }, price: 3299 }
+      "Technics AZ100": { attr: { anc: 9.5, sound: 10.0, battery: 7.0 }, price: 22990 },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, sound: 9.5, battery: 8.0 }, price: 24990 },
+      "SteelSeries Arctis": { attr: { anc: 7.0, latency: 10.0, battery: 8.5 }, price: 17999 },
+      "OnePlus Nord Buds 3": { attr: { anc: 8.5, sound: 8.0, battery: 9.0 }, price: 3299 },
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, sound: 7.0, battery: 10.0 }, price: 3999 },
+      "Beats Powerbeats 2": { attr: { anc: 7.5, sound: 9.0, battery: 9.0 }, price: 21900 },
+      "GoBoult Z40 Pro": { attr: { anc: 6.0, sound: 7.5, battery: 7.0 }, price: 1499 }
     };
 
+    const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
+
+    // 🧠 2. MODULE REGISTRY (RESTORED FULL)
     const MODULES = {
-        smartphones: { label: "SMARTPHONES", database: PHONE_DB, init: () => renderEcosystemGate(), categories: [{ label: "CAMERA-FIRST", type: "camera" }, { label: "PRO GAMER", type: "gaming" }, { label: "CLEAN UI", type: "ui" }] },
-        earbuds: { label: "EARBUDS", database: AUDIO_DB, init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, categories: [{ label: "AUDIOPHILE", type: "sound" }, { label: "ZERO LATENCY", type: "latency" }] },
+        smartphones: { 
+            label: "SMARTPHONES", 
+            database: PHONE_DB, 
+            init: () => renderEcosystemGate(), 
+            categories: [
+                { label: "CAMERA-FIRST", type: "camera", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}] }, 
+                { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] }, 
+                { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}] }
+            ] 
+        },
+        earbuds: { 
+            label: "EARBUDS", 
+            database: AUDIO_DB, 
+            init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, 
+            categories: [
+                { label: "AUDIOPHILE", type: "sound", items: [{"name": "Technics AZ100"}, {"name": "Sony WF-1000XM6"}] }, 
+                { label: "ZERO LATENCY", type: "latency", items: [{"name": "SteelSeries Arctis"}] }
+            ] 
+        },
         food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
         research: { label: "RESEARCH", init: () => renderSearchSlide() },
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
@@ -187,11 +216,15 @@
             const res = await fetch(url);
             const data = await res.json();
             const page = Object.values(data.query.pages)[0];
-            return { title: page.title, summary: page.extract || "No data.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
+            return { 
+                title: page.title, 
+                summary: page.extract || "No data available.", 
+                links: page.links ? page.links.map(l => ({name: l.title})) : [] 
+            };
         }
     };
 
-    let ENGINE_STATE = { currentDomain: null, items_detected: {}, active_filters: [], researchPath: [] };
+    let ENGINE_STATE = { currentDomain: null, items_detected: {}, active_filters: [], session_weights: {}, researchPath: [], ecosystem: null };
     let slideElements = [];
     let currentIdx = 0;
 
@@ -202,7 +235,7 @@
         container.innerHTML = "";
         const section = document.createElement('section');
         section.className = "main-slide active";
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.3</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.4</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -228,6 +261,96 @@
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
+    // 🟢 SMARTPHONE UI: Ecosystem Gate
+    function renderEcosystemGate() {
+        const container = document.getElementById('master-container');
+        const section = document.createElement('section');
+        section.className = "main-slide next";
+        section.innerHTML = `
+        <div class="slide-header"><span class="header-title">PHILOSOPHY</span></div>
+        <div class="lobby-container">
+            <h1 style="text-align:center">WHAT MATTERS?</h1>
+            <div style="display:grid; gap:20px;">
+                <button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, 120W Charge</span></button>
+                <button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Cameras</span></button>
+            </div>
+        </div>`;
+        container.appendChild(section);
+        slideElements.push(section);
+        goToSlide(1);
+    }
+
+    function selectEcosystem(type) {
+        ENGINE_STATE.ecosystem = type;
+        ENGINE_STATE.active_filters = [];
+        renderSubLobby('smartphones');
+    }
+
+    function renderSubLobby(domain) {
+        const container = document.getElementById('master-container');
+        const section = document.createElement('section');
+        section.className = "main-slide next"; 
+        const module = MODULES[domain];
+        let html = `<div class="slide-header"><span class="header-title">FILTER</span></div><div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1>`;
+        module.categories.forEach((cat, idx) => {
+            html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
+        });
+        html += `<button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
+        section.innerHTML = html;
+        container.appendChild(section);
+        slideElements.push(section);
+        goToSlide(slideElements.length - 1);
+    }
+
+    function toggleFilter(label, idx) {
+        const btn = document.getElementById(`filter-btn-${idx}`);
+        if(ENGINE_STATE.active_filters.includes(label)) {
+            ENGINE_STATE.active_filters = ENGINE_STATE.active_filters.filter(x => x !== label);
+            btn.classList.remove('selected');
+        } else {
+            ENGINE_STATE.active_filters.push(label);
+            btn.classList.add('selected');
+        }
+    }
+
+    function startHunt() {
+        if(ENGINE_STATE.active_filters.length === 0) return showToast("SELECT AT LEAST ONE");
+        ENGINE_STATE.session_weights = { camera:0.1, gaming:0.1, battery:0.1, ui:0.1, anc:0.1, sound:0.1, latency:0.1 };
+        buildDeck();
+    }
+
+    function buildDeck() {
+        const container = document.getElementById('master-container');
+        const currentMod = MODULES[ENGINE_STATE.currentDomain];
+        const targetCats = currentMod.categories.filter(c => ENGINE_STATE.active_filters.includes(c.label));
+        
+        targetCats.forEach(cat => {
+            const el = document.createElement('section');
+            el.className = `main-slide next`;
+            let html = `<div class="slide-header"><span class="header-title">${cat.label}</span></div><div class="carousel-viewport">`;
+            cat.items.forEach((item, i) => {
+                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}">
+                         <div class="role-label">OPTION</div><h1>${item.name}</h1>
+                         <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+            });
+            html += `</div>`;
+            el.innerHTML = html;
+            container.appendChild(el);
+            slideElements.push(el);
+        });
+
+        // Final Verdict Slide
+        const final = document.createElement('section');
+        final.className = "main-slide next";
+        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
+            <div class="winner-container"><div id="final-list"></div>
+            <div class="final-actions"><button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-full" onclick="location.reload()">RESTART</button></div></div>`;
+        container.appendChild(final);
+        slideElements.push(final);
+        goToSlide(currentIdx + 1);
+    }
+
+    // 🟢 RESEARCH UI
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -268,7 +391,7 @@
                 const safe = l.name.replace(/'/g, "\\'");
                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${safe}"><h1>${l.name}</h1><div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
-        } else { html += `<div class="sub-slide opt-active"><h1>No links.</h1></div>`; }
+        } else { html += `<div class="sub-slide opt-active"><h1>No links available.</h1></div>`; }
         html += `</div>`;
         linkSlide.innerHTML = html;
         container.appendChild(linkSlide);
@@ -277,6 +400,7 @@
     }
 
     async function diveDeeper(t) {
+        showToast("DIVING...");
         const ctx = await WIKI_ENGINE.getContext(t);
         ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
         buildResearchDeck(ctx);
@@ -297,6 +421,31 @@
         showToast("PDF SAVED");
     }
 
+    // 🟢 VERDICT LOGIC
+    function calculateVerdict() {
+        const activeModule = MODULES[ENGINE_STATE.currentDomain];
+        if(!activeModule.database) return {name: "Selection Ready", price: "---"};
+        let DB = activeModule.database;
+        let scores = [];
+        for (let name in DB) {
+            let item = DB[name];
+            let score = 0;
+            for(let attr in item.attr) { score += item.attr[attr] * 0.1; }
+            if(ENGINE_STATE.items_detected[name]) score += 10;
+            scores.push({name, score, price: item.price});
+        }
+        scores.sort((a, b) => b.score - a.score);
+        return scores[0];
+    }
+
+    function updateFinal() {
+        const list = document.getElementById('final-list');
+        const winner = calculateVerdict();
+        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff;">${winner.name}</div><p style="color:#eee;">Est. Price: ₹${winner.price}</p></div>`;
+        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = {qty:1};
+    }
+
+    // 🟢 GLOBAL SWIPE SYSTEM (UP = Forward, DOWN = Back)
     let touchStartY = 0, touchStartX = 0;
     function initSwipeSystem() {
         document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; touchStartX = e.touches[0].clientX; }, {passive: true});
@@ -307,12 +456,15 @@
             const dx = e.changedTouches[0].clientX - touchStartX;
             const mode = view.closest('.main-slide').dataset.mode;
 
-            if(dy < -80) { // UP -> FORWARD
+            if(dy < -80) { // 🟢 SWIPE UP -> FORWARD
                 const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 const val = active ? active.dataset.val : null;
                 if(mode === "research" && val) diveDeeper(val);
-                else goToSlide(currentIdx + 1);
-            } else if (dy > 80) { // DOWN -> BACK
+                else {
+                    if(val) ENGINE_STATE.items_detected[val] = true;
+                    goToSlide(currentIdx + 1);
+                }
+            } else if (dy > 80) { // 🟢 SWIPE DOWN -> BACK
                 if(mode === "research" && ENGINE_STATE.researchPath.length > 1) {
                     ENGINE_STATE.researchPath.pop();
                     WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c));
@@ -332,6 +484,7 @@
         slideElements[currentIdx].classList.replace('active', idx > currentIdx ? 'prev' : 'next');
         currentIdx = idx;
         slideElements[currentIdx].className = "main-slide active";
+        if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
     }
 
     function renderExternalModule(url) {
@@ -340,6 +493,12 @@
     }
 
     function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('visible'); setTimeout(()=>t.classList.remove('visible'),2000); }
+    function redirect(type) {
+        const item = Object.keys(ENGINE_STATE.items_detected)[0];
+        if(!item) return showToast("NOTHING SELECTED");
+        window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank');
+    }
+
     boot();
 </script>
 </body>
