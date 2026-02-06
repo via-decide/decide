@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v65.1 |</title>
+    <title>| decide.engine v63 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -180,23 +180,18 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v65.1 (Patched)
+       KUTCH AUTOMATION | UNIVERSAL OS v63.0
        ========================================= */
     
-    // 🌐 CONFIGURATION ZONE
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
-    const SHEET_ID = "1MLL4yyhzEebd2-_iMSA90FGJ3VuBrVV2drcGYAsLmnA"; 
-    
-    const STUDENT_PORTAL_URL = "https://scholar.google.com"; 
-    const ALCHEMIST_BASE = "https://via-decide.github.io/alchemist_app/";
-
-    // --- EXTERNAL LINKS ---
     const AMZN_TAG = "decideos-21";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
     const ENGINE_REVIEW_URL = "https://www.youtube.com/@decide.engine?si=1lPOk-c_SkrI9RL8";
     const PHONE_REVIEW_URL = "https://youtu.be/_GQkaY9-jto?si=EiNtzvkHtHG8uiT5";
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
+    
+    // ⚗️ ALCHEMIST BRIDGE
+    const ALCHEMIST_BASE = "https://dharamdaxini.github.io/Alchemist-App/";
 
     // 🧠 1. DATABASES
     const PHONE_DB = {
@@ -272,7 +267,8 @@
         research: {
             label: "RESEARCH",
             database: null,
-            init: () => renderSearchSlide(),
+            // 🟢 MODIFIED: Launches the Studio Interface
+            init: () => renderExternalModule("studio.html"),
             categories: []
         },
         review: {
@@ -280,41 +276,6 @@
             database: null,
             init: () => window.open(ENGINE_REVIEW_URL, '_blank'),
             categories: []
-        }
-    };
-
-    const WIKI_ENGINE = {
-        source: "wiki", 
-        endpoints: { wiki: "https://en.wikipedia.org/w/api.php", travel: "https://en.wikivoyage.org/w/api.php" },
-        async search(query) {
-            try {
-                const base = this.endpoints[this.source];
-                const url = `${base}?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                return data[1][0] || null; 
-            } catch(e) { return null; }
-        },
-        async getContext(title) {
-            try {
-                const base = this.endpoints[this.source];
-                const url = `${base}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&exintro=1&explaintext=1&pllimit=15&plnamespace=0&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                const pages = data.query.pages;
-                const pageId = Object.keys(pages)[0];
-                if(pageId === "-1") return null;
-                const p = pages[pageId];
-                
-                const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
-                
-                return {
-                    title: p.title,
-                    summary: p.extract ? p.extract.split('. ')[0] + '.' : "No summary available.",
-                    full_summary: p.extract || "",
-                    links: safeLinks
-                };
-            } catch(e) { return null; }
         }
     };
 
@@ -338,7 +299,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v65.1</span></div>
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v63.0</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1><div style="display:grid; gap:15px;">`;
         
         for(let key in MODULES) {
@@ -450,150 +411,7 @@
         container.appendChild(closeBtn);
     }
     
-    function renderSearchSlide() {
-        const container = document.getElementById('master-container');
-        while(container.children.length > 1) container.removeChild(container.lastChild);
-        slideElements = [slideElements[0]];
-        ENGINE_STATE.researchPath = []; 
-        const section = document.createElement('section');
-        section.className = "main-slide next";
-        
-        section.innerHTML = `
-        <div class="slide-header"><span class="header-title">KNOWLEDGE ENGINE</span></div>
-        <div class="lobby-container">
-            <div class="source-toggle">
-                <span class="source-chip active">NEURAL SEARCH</span>
-                <span class="source-chip" onclick="window.open('${STUDENT_PORTAL_URL}', '_blank')" style="border-color:var(--accent-go); color:var(--accent-go);">STUDENT PORTAL ↗</span>
-            </div>
-            <h1>TOPIC?</h1>
-            <input type="text" id="search-input" placeholder="e.g. AI, Space...">
-            <button class="btn btn-auto btn-full" onclick="executeSearch()">START RESEARCH</button>
-        </div>`;
-        
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(1);
-    }
-
-    async function executeSearch() {
-        const rawInput = document.getElementById('search-input').value;
-        if(!rawInput) return showToast("ENTER TOPIC");
-        
-        showToast("EXTRACTING...");
-        
-        // 🟢 FIX 1: Send the exact raw input to Wikipedia first
-        const title = await WIKI_ENGINE.search(rawInput);
-        if(!title) return showToast("NOT FOUND");
-        
-        const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
-        buildResearchDeck(context);
-    }
-
-    function buildResearchDeck(context) {
-        const container = document.getElementById('master-container');
-        while(container.children.length > 2) container.removeChild(container.lastChild);
-        slideElements = slideElements.slice(0, 2);
-        const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " books")}&tag=${AMZN_TAG}`;
-        
-        const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next"; 
-        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
-            <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div>
-            <div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button><a href="${SUPPORT_URL}" target="_blank" class="support-link">Fuel the Engine ⚡</a></div>
-            <div class="nav-hint"><span>SWIPE UP: BACK</span><span style="color:var(--accent-go)">DOWN: DIG DEEPER</span></div></div></div>`;
-        container.appendChild(sumSlide);
-        slideElements.push(sumSlide);
-
-        const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next"; 
-        let html = `<div class="slide-header"><span class="header-title">RELATED INQUIRIES</span></div><div class="carousel-viewport">`;
-        
-        if(context.links && context.links.length > 0) {
-            context.links.slice(0,5).forEach((link, i) => {
-                 // 🟢 FIX 2: ESCAPE SINGLE QUOTES TO PREVENT CRASH
-                 const safeTitle = link.name.replace(/'/g, "\\'");
-                 html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${safeTitle}')">
-                            <div class="role-label">FOLLOW UP</div><h1>${link.name}</h1>
-                            <div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT</span></div></div>`;
-            });
-        } else {
-            html += `<div class="sub-slide opt-active"><h1>No further links available.</h1></div>`;
-        }
-        
-        html += `</div>`;
-        linkSlide.innerHTML = html;
-        container.appendChild(linkSlide);
-        slideElements.push(linkSlide);
-        goToSlide(2);
-    }
-
-    async function diveDeeper(title) {
-        showToast("ACCESSING NODE...");
-        const context = await WIKI_ENGINE.getContext(title);
-        
-        if (!context) {
-            showToast("DATA CORRUPTED");
-            return;
-        }
-        
-        ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
-        buildResearchDeck(context);
-    }
-
-    /* 🟢 STRETCH LOGIC (Using Raw Input) */
-    async function generateStoryPDF() {
-        showToast("SYNCING DATA...");
-        
-        const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
-        
-        // 🟢 FIX 3: USE RAW INPUT FOR SYLLABUS
-        const rawTopic = document.getElementById('search-input') ? document.getElementById('search-input').value : "General Knowledge";
-        
-        const payload = {
-            event: "PDF_GENERATED",
-            session_id: sessionID,
-            syllabus: rawTopic, 
-            user_agent: navigator.userAgent
-        };
-        
-        fetch(BACKEND_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const width = doc.internal.pageSize.getWidth();
-        const height = doc.internal.pageSize.getHeight();
-        const margin = 20;
-
-        const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(rawTopic)}`;
-
-        ENGINE_STATE.researchPath.forEach((item, index) => {
-            if (index > 0) doc.addPage();
-            doc.setFont("times", "bold"); doc.setFontSize(10); doc.setTextColor(100); 
-            doc.text(`SESSION: ${sessionID} | LEVEL ${index}`, margin, 15);
-            
-            doc.setFontSize(24); doc.setTextColor(0); 
-            doc.text(item.title.toUpperCase(), margin, 35);
-            
-            doc.setFont("times", "normal"); doc.setFontSize(12);
-            const summaryText = item.summary || "No textual data available for this node.";
-            const bodyText = doc.splitTextToSize(summaryText, width - 40); 
-            doc.text(bodyText, margin, 55);
-            
-            const boxY = height - 40;
-            doc.setFillColor(245, 245, 245); doc.rect(margin, boxY, width - 40, 25, 'F');
-            doc.setTextColor(0, 0, 238); doc.setFontSize(12); doc.setFont("courier", "bold");
-            doc.textWithLink("[ 🧪 START STRETCH SESSION ↗ ]", margin + 5, boxY + 15, { url: masterLink });
-        });
-        
-        doc.save(`Research_${sessionID}.pdf`);
-        showToast("PDF DOWNLOADED");
-    }
+    // Internal Search functions removed as they are now handled by studio.html
 
     function getMediaLink(itemName) {
         return `https://www.youtube.com/results?search_query=${encodeURIComponent(itemName + " review 2026")}`;
@@ -763,12 +581,8 @@
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
                     ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
                     WIKI_ENGINE.getContext(val).then(ctx => {
-                        if(ctx) {
-                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
-                            buildResearchDeck(ctx);
-                        } else {
-                            showToast("LINK BROKEN");
-                        }
+                        ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
+                        buildResearchDeck(ctx);
                     });
                 } else if (val) {
                     ENGINE_STATE.items_detected[val] = {qty:1};
