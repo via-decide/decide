@@ -190,7 +190,6 @@
     const EARBUD_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
 
-    // 🧠 1. DATABASES (Standard Databases Removed for Brevity - they remain unchanged in logic)
     const PHONE_DB = {
       "Poco F7": { attr: { camera: 6.0, gaming: 10.0, battery: 9.0, ui: 4.0 }, tags: ["heavy", "bloatware", "performance"], price: 29999, video: null },
       "iQOO Neo 10R": { attr: { camera: 7.0, gaming: 9.5, battery: 9.0, ui: 6.0 }, tags: ["balanced", "value", "144hz"], price: 30999, video: null },
@@ -198,17 +197,16 @@
       "Samsung A55": { attr: { camera: 8.0, gaming: 4.0, battery: 7.0, ui: 9.5 }, tags: ["trust", "slow_charge", "updates"], price: 33999, video: null }
     };
     const AUDIO_DB = { "Technics AZ100": { attr: { anc: 9.0, sound: 9.9 }, tags: ["audiophile"], price: 22990 } };
-
     const DEAL_BREAKERS = { "Lightweight": "heavy", "Clean UI": "bloatware" };
     const ECOM_DEEP_LINKS = { amazon: { app: q => `intent://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}#Intent;scheme=https;package=in.amazon.mShop.android.shopping;end`, web: q => `https://www.amazon.in/s?k=${q}&tag=${AMZN_TAG}` } };
 
-    // 🧠 2. MODULE REGISTRY
+    // 🧠 MODULE REGISTRY
     const MODULES = {
         smartphones: {
             label: "SMARTPHONES",
             database: PHONE_DB,
             init: () => renderEcosystemGate(),
-            categories: [ { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}] }, { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}] } ]
+            categories: [ { label: "PRO GAMER", type: "gaming", items: [{"name": "Poco F7"}] } ]
         },
         earbuds: {
             label: "EARBUDS",
@@ -219,14 +217,13 @@
         food: {
             label: "DINING",
             database: null,
-            // 🟢 FIXED: Now correctly opens iframe
             init: () => renderExternalModule("https://via-decide.github.io/food.decider/"),
             categories: []
         },
         research: {
             label: "RESEARCH",
             database: null,
-            // 🟢 FIXED: Now correctly initializes the search UI
+            // 🟢 FIXED: Properly mapped to the search function
             init: () => renderSearchSlide(),
             categories: []
         },
@@ -262,26 +259,12 @@
                 const p = pages[pageId];
                 
                 const safeLinks = p.links ? p.links.map(l => ({ name: l.title })) : [];
-                
-                return {
-                    title: p.title,
-                    summary: p.extract ? p.extract.split('. ')[0] + '.' : "No summary available.",
-                    full_summary: p.extract || "",
-                    links: safeLinks
-                };
+                return { title: p.title, summary: p.extract || "No data.", full_summary: p.extract || "", links: safeLinks };
             } catch(e) { return null; }
         }
     };
 
-    let ENGINE_STATE = { 
-        currentDomain: null,
-        items_detected: {}, 
-        session_weights: {}, 
-        active_filters: [],
-        researchPath: [],
-        ecosystem: null 
-    };
-    
+    let ENGINE_STATE = { currentDomain: null, items_detected: {}, session_weights: {}, active_filters: [], researchPath: [], ecosystem: null };
     let slideElements = [];
     let currentIdx = 0;
 
@@ -317,7 +300,7 @@
 
     function handleStart() {
         if(!ENGINE_STATE.currentDomain) return showToast("SELECT DOMAIN");
-        // 🟢 FIX: This ensures the init() function is called properly for every module
+        // 🟢 ACTION: Actually Launch the Module
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
@@ -353,21 +336,15 @@
         const depth = domain === 'smartphones' ? 2 : 1; 
         while(container.children.length > depth) container.removeChild(container.lastChild);
         slideElements = slideElements.slice(0, depth);
-
         const section = document.createElement('section');
         section.className = "main-slide next"; 
         const module = MODULES[domain];
-        const categories = module.categories;
-
+        
         let html = `<div class="slide-header"><span class="header-title">FILTER</span></div>
                     <div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:15px; max-height:60vh; overflow-y:auto">`;
         
-        categories.forEach((cat, idx) => {
-            if (cat.type === 'external') {
-                html += `<button class="cuisine-btn" style="border-color:#ff4444; color:#ff4444;" onclick="window.open('${cat.link}', '_blank')">${cat.label}</button>`;
-            } else {
-                html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
-            }
+        module.categories.forEach((cat, idx) => {
+            html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
         html += `</div><button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html;
@@ -393,10 +370,9 @@
         buildDeck(); 
     }
 
-    // 🟢 FIXED EXTERNAL MODULE RENDERER
+    // 🟢 FIXED: External Module Renderer (Dining)
     function renderExternalModule(url) {
         const container = document.getElementById('master-container');
-        // Clear all slides except base if needed, but for modules we often take over
         container.innerHTML = ""; 
         
         const iframe = document.createElement('iframe');
@@ -406,17 +382,20 @@
         const closeBtn = document.createElement('button');
         closeBtn.className = "close-iframe";
         closeBtn.innerText = "EXIT MODULE";
-        closeBtn.onclick = () => location.reload(); // Hard reset to exit cleanly
+        closeBtn.onclick = () => location.reload(); // Reset to exit cleanly
         
         container.appendChild(iframe);
         container.appendChild(closeBtn);
     }
     
+    // 🟢 FIXED: Research Module Renderer
     function renderSearchSlide() {
         const container = document.getElementById('master-container');
+        // Clear all except lobby? No, Research takes over.
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         ENGINE_STATE.researchPath = []; 
+        
         const section = document.createElement('section');
         section.className = "main-slide next";
         
@@ -619,10 +598,8 @@
     function calculateVerdict() {
         const activeModule = MODULES[ENGINE_STATE.currentDomain];
         if(!activeModule.database) return {name: "Error", price: 0};
-
         let DB = activeModule.database;
         let scores = [];
-        
         const bannedTags = [];
         if(ENGINE_STATE.active_filters.some(f => f.includes("FAST CHARGE"))) bannedTags.push(DEAL_BREAKERS["Fast Charging"]);
         if(ENGINE_STATE.active_filters.some(f => f.includes("LIGHTWEIGHT"))) bannedTags.push(DEAL_BREAKERS["Lightweight"]);
@@ -631,20 +608,10 @@
         for (let name in DB) {
             let item = DB[name];
             const tags = item.tags || [];
-            const hasDeadlyTag = tags.some(t => bannedTags.includes(t));
-            if(hasDeadlyTag) continue; 
-
-            let ecoScore = 0;
-            if(ENGINE_STATE.ecosystem === 'specs' && (tags.includes('value') || tags.includes('performance'))) ecoScore += 2;
-            if(ENGINE_STATE.ecosystem === 'peace' && (tags.includes('trust') || tags.includes('service_king'))) ecoScore += 2;
-
-            let score = ecoScore;
-            for(let attr in item.attr) {
-                let w = ENGINE_STATE.session_weights[attr] || 0.1;
-                score += item.attr[attr] * w;
-            }
+            if(tags.some(t => bannedTags.includes(t))) continue; 
+            let score = 0;
+            for(let attr in item.attr) { score += item.attr[attr] * 0.1; }
             if(ENGINE_STATE.items_detected[name]) score += 10;
-            
             scores.push({name, score, price: item.price});
         }
         scores.sort((a, b) => b.score - a.score);
@@ -654,35 +621,12 @@
     function updateFinal() {
         const list = document.getElementById('final-list');
         const winner = calculateVerdict();
-        
-        let html = "";
-        if (winner.price === 0) {
-            html = `<div style="text-align:center; padding:20px; color:#aaa">Your filters were too strict.<br>Try removing some conditions.</div>`;
-        } else {
-            html = `
-            <div style="text-align:left;">
-                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px; text-shadow:0 1px 2px rgba(0,0,0,0.8);">THE CHAMPION</span>
-                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.8); line-height:1.1">${winner.name}</div>
-                <p style="color:#eee; font-size:1.1rem; text-shadow:0 1px 2px rgba(0,0,0,0.8);">Est. Price: ₹${winner.price}</p>
-            </div>`;
-            ENGINE_STATE.items_detected = {};
-            ENGINE_STATE.items_detected[winner.name] = {qty:1};
-        }
-        list.innerHTML = html;
+        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff;">${winner.name}</div><p style="color:#eee;">Est. Price: ₹${winner.price}</p></div>`;
+        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = {qty:1};
         setTimeout(() => triggerVerdictSpeech(), 1000);
     }
 
-    function triggerVerdictSpeech() {
-        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
-        if(!winner) return;
-        const msg = new SpeechSynthesisUtterance();
-        msg.text = `The winner is ${winner}. Based on your priorities, this is the best choice.`;
-        msg.lang = 'en-US';
-        msg.rate = 1.0;
-        window.speechSynthesis.speak(msg);
-    }
-
-    // 🟢 FIXED SWIPE UX: UP IS FORWARD, DOWN IS BACK
+    // 🟢 GLOBAL SWIPE SYSTEM (Final Fixed UX: Up=Forward, Down=Back)
     let touchStartX = 0, touchStartY = 0;
     function initSwipeSystem() {
         const doc = document;
@@ -694,6 +638,9 @@
         doc.addEventListener('touchmove', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
+            // 🟢 IFRAME CHECK: Stop standard swipes if an iframe is open
+            if(document.querySelector('iframe')) return; 
+
             const dy = e.touches[0].clientY - touchStartY;
             if(Math.abs(dy) > Math.abs(e.touches[0].clientX - touchStartX)) {
                 if (e.cancelable) e.preventDefault(); 
@@ -703,43 +650,33 @@
         doc.addEventListener('touchend', e => {
             const view = e.target.closest('.carousel-viewport');
             if(!view) return;
+            if(document.querySelector('iframe')) return;
+
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
             document.getElementById('depth-fill').style.height = '0%';
             const mainSlide = view.closest('.main-slide');
-            const mode = mainSlide.dataset.mode; // 'research' or undefined
+            const mode = mainSlide.dataset.mode;
 
-            // --- 🟢 NEW SWIPE LOGIC ---
-            // SWIPE UP (dy < -80) -> FORWARD / DIVE DEEPER / SELECT
+            // SWIPE UP (Forward)
             if(dy < -80) { 
                 const activeSub = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if(!activeSub) return;
                 const val = activeSub.dataset.val;
-
                 if(mode === "research" && val) {
                     const currentTitle = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title;
-                    ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].link = val;
                     WIKI_ENGINE.getContext(val).then(ctx => {
                         if(ctx) {
-                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary, link: null });
+                            ENGINE_STATE.researchPath.push({ depth: ENGINE_STATE.researchPath.length, title: ctx.title, summary: ctx.full_summary });
                             buildResearchDeck(ctx);
-                        } else {
-                            showToast("LINK BROKEN");
                         }
                     });
                 } else if (val) {
-                    // Standard Product Selection
                     ENGINE_STATE.items_detected[val] = {qty:1};
-                    if(val === "Samsung A55") ENGINE_STATE.session_weights.ui += 0.2;
-                    if(val === "Poco F7") ENGINE_STATE.session_weights.gaming += 0.2;
-                    showToast("SELECTED");
                     goToSlide(currentIdx + 1);
-                } else {
-                    // Just go next (no selection needed)
-                    goToSlide(currentIdx + 1);
-                }
+                } else goToSlide(currentIdx + 1);
             } 
-            // SWIPE DOWN (dy > 80) -> BACK
+            // SWIPE DOWN (Back)
             else if (dy > 80) {
                 if(mode === "research") {
                     if(ENGINE_STATE.researchPath.length > 1) {
@@ -747,17 +684,14 @@
                         const prev = ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1];
                         WIKI_ENGINE.getContext(prev.title).then(ctx => buildResearchDeck(ctx));
                     } else showToast("ROOT LEVEL");
-                } else {
-                    goToSlide(currentIdx - 1);
-                }
+                } else goToSlide(currentIdx - 1);
             } 
-            // HORIZONTAL SWIPE (Carousel Navigation)
+            // SIDE SWIPE
             else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 if(slides.length <= 1) return;
                 const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
                 if(currIdx === -1) return;
-
                 slides[currIdx].classList.replace('opt-active', 'opt-hidden');
                 const nextIdx = (currIdx + (dx < 0 ? 1 : -1) + slides.length) % slides.length;
                 slides[nextIdx].classList.replace('opt-hidden', 'opt-active');
