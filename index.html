@@ -210,8 +210,8 @@
       "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999 },
       "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999 },
       "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999 },
-      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust"], price: 7499 },
-      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value"], price: 7999 },
+      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust", "val"], price: 7499 },
+      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value", "val"], price: 7999 },
       "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999 }
     };
 
@@ -396,19 +396,14 @@
     }
 
     function manualSkip(el) {
-        // Fix for skipping slides on tap - stopPropagation to avoid swipe conflict
         if (event) event.stopPropagation();
-        
         const view = el.closest('.carousel-viewport');
         const slides = Array.from(view.querySelectorAll('.sub-slide'));
-        // In trivia or hunt mode, non-static slides are the items
-        const activeSlides = slides.filter(s => !s.classList.contains('static') && !s.classList.contains('opt-hidden'));
+        const activeSlides = slides.filter(s => !s.classList.contains('static'));
         
-        // Find current active 
         const currentActive = view.querySelector('.sub-slide.opt-active');
         if (!currentActive) return;
 
-        // Find next slide index among siblings
         const siblings = Array.from(currentActive.parentNode.children).filter(c => c.classList.contains('sub-slide') && !c.classList.contains('static'));
         const currIdx = siblings.indexOf(currentActive);
         const nextIdx = (currIdx + 1) % siblings.length;
@@ -577,10 +572,17 @@
 
     async function generateStoryPDF() {
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+        // 1. Backend Sync
         fetch(BACKEND_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ session_id: sessionID, syllabus: JSON.stringify(ENGINE_STATE.researchPath) })});
+        
+        // 2. PDF Gen
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         ENGINE_STATE.researchPath.forEach((item, i) => { if(i>0) doc.addPage(); doc.text(item.title, 20, 20); doc.text(doc.splitTextToSize(item.summary, 170), 20, 40); doc.text(`Search ID: ${sessionID}`, 20, 280); });
-        doc.save(`Research_${sessionID}.pdf`); showToast("PDF SAVED");
+        doc.save(`Research_${sessionID}.pdf`);
+        
+        // 3. Auto-Copy Clean JSON
+        const payload = { session_id: sessionID, syllabus: ENGINE_STATE.researchPath };
+        navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => showToast("PDF SAVED & COPIED")).catch(() => showToast("PDF SAVED"));
     }
 
     let touchStartY = 0, touchStartX = 0;
