@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v69.0 |</title>
+    <title>| decide.engine v69.2 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -114,7 +114,7 @@
             margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
             font-family: var(--font-tech); font-size: 0.7rem; color: #666;
             display: flex; justify-content: space-between;
-            pointer-events: none; /* Let clicks pass through container */
+            pointer-events: none; /* Let clicks pass */
         }
         
         /* 🔧 SKIP BUTTON FIX */
@@ -181,7 +181,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v69.0
+       KUTCH AUTOMATION | UNIVERSAL OS v69.2
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -191,7 +191,32 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🔧 BOOK SEARCH HELPER
+    // 🏆 CURATED PATHS (Expanded to 5 Nodes per topic)
+    const CURATED_PATHS = {
+        "ER = EPR": {
+            title: "ER = EPR",
+            summary: "A conjecture in theoretical physics connecting Gravity and Quantum Mechanics. It states that two entangled particles (EPR) are connected by a wormhole (ER bridge) in spacetime.",
+            links: [
+                { name: "Firewall Paradox", summary: "The crisis in physics: Do you burn up instantly when hitting a black hole event horizon?" },
+                { name: "Juan Maldacena", summary: "The architect of the theory who proposed that spacetime geometry is built from entanglement." },
+                { name: "Holographic Principle", summary: "The universe as a projection: How 3D reality emerges from 2D information." },
+                { name: "Leonard Susskind", summary: "Co-founder of String Theory who championed ER=EPR to save Quantum Mechanics." },
+                { name: "Quantum Teleportation", summary: "How information moves instantly. Is it magic, or is it traversing a wormhole?" }
+            ]
+        },
+        "ASSEMBLY THEORY": {
+            title: "Assembly Theory",
+            summary: "A new physics of life that quantifies complexity. It asks: 'How many steps are needed to build this object?' If the number is high, it MUST be life.",
+            links: [
+                { name: "Lee Cronin", summary: "The chemist proposing this as the new standard for detecting aliens." },
+                { name: "Biosignatures", summary: "The chemical fingerprints that prove life exists on other planets." },
+                { name: "Cellular Automata", summary: "Mathematical models (like Game of Life) that show complexity emerging from simple rules." },
+                { name: "Selection", summary: "How the universe 'chooses' certain molecules to persist over time." },
+                { name: "Molecular Complexity", summary: "The raw math of counting bonds and atomic connections." }
+            ]
+        }
+    };
+
     function buildBookQuery() {
         if (!ENGINE_STATE.researchPath || ENGINE_STATE.researchPath.length === 0) return null;
         const titles = ENGINE_STATE.researchPath.slice(-2).map(n => n.title || "").join(" ");
@@ -201,7 +226,7 @@
 
     function safe(str) { return (str || '').replace(/"/g, '&quot;'); }
 
-    // 🧠 DATABASES (Restored: Comprehensive Options)
+    // 🧠 DATABASES (Restored Full)
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -268,11 +293,13 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
-    // 🔧 WIKI ENGINE (FIXED)
+    // 🔧 WIKI ENGINE (With 5-Node Logic)
     const WIKI_ENGINE = {
         source: "wiki",
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", rest: "https://wikimedia.org/api/rest_v1" },
         async search(query) {
+            const upper = query.toUpperCase();
+            if(CURATED_PATHS[upper]) return upper; 
             const url = `${this.endpoints.wiki}?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
             const res = await fetch(url);
             const data = await res.json();
@@ -292,10 +319,11 @@
                 const res = await fetch(url); const json = await res.json();
                 const items = json.items[0].articles.filter(a => !a.article.includes(":") && a.article !== "Main_Page" && a.article !== "Search");
                 return items.slice(0, 5).map(i => i.article.replace(/_/g, ' '));
-            } catch(e) { return ["Quantum Computing", "Black Hole", "CRISPR", "Stoicism"]; }
+            } catch(e) { return ["Quantum Computing", "Black Hole", "CRISPR", "Stoicism", "Neuroscience"]; }
         },
         async getContext(title) {
-            const url = `${this.endpoints.wiki}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=10&format=json`;
+            if(CURATED_PATHS[title.toUpperCase()]) return CURATED_PATHS[title.toUpperCase()];
+            const url = `${this.endpoints.wiki}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=20&format=json`;
             const res = await fetch(url);
             const data = await res.json();
             const pages = data.query.pages;
@@ -323,15 +351,12 @@
     async function boot() { 
         const params = new URLSearchParams(window.location.search);
         const syllabus = params.get('syllabus');
-        
         if (syllabus) {
             ENGINE_STATE.currentDomain = 'research';
             renderSearchSlide(); 
             document.getElementById('search-input').value = syllabus;
             executeSearch(); 
-        } else {
-            renderLobby(); 
-        }
+        } else { renderLobby(); }
         initSwipeSystem(); 
     }
 
@@ -341,7 +366,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         ENGINE_STATE.triviaMode = false;
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v69.0</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v69.2</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -398,16 +423,11 @@
     function manualSkip(el) {
         if (event) event.stopPropagation();
         const view = el.closest('.carousel-viewport');
-        const slides = Array.from(view.querySelectorAll('.sub-slide'));
-        const activeSlides = slides.filter(s => !s.classList.contains('static'));
-        
         const currentActive = view.querySelector('.sub-slide.opt-active');
         if (!currentActive) return;
-
         const siblings = Array.from(currentActive.parentNode.children).filter(c => c.classList.contains('sub-slide') && !c.classList.contains('static'));
         const currIdx = siblings.indexOf(currentActive);
         const nextIdx = (currIdx + 1) % siblings.length;
-
         currentActive.classList.replace('opt-active', 'opt-hidden');
         siblings[nextIdx].classList.replace('opt-hidden', 'opt-active');
     }
@@ -448,6 +468,7 @@
         }
     }
 
+    // 🔬 RESEARCH / TRIVIA LOGIC
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -562,25 +583,39 @@
         const container = document.getElementById('master-container');
         if (ENGINE_STATE.currentDomain === 'research') { while(container.children.length > (slideElements.length > 1 ? 2 : 1)) container.removeChild(container.lastChild); slideElements = slideElements.slice(0, (slideElements.length > 1 ? 2 : 1)); }
         else { while(container.children.length > 2) container.removeChild(container.lastChild); slideElements = slideElements.slice(0, 2); }
+        
         const bookQuery = buildBookQuery();
         const bookLink = bookQuery ? `https://www.amazon.in/s?k=${encodeURIComponent(bookQuery)}&i=stripbooks&tag=${AMZN_TAG}` : null;
+        
+        // 🛠️ 5-NODE GUARANTEE LOGIC
+        // If links < 5, fill with smart drifts
+        let links = context.links || [];
+        if (links.length < 5) {
+            const drifts = [
+                {name: "Quantum Mechanics"}, {name: "Philosophy of Science"}, 
+                {name: "Artificial Intelligence"}, {name: "Cognitive Science"}, 
+                {name: "Future of Humanity"}
+            ];
+            while (links.length < 5) {
+                const r = drifts[Math.floor(Math.random() * drifts.length)];
+                if(!links.some(l => l.name === r.name)) links.push(r);
+            }
+        }
+        // Strict slice to 5
+        links = links.slice(0, 5);
+
         const sumSlide = document.createElement('section');
         sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
-        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section">${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}<a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a></div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${(context.links || []).slice(0, 5).map((link, i) => `<div class="sub-slide opt-hidden" data-val="${safe(link.name)}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH</div><h1>${link.name}</h1><div class="nav-hint"><span>TAP TO EXPLORE</span></div></div>`).join('')}</div>`;
+        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section">${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}<a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a></div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${links.map((link, i) => `<div class="sub-slide opt-hidden" data-val="${safe(link.name)}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH ${i+1}/5</div><h1>${link.name}</h1><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`).join('')}</div>`;
         container.appendChild(sumSlide); slideElements.push(sumSlide); goToSlide(slideElements.length - 1);
     }
 
     async function generateStoryPDF() {
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
-        // 1. Backend Sync
         fetch(BACKEND_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ session_id: sessionID, syllabus: JSON.stringify(ENGINE_STATE.researchPath) })});
-        
-        // 2. PDF Gen
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         ENGINE_STATE.researchPath.forEach((item, i) => { if(i>0) doc.addPage(); doc.text(item.title, 20, 20); doc.text(doc.splitTextToSize(item.summary, 170), 20, 40); doc.text(`Search ID: ${sessionID}`, 20, 280); });
         doc.save(`Research_${sessionID}.pdf`);
-        
-        // 3. Auto-Copy Clean JSON
         const payload = { session_id: sessionID, syllabus: ENGINE_STATE.researchPath };
         navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => showToast("PDF SAVED & COPIED")).catch(() => showToast("PDF SAVED"));
     }
