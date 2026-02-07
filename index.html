@@ -68,7 +68,7 @@
         .winner-container {
             flex-grow: 1; display: flex; flex-direction: column; 
             justify-content: flex-end; padding: 30px; 
-            padding-bottom: 100px; 
+            padding-bottom: 120px; 
             background: linear-gradient(to top, #000 95%, transparent);
         }
 
@@ -114,11 +114,25 @@
             margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;
             font-family: var(--font-tech); font-size: 0.7rem; color: #666;
             display: flex; justify-content: space-between;
+            pointer-events: none; /* Let clicks pass through container */
         }
         
-        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        /* 🔧 SKIP BUTTON FIX */
+        .skip-btn-clickable { 
+            cursor: pointer; 
+            padding: 8px 15px; 
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px; 
+            transition: all 0.2s; 
+            pointer-events: auto; /* Enable clicks */
+            font-weight: bold;
+            color: #fff;
+        }
+        .skip-btn-clickable:active { background: var(--accent-go); color: #000; border-color: var(--accent-go); }
+
+        .final-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .btn { background: #222; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.8rem; cursor: pointer; width: 100%; }
-        .btn-full { grid-column: span 2; }
         .btn-amazon { background: #2d3436; color: #fab1a0; border-color: #fab1a0; }
         .btn-yt { background: #cc0000; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-speak { background: #333; color: #aaa; border: 1px solid #444; }
@@ -177,6 +191,7 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
+    // 🔧 BOOK SEARCH HELPER
     function buildBookQuery() {
         if (!ENGINE_STATE.researchPath || ENGINE_STATE.researchPath.length === 0) return null;
         const titles = ENGINE_STATE.researchPath.slice(-2).map(n => n.title || "").join(" ");
@@ -186,6 +201,7 @@
 
     function safe(str) { return (str || '').replace(/"/g, '&quot;'); }
 
+    // 🧠 DATABASES (Restored: Comprehensive Options)
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -195,7 +211,8 @@
       "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999 },
       "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999 },
       "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust"], price: 7499 },
-      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value"], price: 7999 }
+      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value"], price: 7999 },
+      "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999 }
     };
 
     const AUDIO_DB = {
@@ -229,7 +246,8 @@
                 { label: "CAMERA-FIRST", type: "cam", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}] }, 
                 { label: "PRO GAMER", type: "gam", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] }, 
                 { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] },
-                { label: "BATTERY KING", type: "bat", items: [{"name": "Realme GT 7T"}] }
+                { label: "BATTERY KING", type: "bat", items: [{"name": "Realme GT 7T"}] },
+                { label: "BUDGET BUY", type: "val", items: [{"name": "Samsung Galaxy F07"}, {"name": "Realme Note 60"}] }
             ] 
         },
         earbuds: { 
@@ -240,7 +258,8 @@
             categories: [
                 { label: "AUDIOPHILE", type: "snd", items: [{"name": "Technics AZ100"}] }, 
                 { label: "SILENCE (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}] },
-                { label: "LOW LATENCY", type: "lat", items: [{"name": "SteelSeries Arctis"}] }
+                { label: "LOW LATENCY", type: "lat", items: [{"name": "SteelSeries Arctis"}] },
+                { label: "WORK & MIC", type: "mic", items: [{"name": "Technics AZ100"}] }
             ] 
         },
         trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
@@ -249,24 +268,22 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
+    // 🔧 WIKI ENGINE (FIXED)
     const WIKI_ENGINE = {
         source: "wiki",
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", rest: "https://wikimedia.org/api/rest_v1" },
-        
         async search(query) {
             const url = `${this.endpoints.wiki}?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
             const res = await fetch(url);
             const data = await res.json();
             return (data[1] && data[1].length > 0) ? data[1][0] : null;
         },
-
         async getRandom() {
             const url = `${this.endpoints.wiki}?origin=*&action=query&list=random&rnnamespace=0&rnlimit=1&format=json`;
             const res = await fetch(url);
             const data = await res.json();
             return data.query.random[0].title;
         },
-
         async getTrending() {
             const date = new Date(); date.setDate(date.getDate() - 2); 
             const yyyy = date.getFullYear(); const mm = String(date.getMonth() + 1).padStart(2, '0'); const dd = String(date.getDate()).padStart(2, '0');
@@ -277,22 +294,15 @@
                 return items.slice(0, 5).map(i => i.article.replace(/_/g, ' '));
             } catch(e) { return ["Quantum Computing", "Black Hole", "CRISPR", "Stoicism"]; }
         },
-
         async getContext(title) {
             const url = `${this.endpoints.wiki}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=10&format=json`;
             const res = await fetch(url);
             const data = await res.json();
             const pages = data.query.pages;
             const pageId = Object.keys(pages)[0];
-            const page = pages[pageId];
-
             if (pageId === "-1") return { title: "Not Found", summary: "", links: [] };
-
-            return { 
-                title: page.title, 
-                summary: page.extract || "No specific summary available.", 
-                links: page.links ? page.links.map(l => ({name: l.title})) : [] 
-            };
+            const page = pages[pageId];
+            return { title: page.title, summary: page.extract || "No specific summary available.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
         }
     };
 
@@ -310,7 +320,20 @@
         localStorage.setItem("WIKI_HIST", JSON.stringify(RESEARCH_HISTORY));
     }
 
-    async function boot() { renderLobby(); initSwipeSystem(); }
+    async function boot() { 
+        const params = new URLSearchParams(window.location.search);
+        const syllabus = params.get('syllabus');
+        
+        if (syllabus) {
+            ENGINE_STATE.currentDomain = 'research';
+            renderSearchSlide(); 
+            document.getElementById('search-input').value = syllabus;
+            executeSearch(); 
+        } else {
+            renderLobby(); 
+        }
+        initSwipeSystem(); 
+    }
 
     function renderLobby() {
         const container = document.getElementById('master-container');
@@ -348,109 +371,65 @@
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `
-        <div class="slide-header"><span class="header-title">TRIVIA ENGINE</span></div>
-        <div class="lobby-container">
-            <h1 style="text-align:center">CATEGORY</h1>
-            <div style="display:grid; gap:15px;">
-                <button class="cuisine-btn" onclick="startTrivia(9)">GENERAL KNOWLEDGE</button>
-                <button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button>
-                <button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button>
-                <button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button>
-            </div>
-        </div>`;
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(1);
+        section.innerHTML = `<div class="slide-header"><span class="header-title">TRIVIA ENGINE</span></div><div class="lobby-container"><h1 style="text-align:center">CATEGORY</h1><div style="display:grid; gap:15px;"><button class="cuisine-btn" onclick="startTrivia(9)">GENERAL KNOWLEDGE</button><button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button><button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button><button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button></div></div>`;
+        container.appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
     async function startTrivia(cat) {
         showToast("FETCHING Qs...");
         ENGINE_STATE.triviaMode = true;
-        
         try {
             const data = await TRIVIA_ENGINE.fetch(cat);
             if(!data || data.length === 0) return showToast("NOT ENOUGH Qs");
-            
             const container = document.getElementById('master-container');
-            
             data.forEach((q, i) => {
-                const el = document.createElement('section');
-                el.className = `main-slide next`;
-                
+                const el = document.createElement('section'); el.className = `main-slide next`;
                 const answers = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
-                
                 let html = `<div class="slide-header"><span class="header-title">Q${i+1} · ${q.category}</span></div><div class="carousel-viewport">`;
-                
                 answers.forEach((ans, idx) => {
-                    html += `
-                    <div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" 
-                         data-val="${safe(ans)}" 
-                         data-correct="${ans === q.correct_answer ? 'true' : 'false'}"
-                         data-real="${safe(q.correct_answer)}">
-                         <div class="role-label">${q.difficulty.toUpperCase()}</div>
-                         <h1 style="font-size:1.4rem; line-height:1.4">${decodeHTML(q.question)}</h1>
-                         <div style="margin-top:20px; font-size:1.2rem; color:var(--brand-orange); font-weight:bold;">${decodeHTML(ans)}</div>
-                         <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
-                    </div>`;
+                    html += `<div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" data-val="${safe(ans)}" data-correct="${ans === q.correct_answer ? 'true' : 'false'}" data-real="${safe(q.correct_answer)}"><div class="role-label">${q.difficulty.toUpperCase()}</div><h1 style="font-size:1.4rem; line-height:1.4">${decodeHTML(q.question)}</h1><div style="margin-top:20px; font-size:1.2rem; color:var(--brand-orange); font-weight:bold;">${decodeHTML(ans)}</div><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
                 });
-                
-                html += `</div>`;
-                el.innerHTML = html;
-                container.appendChild(el);
-                slideElements.push(el);
+                html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
             });
-            
             goToSlide(slideElements.length - data.length); 
-            
         } catch(e) { showToast("FAILED TO LOAD"); }
     }
 
-    function decodeHTML(html) {
-        const txt = document.createElement("textarea");
-        txt.innerHTML = html;
-        return txt.value;
+    function manualSkip(el) {
+        // Fix for skipping slides on tap - stopPropagation to avoid swipe conflict
+        if (event) event.stopPropagation();
+        
+        const view = el.closest('.carousel-viewport');
+        const slides = Array.from(view.querySelectorAll('.sub-slide'));
+        // In trivia or hunt mode, non-static slides are the items
+        const activeSlides = slides.filter(s => !s.classList.contains('static') && !s.classList.contains('opt-hidden'));
+        
+        // Find current active 
+        const currentActive = view.querySelector('.sub-slide.opt-active');
+        if (!currentActive) return;
+
+        // Find next slide index among siblings
+        const siblings = Array.from(currentActive.parentNode.children).filter(c => c.classList.contains('sub-slide') && !c.classList.contains('static'));
+        const currIdx = siblings.indexOf(currentActive);
+        const nextIdx = (currIdx + 1) % siblings.length;
+
+        currentActive.classList.replace('opt-active', 'opt-hidden');
+        siblings[nextIdx].classList.replace('opt-hidden', 'opt-active');
     }
 
+    function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
     function handleTriviaSelection(el) {
         const isCorrect = el.dataset.correct === 'true';
         const correctAns = el.dataset.real;
-        
-        if(isCorrect) {
-            showToast("CORRECT! LEARNING...", "success");
-            diveDeeper(correctAns); 
-        } else {
-            showToast("WRONG!", "error");
-            setTimeout(() => diveDeeper(correctAns), 1000); 
-        }
+        if(isCorrect) { showToast("CORRECT! LEARNING...", "success"); diveDeeper(correctAns); } 
+        else { showToast("WRONG!", "error"); setTimeout(() => diveDeeper(correctAns), 1000); }
     }
 
     function injectTriviaContext(context) {
         const el = document.createElement('section');
-        el.className = "main-slide next";
-        el.dataset.mode = "trivia-context"; 
+        el.className = "main-slide next"; el.dataset.mode = "trivia-context";
         const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " book")}&i=stripbooks&tag=${AMZN_TAG}`;
-        
-        el.innerHTML = `
-            <div class="slide-header">
-                <span class="header-title">LEARNING NODE</span>
-                <button class="pdf-btn" onclick="goToSlide(currentIdx + 1)">NEXT Q &rarr;</button>
-            </div>
-            <div class="carousel-viewport">
-                <div class="sub-slide static">
-                    <div class="role-label">CONTEXT</div>
-                    <h1>${context.title}</h1>
-                    <div class="wiki-summary">${context.summary}</div>
-                    <div class="resources-section">
-                        <button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>
-                    </div>
-                    <div class="nav-hint">
-                        <span>SWIPE DOWN: NEXT Q</span>
-                        <span style="color:var(--accent-go)">UP: NEXT Q</span>
-                    </div>
-                </div>
-            </div>`;
-            
+        el.innerHTML = `<div class="slide-header"><span class="header-title">LEARNING NODE</span><button class="pdf-btn" onclick="goToSlide(currentIdx + 1)">NEXT Q &rarr;</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">CONTEXT</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section"><button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button></div><div class="nav-hint"><span>SWIPE DOWN: NEXT Q</span><span style="color:var(--accent-go)">UP: NEXT Q</span></div></div></div>`;
         const current = slideElements[currentIdx];
         if (current.nextSibling) document.getElementById('master-container').insertBefore(el, current.nextSibling);
         else document.getElementById('master-container').appendChild(el);
@@ -459,36 +438,18 @@
     }
 
     async function diveDeeper(t) {
-        if (!t || t === "undefined" || t === "null") { 
-             if(ENGINE_STATE.triviaMode) return goToSlide(currentIdx + 1);
-             return showToast("INVALID TOPIC");
-        }
-        
+        if (!t || t === "undefined" || t === "null") { if(ENGINE_STATE.triviaMode) return goToSlide(currentIdx + 1); return showToast("INVALID TOPIC"); }
         showToast("DIVING...");
-        
         try {
             const ctx = await WIKI_ENGINE.getContext(t);
-            
             if (ENGINE_STATE.triviaMode) {
-                if (ctx.title === "Not Found" || ctx.title === "Undefined" || ctx.summary.length < 50) {
-                    showToast("NO CONTEXT - NEXT Q");
-                    goToSlide(currentIdx + 1);
-                    return;
-                }
-                injectTriviaContext(ctx);
-                return;
+                if (ctx.title === "Not Found" || ctx.title === "Undefined" || ctx.summary.length < 50) { showToast("NO CONTEXT - NEXT Q"); goToSlide(currentIdx + 1); return; }
+                injectTriviaContext(ctx); return;
             }
-
             ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
             buildResearchDeck(ctx);
-            
         } catch(e) {
-            if (ENGINE_STATE.triviaMode) {
-                showToast("NET ERROR - NEXT Q");
-                goToSlide(currentIdx + 1);
-            } else {
-                showToast("DIVE FAILED");
-            }
+            if (ENGINE_STATE.triviaMode) { showToast("NET ERROR - NEXT Q"); goToSlide(currentIdx + 1); } else { showToast("DIVE FAILED"); }
         }
     }
 
@@ -511,24 +472,15 @@
         module.categories.forEach((cat, idx) => {
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
-        
-        if(module.review) {
-            html += `<button class="btn btn-yt" style="margin-top:15px; background:#cc0000; color:#fff;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`;
-        }
-        
+        if(module.review) { html += `<button class="btn btn-yt" style="margin-top:15px;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`; }
         html += `<button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html; container.appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
     }
 
     function toggleFilter(label, idx) {
         const btn = document.getElementById(`filter-btn-${idx}`);
-        if(ENGINE_STATE.active_filters.includes(label)) {
-            ENGINE_STATE.active_filters = ENGINE_STATE.active_filters.filter(x => x !== label);
-            btn.classList.remove('selected');
-        } else {
-            ENGINE_STATE.active_filters.push(label);
-            btn.classList.add('selected');
-        }
+        if(ENGINE_STATE.active_filters.includes(label)) { ENGINE_STATE.active_filters = ENGINE_STATE.active_filters.filter(x => x !== label); btn.classList.remove('selected'); } 
+        else { ENGINE_STATE.active_filters.push(label); btn.classList.add('selected'); }
     }
 
     function startHunt() {
@@ -536,8 +488,6 @@
         ENGINE_STATE.session_weights = { cam:0.1, gam:0.1, bat:0.1, ui:0.1, dis:0.1, srv:0.1, thm:0.1, dur:0.1, anc:0.1, snd:0.1, mic:0.1, lat:0.1, fit:0.1, bld:0.1, app:0.1 };
         buildDeck();
     }
-
-    function getMediaLink(q) { return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + " review 2026")}`; }
 
     function buildDeck() {
         const container = document.getElementById('master-container');
@@ -548,59 +498,45 @@
             let html = `<div class="slide-header"><span class="header-title">${cat.label}</span></div><div class="carousel-viewport">`;
             const items = cat.items.length > 0 ? cat.items : [{name: cat.label + " Optimized"}];
             items.forEach((item, i) => {
-                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}"><div class="role-label">PROPOSAL</div><h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1><div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}"><div class="role-label">PROPOSAL</div><h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
             html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
         });
         const final = document.createElement('section'); final.className = "main-slide next";
-        
-        final.innerHTML = `
-            <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
-            <div class="winner-container">
-                <div id="final-list"></div>
-                <div class="final-actions">
-                    <button class="btn btn-amazon btn-full" onclick="redirect('amazon')">BUY NOW ↗</button>
-                    <button class="btn btn-yt btn-full" onclick="window.open('${currentMod.review}', '_blank')">▶ WATCH REVIEW</button>
-                    <button class="btn btn-full" onclick="location.reload()">RESTART</button>
-                </div>
-            </div>`;
+        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video><div class="winner-container"><div id="final-list"></div><div class="final-actions"><button class="btn btn-amazon btn-full" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-yt btn-full" onclick="window.open('${currentMod.review}', '_blank')">▶ WATCH REVIEW</button><button class="btn btn-full" onclick="location.reload()">RESTART</button></div></div>`;
         container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
     }
 
-    function calculateVerdict() { return {name: "Poco F7", price: 29999}; }
+    function getMediaLink(q) { return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + " review 2026")}`; }
+    function calculateVerdict() {
+        const activeModule = MODULES[ENGINE_STATE.currentDomain];
+        if(!activeModule.database) return {name: "Ready", price: "---"};
+        let DB = activeModule.database; let scores = []; const bannedTags = [];
+        ENGINE_STATE.active_filters.forEach(f => { if(DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]); });
+        for (let name in DB) {
+            let item = DB[name]; if(item.tags && item.tags.some(t => bannedTags.includes(t))) continue;
+            let score = 0;
+            if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
+            if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
+            for(let attr in item.attr) { let w = ENGINE_STATE.session_weights[attr] || 0.1; score += item.attr[attr] * w; }
+            if(ENGINE_STATE.items_detected[name]) score += 10;
+            scores.push({name, score, price: item.price});
+        }
+        scores.sort((a, b) => b.score - a.score); return scores[0] || {name: "No Match", price: 0};
+    }
+
     function updateFinal() { const list = document.getElementById('final-list'); const winner = calculateVerdict(); list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; }
 
     async function renderSearchSlide() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
         section.className = "main-slide next";
-        
-        const historyHTML = RESEARCH_HISTORY.length > 0 
-            ? `<div class="history-row">${RESEARCH_HISTORY.map(t => `<div class="history-pill" onclick="triggerSearch('${t}')">↺ ${t}</div>`).join('')}</div>` 
-            : '';
-
+        if (ENGINE_STATE.currentDomain === 'research' && slideElements.length <= 1) section.className = "main-slide active";
+        const historyHTML = RESEARCH_HISTORY.length > 0 ? `<div class="history-row">${RESEARCH_HISTORY.map(t => `<div class="history-pill" onclick="triggerSearch('${t}')">↺ ${t}</div>`).join('')}</div>` : '';
         let trendingChips = `<div class="spark-chip">Loading Trends...</div>`;
-        try {
-            const trends = await WIKI_ENGINE.getTrending();
-            trendingChips = trends.map(t => `<div class="spark-chip" onclick="triggerSearch('${t}')">🔥 ${t}</div>`).join('');
-        } catch(e) {}
-
-        section.innerHTML = `
-        <div class="slide-header"><span class="header-title">RESEARCH ENGINE</span></div>
-        <div class="lobby-container">
-            <h1>TOPIC?</h1>
-            <div class="search-wrapper">
-                <input type="text" id="search-input" placeholder="e.g. AI, Stoicism...">
-                <button class="voice-inject" onclick="startQuickVoice(this)"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
-            </div>
-            ${historyHTML}
-            <div class="chip-container" id="trend-box">${trendingChips}</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
-                <button class="btn" style="background:#222; border-color:#444;" onclick="surpriseMe()">🎲 RANDOM</button>
-                <button class="btn btn-auto" onclick="executeSearch()">SEARCH &rarr;</button>
-            </div>
-        </div>`;
-        container.appendChild(section); slideElements.push(section); goToSlide(1);
+        try { const trends = await WIKI_ENGINE.getTrending(); trendingChips = trends.map(t => `<div class="spark-chip" onclick="triggerSearch('${t}')">🔥 ${t}</div>`).join(''); } catch(e) {}
+        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH ENGINE</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. AI, Stoicism..."><button class="voice-inject" onclick="startQuickVoice(this)"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button></div>${historyHTML}<div class="chip-container" id="trend-box">${trendingChips}</div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"><button class="btn" style="background:#222; border-color:#444;" onclick="surpriseMe()">🎲 RANDOM</button><button class="btn btn-auto" onclick="executeSearch()">SEARCH &rarr;</button></div></div>`;
+        if (ENGINE_STATE.currentDomain === 'research' && slideElements.length <= 1) { if(container.children[0]) container.replaceChild(section, container.children[0]); else container.appendChild(section); slideElements = [section]; } else { container.appendChild(section); slideElements.push(section); goToSlide(1); }
     }
 
     function triggerSearch(term) { document.getElementById('search-input').value = term; executeSearch(); }
@@ -624,21 +560,18 @@
             const context = await WIKI_ENGINE.getContext(title);
             ENGINE_STATE.researchPath = []; ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
             buildResearchDeck(context);
-        } catch(e) { showToast("CONNECTION ERROR"); }
+        } catch(e) { console.error(e); showToast("CONNECTION ERROR", "error"); }
     }
 
     function buildResearchDeck(context) {
         const container = document.getElementById('master-container');
-        while(container.children.length > 2) container.removeChild(container.lastChild);
-        slideElements = slideElements.slice(0, 2);
+        if (ENGINE_STATE.currentDomain === 'research') { while(container.children.length > (slideElements.length > 1 ? 2 : 1)) container.removeChild(container.lastChild); slideElements = slideElements.slice(0, (slideElements.length > 1 ? 2 : 1)); }
+        else { while(container.children.length > 2) container.removeChild(container.lastChild); slideElements = slideElements.slice(0, 2); }
         const bookQuery = buildBookQuery();
         const bookLink = bookQuery ? `https://www.amazon.in/s?k=${encodeURIComponent(bookQuery)}&i=stripbooks&tag=${AMZN_TAG}` : null;
-        
         const sumSlide = document.createElement('section');
         sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
-        sumSlide.innerHTML = `
-            <div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
-            <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section">${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}<a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a></div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${(context.links || []).slice(0, 5).map((link, i) => `<div class="sub-slide opt-hidden" data-val="${safe(link.name)}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH</div><h1>${link.name}</h1><div class="nav-hint"><span>TAP TO EXPLORE</span></div></div>`).join('')}</div>`;
+        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section">${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}<a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a></div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${(context.links || []).slice(0, 5).map((link, i) => `<div class="sub-slide opt-hidden" data-val="${safe(link.name)}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH</div><h1>${link.name}</h1><div class="nav-hint"><span>TAP TO EXPLORE</span></div></div>`).join('')}</div>`;
         container.appendChild(sumSlide); slideElements.push(sumSlide); goToSlide(slideElements.length - 1);
     }
 
@@ -667,8 +600,8 @@
                 else if(mode === "research" && active && active.classList.contains('static')) { const firstLink = view.querySelector('.sub-slide:nth-child(2)'); if(firstLink) { active.classList.add('opt-hidden'); active.classList.remove('static'); firstLink.classList.remove('opt-hidden'); firstLink.classList.add('opt-active'); } else showToast("NO LINKS"); }
                 else { const val = active ? active.dataset.val : null; if(val) { ENGINE_STATE.items_detected[val] = true; } goToSlide(currentIdx + 1); }
             } else if (dy > 80) { // DOWN -> BACK
-                if (mode === "trivia-context") { goToSlide(currentIdx + 1); return; } // NEXT Q
-                if (ENGINE_STATE.triviaMode) { goToSlide(currentIdx + 1); return; } // Skip
+                if (mode === "trivia-context") { goToSlide(currentIdx + 1); return; }
+                if (ENGINE_STATE.triviaMode) { goToSlide(currentIdx + 1); return; }
                 if(mode === "research" && ENGINE_STATE.researchPath.length > 1) { ENGINE_STATE.researchPath.pop(); WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c)); } else goToSlide(currentIdx - 1);
             } else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
