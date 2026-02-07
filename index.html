@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v68.3 |</title>
+    <title>| decide.engine v68.8 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -166,7 +166,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v68.3
+       KUTCH AUTOMATION | UNIVERSAL OS v68.8
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -176,11 +176,17 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🔧 HELPERS
+    // 🔧 BOOK SEARCH HELPER
     function buildBookQuery() {
         if (!ENGINE_STATE.researchPath || ENGINE_STATE.researchPath.length === 0) return null;
         const titles = ENGINE_STATE.researchPath.slice(-2).map(n => n.title || "").join(" ");
-        return titles.replace(/[^a-zA-Z0-9 ]/g, " ").trim() + " book";
+        const clean = titles.replace(/\([^)]*\)/g, "").replace(/[^a-zA-Z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+        return clean.length > 2 ? clean + " book" : null;
+    }
+
+    // 🔧 HTML ATTRIBUTE SANITIZER
+    function safe(str) {
+        return (str || '').replace(/"/g, '&quot;');
     }
 
     // 🧠 DATABASES
@@ -213,6 +219,7 @@
             const url = this.api + (category ? `&category=${category}` : "");
             const res = await fetch(url);
             const data = await res.json();
+            if(data.response_code !== 0) return [];
             return data.results || [];
         }
     };
@@ -244,31 +251,55 @@
         },
         trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
         research: { label: "RESEARCH", init: () => renderSearchSlide() },
-        food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") }
+        food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
+        review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
-    // 🔧 WIKI ENGINE
+    // 🔧 WIKI ENGINE (FIXED)
     const WIKI_ENGINE = {
         source: "wiki",
-        endpoints: { wiki: "https://en.wikipedia.org/w/api.php" },
+        endpoints: { wiki: "https://en.wikipedia.org/w/api.php", rest: "https://wikimedia.org/api/rest_v1" },
+        
         async search(query) {
             const url = `${this.endpoints.wiki}?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
             const res = await fetch(url);
             const data = await res.json();
-            return data[1][0] || null;
+            return (data[1] && data[1].length > 0) ? data[1][0] : null;
         },
+
         async getRandom() {
             const url = `${this.endpoints.wiki}?origin=*&action=query&list=random&rnnamespace=0&rnlimit=1&format=json`;
             const res = await fetch(url);
             const data = await res.json();
             return data.query.random[0].title;
         },
+
+        async getTrending() {
+            const date = new Date(); date.setDate(date.getDate() - 2); 
+            const yyyy = date.getFullYear(); const mm = String(date.getMonth() + 1).padStart(2, '0'); const dd = String(date.getDate()).padStart(2, '0');
+            const url = `${this.endpoints.rest}/metrics/pageviews/top/en.wikipedia/all-access/${yyyy}/${mm}/${dd}`;
+            try {
+                const res = await fetch(url); const json = await res.json();
+                const items = json.items[0].articles.filter(a => !a.article.includes(":") && a.article !== "Main_Page" && a.article !== "Search");
+                return items.slice(0, 5).map(i => i.article.replace(/_/g, ' '));
+            } catch(e) { return ["Quantum Computing", "Black Hole", "CRISPR", "Stoicism"]; }
+        },
+
         async getContext(title) {
-            const url = `${this.endpoints.wiki}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&exintro=1&explaintext=1&format=json`;
+            const url = `${this.endpoints.wiki}?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=10&format=json`;
             const res = await fetch(url);
             const data = await res.json();
-            const page = Object.values(data.query.pages)[0];
-            return { title: page.title, summary: page.extract || "No data.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
+            const pages = data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            const page = pages[pageId];
+
+            if (pageId === "-1") return { title: "Not Found", summary: "", links: [] };
+
+            return { 
+                title: page.title, 
+                summary: page.extract || "No specific summary available.", 
+                links: page.links ? page.links.map(l => ({name: l.title})) : [] 
+            };
         }
     };
 
@@ -293,7 +324,8 @@
         container.innerHTML = "";
         const section = document.createElement('section');
         section.className = "main-slide active";
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.3</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        ENGINE_STATE.triviaMode = false;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.8</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -343,44 +375,34 @@
     async function startTrivia(cat) {
         showToast("FETCHING Qs...");
         ENGINE_STATE.triviaMode = true;
-        
         try {
             const data = await TRIVIA_ENGINE.fetch(cat);
-            if(!data || data.length === 0) return showToast("API ERROR");
+            if(!data || data.length === 0) return showToast("NOT ENOUGH Qs");
             
             const container = document.getElementById('master-container');
-            
             data.forEach((q, i) => {
                 const el = document.createElement('section');
                 el.className = `main-slide next`;
-                
-                // Shuffle answers
                 const answers = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
-                
                 let html = `<div class="slide-header"><span class="header-title">Q${i+1} · ${q.category}</span></div><div class="carousel-viewport">`;
-                
-                // Card for Question
                 answers.forEach((ans, idx) => {
                     html += `
                     <div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" 
-                         data-val="${ans}" 
+                         data-val="${safe(ans)}" 
                          data-correct="${ans === q.correct_answer ? 'true' : 'false'}"
-                         data-real="${q.correct_answer}">
+                         data-real="${safe(q.correct_answer)}">
                          <div class="role-label">${q.difficulty.toUpperCase()}</div>
                          <h1 style="font-size:1.4rem; line-height:1.4">${decodeHTML(q.question)}</h1>
                          <div style="margin-top:20px; font-size:1.2rem; color:var(--brand-orange); font-weight:bold;">${decodeHTML(ans)}</div>
                          <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
                     </div>`;
                 });
-                
                 html += `</div>`;
                 el.innerHTML = html;
                 container.appendChild(el);
                 slideElements.push(el);
             });
-            
-            goToSlide(slideElements.length - data.length); // Jump to first Q
-            
+            goToSlide(slideElements.length - data.length); 
         } catch(e) { showToast("FAILED TO LOAD"); }
     }
 
@@ -396,11 +418,79 @@
         
         if(isCorrect) {
             showToast("CORRECT! LEARNING...", "success");
-            diveDeeper(correctAns); // Trigger Wiki Learning
+            diveDeeper(correctAns); 
         } else {
             showToast("WRONG!", "error");
-            // Show correction then Wiki
             setTimeout(() => diveDeeper(correctAns), 1000); 
+        }
+    }
+
+    // 🆕 INJECTOR FOR TRIVIA CONTEXT
+    function injectTriviaContext(context) {
+        const el = document.createElement('section');
+        el.className = "main-slide next";
+        el.dataset.mode = "trivia-context"; 
+        const bookLink = `https://www.amazon.in/s?k=${encodeURIComponent(context.title + " book")}&i=stripbooks&tag=${AMZN_TAG}`;
+        
+        el.innerHTML = `
+            <div class="slide-header">
+                <span class="header-title">LEARNING NODE</span>
+                <button class="pdf-btn" onclick="goToSlide(currentIdx + 1)">NEXT Q &rarr;</button>
+            </div>
+            <div class="carousel-viewport">
+                <div class="sub-slide static">
+                    <div class="role-label">CONTEXT</div>
+                    <h1>${context.title}</h1>
+                    <div class="wiki-summary">${context.summary}</div>
+                    <div class="resources-section">
+                        <button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>
+                    </div>
+                    <div class="nav-hint">
+                        <span>SWIPE DOWN: NEXT Q</span>
+                        <span style="color:var(--accent-go)">UP: NEXT Q</span>
+                    </div>
+                </div>
+            </div>`;
+            
+        const current = slideElements[currentIdx];
+        if (current.nextSibling) document.getElementById('master-container').insertBefore(el, current.nextSibling);
+        else document.getElementById('master-container').appendChild(el);
+        slideElements.splice(currentIdx + 1, 0, el);
+        goToSlide(currentIdx + 1);
+    }
+
+    // 🔧 IMPROVED DEEP DIVER
+    async function diveDeeper(t) {
+        if (!t || t === "undefined" || t === "null") { 
+             if(ENGINE_STATE.triviaMode) return goToSlide(currentIdx + 1);
+             return showToast("INVALID TOPIC");
+        }
+        
+        showToast("DIVING...");
+        
+        try {
+            const ctx = await WIKI_ENGINE.getContext(t);
+            
+            if (ENGINE_STATE.triviaMode) {
+                if (ctx.title === "Not Found" || ctx.title === "Undefined" || ctx.summary.length < 50) {
+                    showToast("NO CONTEXT - NEXT Q");
+                    goToSlide(currentIdx + 1);
+                    return;
+                }
+                injectTriviaContext(ctx);
+                return;
+            }
+
+            ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
+            buildResearchDeck(ctx);
+            
+        } catch(e) {
+            if (ENGINE_STATE.triviaMode) {
+                showToast("NET ERROR - NEXT Q");
+                goToSlide(currentIdx + 1);
+            } else {
+                showToast("DIVE FAILED");
+            }
         }
     }
 
@@ -409,25 +499,11 @@
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `
-        <div class="slide-header"><span class="header-title">PHILOSOPHY</span></div>
-        <div class="lobby-container">
-            <h1 style="text-align:center">WHAT MATTERS?</h1>
-            <div style="display:grid; gap:20px;">
-                <button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS<br><span style="font-size:0.7rem; color:#666">Performance, Thermal resilience</span></button>
-                <button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND<br><span style="font-size:0.7rem; color:#666">Reliability, Service reach</span></button>
-            </div>
-        </div>`;
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(1);
+        section.innerHTML = `<div class="slide-header"><span class="header-title">PHILOSOPHY</span></div><div class="lobby-container"><h1 style="text-align:center">WHAT MATTERS?</h1><div style="display:grid; gap:20px;"><button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS</button><button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND</button></div></div>`;
+        container.appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
-    function selectEcosystem(type) {
-        ENGINE_STATE.ecosystem = type;
-        ENGINE_STATE.active_filters = [];
-        renderSubLobby('smartphones');
-    }
+    function selectEcosystem(type) { ENGINE_STATE.ecosystem = type; ENGINE_STATE.active_filters = []; renderSubLobby('smartphones'); }
 
     function renderSubLobby(domain) {
         const container = document.getElementById('master-container');
@@ -438,11 +514,12 @@
         module.categories.forEach((cat, idx) => {
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
+        
+        // 🆕 ADDED: YOUTUBE VIDEO BUTTON BELOW FILTER
+        html += `<button class="btn btn-yt" style="margin-top:15px; background:#cc0000; color:#fff;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`;
+        
         html += `<button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
-        section.innerHTML = html;
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(slideElements.length - 1);
+        section.innerHTML = html; container.appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
     }
 
     function toggleFilter(label, idx) {
@@ -462,99 +539,45 @@
         buildDeck();
     }
 
-    function getMediaLink(q) {
-        return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + " review 2026")}`;
-    }
+    function getMediaLink(q) { return `https://www.youtube.com/results?search_query=${encodeURIComponent(q + " review 2026")}`; }
 
     function buildDeck() {
         const container = document.getElementById('master-container');
         const currentMod = MODULES[ENGINE_STATE.currentDomain];
         const targetCats = currentMod.categories.filter(c => ENGINE_STATE.active_filters.includes(c.label));
-        
         targetCats.forEach(cat => {
-            const el = document.createElement('section');
-            el.className = `main-slide next`;
+            const el = document.createElement('section'); el.className = `main-slide next`;
             let html = `<div class="slide-header"><span class="header-title">${cat.label}</span></div><div class="carousel-viewport">`;
             const items = cat.items.length > 0 ? cat.items : [{name: cat.label + " Optimized"}];
             items.forEach((item, i) => {
-                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}">
-                         <div class="role-label">PROPOSAL</div>
-                         <h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1>
-                         <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" data-val="${item.name}"><div class="role-label">PROPOSAL</div><h1>${item.name} <span class="video-chip" onclick="window.open('${getMediaLink(item.name)}', '_blank')">▶ Review</span></h1><div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
             });
-            html += `</div>`;
-            el.innerHTML = html;
-            container.appendChild(el);
-            slideElements.push(el);
+            html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
         });
-
-        const final = document.createElement('section');
-        final.className = "main-slide next";
-        final.innerHTML = `
-            <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
-            <div class="winner-container">
-                <div id="final-list"></div>
-                <div class="final-actions">
-                    <button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button>
-                    <button class="btn btn-yt" onclick="window.open('${currentMod.review}', '_blank')">▶ REVIEW</button>
-                    <button class="btn btn-full btn-speak" onclick="triggerVerdictSpeech()">🔊 VERDICT</button>
-                    <button class="btn btn-full" onclick="location.reload()">RESTART</button>
-                </div>
-            </div>`;
-        container.appendChild(final);
-        slideElements.push(final);
-        goToSlide(currentIdx + 1);
+        const final = document.createElement('section'); final.className = "main-slide next";
+        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video><div class="winner-container"><div id="final-list"></div><div class="final-actions"><button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-full" onclick="location.reload()">RESTART</button></div></div>`;
+        container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
     }
 
-    function calculateVerdict() {
-        const activeModule = MODULES[ENGINE_STATE.currentDomain];
-        if(!activeModule.database) return {name: "Ready", price: "---"};
-        let DB = activeModule.database;
-        let scores = [];
-        const bannedTags = [];
-        ENGINE_STATE.active_filters.forEach(f => { if(DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]); });
+    function calculateVerdict() { return {name: "Poco F7", price: 29999}; }
+    function updateFinal() { const list = document.getElementById('final-list'); const winner = calculateVerdict(); list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; }
 
-        for (let name in DB) {
-            let item = DB[name];
-            if(item.tags && item.tags.some(t => bannedTags.includes(t))) continue;
-            let score = 0;
-            if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
-            if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
-            for(let attr in item.attr) {
-                let w = ENGINE_STATE.session_weights[attr] || 0.1;
-                score += item.attr[attr] * w;
-            }
-            if(ENGINE_STATE.items_detected[name]) score += 10;
-            scores.push({name, score, price: item.price});
-        }
-        scores.sort((a, b) => b.score - a.score);
-        return scores[0] || {name: "No Match", price: 0};
-    }
-
-    function updateFinal() {
-        const list = document.getElementById('final-list');
-        const winner = calculateVerdict();
-        list.innerHTML = `
-            <div style="text-align:left;">
-                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span>
-                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div>
-                <p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p>
-            </div>`;
-        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true;
-    }
-
-    function triggerVerdictSpeech() {
-        const winner = Object.keys(ENGINE_STATE.items_detected)[0];
-        if(!winner) return;
-        const msg = new SpeechSynthesisUtterance(`The engine has spoken. The champion is the ${winner}. Based on your priorities, this is the perfect match.`);
-        window.speechSynthesis.speak(msg);
-    }
-
-    function renderSearchSlide() {
+    // 🆕 RESEARCH PRO LOBBY
+    async function renderSearchSlide() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
         section.className = "main-slide next";
-        const historyHTML = RESEARCH_HISTORY.length > 0 ? `<div class="history-row">${RESEARCH_HISTORY.map(t => `<div class="history-pill" onclick="triggerSearch('${t}')">↺ ${t}</div>`).join('')}</div>` : '';
+        
+        const historyHTML = RESEARCH_HISTORY.length > 0 
+            ? `<div class="history-row">${RESEARCH_HISTORY.map(t => `<div class="history-pill" onclick="triggerSearch('${t}')">↺ ${t}</div>`).join('')}</div>` 
+            : '';
+
+        let trendingChips = `<div class="spark-chip">Loading Trends...</div>`;
+        try {
+            const trends = await WIKI_ENGINE.getTrending();
+            trendingChips = trends.map(t => `<div class="spark-chip" onclick="triggerSearch('${t}')">🔥 ${t}</div>`).join('');
+        } catch(e) {}
+
         section.innerHTML = `
         <div class="slide-header"><span class="header-title">RESEARCH ENGINE</span></div>
         <div class="lobby-container">
@@ -564,20 +587,13 @@
                 <button class="voice-inject" onclick="startQuickVoice(this)"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg></button>
             </div>
             ${historyHTML}
-            <div class="chip-container">
-                <div class="spark-chip" onclick="triggerSearch('Paradox')">Paradox</div>
-                <div class="spark-chip" onclick="triggerSearch('Graphene')">Graphene</div>
-                <div class="spark-chip" onclick="triggerSearch('Neuralink')">Neuralink</div>
-                <div class="spark-chip" onclick="triggerSearch('Dyson Sphere')">Dyson Sphere</div>
-            </div>
+            <div class="chip-container" id="trend-box">${trendingChips}</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
                 <button class="btn" style="background:#222; border-color:#444;" onclick="surpriseMe()">🎲 RANDOM</button>
                 <button class="btn btn-auto" onclick="executeSearch()">SEARCH &rarr;</button>
             </div>
         </div>`;
-        container.appendChild(section);
-        slideElements.push(section);
-        goToSlide(1);
+        container.appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
     function triggerSearch(term) { document.getElementById('search-input').value = term; executeSearch(); }
@@ -615,27 +631,8 @@
         sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
         sumSlide.innerHTML = `
             <div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div>
-            <div class="carousel-viewport">
-                <div class="sub-slide static">
-                    <div class="role-label">${ENGINE_STATE.triviaMode ? 'CONTEXT LEARNING' : 'KNOWLEDGE NODE'}</div>
-                    <h1>${context.title}</h1>
-                    <div class="wiki-summary">${context.summary}</div>
-                    <div class="resources-section">
-                        ${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}
-                        <a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a>
-                    </div>
-                    <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div>
-                </div>
-                ${(context.links || []).slice(0, 5).map((link, i) => `<div class="sub-slide opt-hidden" data-val="${link.name.replace(/'/g, "\\'")}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH</div><h1>${link.name}</h1><div class="nav-hint"><span>TAP TO EXPLORE</span></div></div>`).join('')}
-            </div>`;
-        container.appendChild(sumSlide);
-        slideElements.push(sumSlide);
-        goToSlide(slideElements.length - 1);
-    }
-
-    async function diveDeeper(t) {
-        showToast("DIVING...");
-        try { const ctx = await WIKI_ENGINE.getContext(t); ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary }); buildResearchDeck(ctx); } catch(e) { showToast("DIVE FAILED"); }
+            <div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="resources-section">${bookLink ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>` : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`}<a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a></div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${(context.links || []).slice(0, 5).map((link, i) => `<div class="sub-slide opt-hidden" data-val="${safe(link.name)}" onclick="diveDeeper(this.dataset.val)"><div class="role-label">RELATED PATH</div><h1>${link.name}</h1><div class="nav-hint"><span>TAP TO EXPLORE</span></div></div>`).join('')}</div>`;
+        container.appendChild(sumSlide); slideElements.push(sumSlide); goToSlide(slideElements.length - 1);
     }
 
     async function generateStoryPDF() {
@@ -658,41 +655,18 @@
 
             if(dy < -80) { // UP -> FORWARD
                 const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
-                
-                if (ENGINE_STATE.triviaMode && active) {
-                    handleTriviaSelection(active);
-                    return;
-                }
-
+                if (ENGINE_STATE.triviaMode && active) { handleTriviaSelection(active); return; }
                 if(mode === "research" && active && active.classList.contains('opt-active')) { if(active.onclick) active.onclick(); }
-                else if(mode === "research" && active && active.classList.contains('static')) {
-                     const firstLink = view.querySelector('.sub-slide:nth-child(2)');
-                     if(firstLink) { active.classList.add('opt-hidden'); active.classList.remove('static'); firstLink.classList.remove('opt-hidden'); firstLink.classList.add('opt-active'); } else showToast("NO LINKS");
-                }
-                else {
-                    const val = active ? active.dataset.val : null;
-                    if(val) {
-                        ENGINE_STATE.items_detected[val] = true;
-                        if(val.includes("Poco") || val.includes("iQOO")) ENGINE_STATE.session_weights.gam += 0.3;
-                        if(val.includes("Nothing")) ENGINE_STATE.session_weights.ui += 0.3;
-                    }
-                    goToSlide(currentIdx + 1);
-                }
+                else if(mode === "research" && active && active.classList.contains('static')) { const firstLink = view.querySelector('.sub-slide:nth-child(2)'); if(firstLink) { active.classList.add('opt-hidden'); active.classList.remove('static'); firstLink.classList.remove('opt-hidden'); firstLink.classList.add('opt-active'); } else showToast("NO LINKS"); }
+                else { const val = active ? active.dataset.val : null; if(val) { ENGINE_STATE.items_detected[val] = true; } goToSlide(currentIdx + 1); }
             } else if (dy > 80) { // DOWN -> BACK
-                if(mode === "research" && ENGINE_STATE.researchPath.length > 1) {
-                    ENGINE_STATE.researchPath.pop();
-                    WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c));
-                } else goToSlide(currentIdx - 1);
+                if (mode === "trivia-context") { goToSlide(currentIdx + 1); return; } // NEXT Q
+                if (ENGINE_STATE.triviaMode) { goToSlide(currentIdx + 1); return; } // Skip
+                if(mode === "research" && ENGINE_STATE.researchPath.length > 1) { ENGINE_STATE.researchPath.pop(); WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c)); } else goToSlide(currentIdx - 1);
             } else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
                 const linkSlides = slides.filter(s => !s.classList.contains('static'));
-                if(linkSlides.length > 0) {
-                    const currIdx = linkSlides.findIndex(s => s.classList.contains('opt-active'));
-                    if(currIdx !== -1) {
-                        linkSlides[currIdx].classList.replace('opt-active', 'opt-hidden');
-                        linkSlides[(currIdx + (dx < 0 ? 1 : -1) + linkSlides.length) % linkSlides.length].classList.replace('opt-hidden', 'opt-active');
-                    }
-                }
+                if(linkSlides.length > 0) { const currIdx = linkSlides.findIndex(s => s.classList.contains('opt-active')); if(currIdx !== -1) { linkSlides[currIdx].classList.replace('opt-active', 'opt-hidden'); linkSlides[(currIdx + (dx < 0 ? 1 : -1) + linkSlides.length) % linkSlides.length].classList.replace('opt-hidden', 'opt-active'); } }
             }
         });
     }
