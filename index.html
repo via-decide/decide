@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v69.2 |</title>
+    <title>| decide.engine v69.5 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -181,7 +181,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v69.2
+       KUTCH AUTOMATION | UNIVERSAL OS v69.5
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -191,7 +191,7 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🏆 CURATED PATHS (Expanded to 5 Nodes per topic)
+    // 🏆 CURATED PATHS (5-Node Deep Dives)
     const CURATED_PATHS = {
         "ER = EPR": {
             title: "ER = EPR",
@@ -214,6 +214,17 @@
                 { name: "Selection", summary: "How the universe 'chooses' certain molecules to persist over time." },
                 { name: "Molecular Complexity", summary: "The raw math of counting bonds and atomic connections." }
             ]
+        },
+        "THE GREAT FILTER": {
+            title: "The Great Filter",
+            summary: "The theory that life hits a cosmic 'wall' that prevents it from becoming interstellar. Are we the first to survive, or is our end near?",
+            links: [
+                { name: "Fermi Paradox", summary: "The mathematical contradiction: If life is likely, where is everyone?" },
+                { name: "Kardashev Scale", summary: "Type II civilizations build Dyson Spheres. We should see their heat, but we see nothing." },
+                { name: "Abiogenesis", summary: "The 'First Wall'. The nearly impossible jump from chemistry to biological life." },
+                { name: "Kessler Syndrome", summary: "The 'Human Wall'. We trap ourselves on Earth with a cloud of space debris." },
+                { name: "Von Neumann Probes", summary: "Self-replicating scouts that could colonize the galaxy in a blink. Their absence is deafening." }
+            ]
         }
     };
 
@@ -226,7 +237,7 @@
 
     function safe(str) { return (str || '').replace(/"/g, '&quot;'); }
 
-    // 🧠 DATABASES (Restored Full)
+    // 🧠 DATABASES (Full)
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -330,7 +341,10 @@
             const pageId = Object.keys(pages)[0];
             if (pageId === "-1") return { title: "Not Found", summary: "", links: [] };
             const page = pages[pageId];
-            return { title: page.title, summary: page.extract || "No specific summary available.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
+            
+            // Map Wiki links to our object structure
+            const mappedLinks = page.links ? page.links.map(l => ({name: l.title})) : [];
+            return { title: page.title, summary: page.extract || "No specific summary available.", links: mappedLinks };
         }
     };
 
@@ -366,7 +380,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         ENGINE_STATE.triviaMode = false;
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v69.2</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v69.5</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -468,7 +482,6 @@
         }
     }
 
-    // 🔬 RESEARCH / TRIVIA LOGIC
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -587,21 +600,15 @@
         const bookQuery = buildBookQuery();
         const bookLink = bookQuery ? `https://www.amazon.in/s?k=${encodeURIComponent(bookQuery)}&i=stripbooks&tag=${AMZN_TAG}` : null;
         
-        // 🛠️ 5-NODE GUARANTEE LOGIC
-        // If links < 5, fill with smart drifts
+        // 🛠️ 5-NODE GUARANTEE (Smart Fill)
         let links = context.links || [];
         if (links.length < 5) {
-            const drifts = [
-                {name: "Quantum Mechanics"}, {name: "Philosophy of Science"}, 
-                {name: "Artificial Intelligence"}, {name: "Cognitive Science"}, 
-                {name: "Future of Humanity"}
-            ];
+            const drifts = [{name: "Quantum Mechanics"}, {name: "Philosophy of Science"}, {name: "Artificial Intelligence"}, {name: "Cognitive Science"}, {name: "Future of Humanity"}];
             while (links.length < 5) {
                 const r = drifts[Math.floor(Math.random() * drifts.length)];
                 if(!links.some(l => l.name === r.name)) links.push(r);
             }
         }
-        // Strict slice to 5
         links = links.slice(0, 5);
 
         const sumSlide = document.createElement('section');
@@ -610,13 +617,29 @@
         container.appendChild(sumSlide); slideElements.push(sumSlide); goToSlide(slideElements.length - 1);
     }
 
+    // 🛡️ UNIVERSAL JSON FIXER
     async function generateStoryPDF() {
         const sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
-        fetch(BACKEND_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ session_id: sessionID, syllabus: JSON.stringify(ENGINE_STATE.researchPath) })});
+        
+        // 1. Auto-Pad Path to ensure 5 Nodes
+        let path = [...ENGINE_STATE.researchPath];
+        while(path.length < 5) {
+            path.push({
+                title: `Exploration Node ${path.length + 1}`,
+                summary: "Further research required on this sub-topic. Use NotebookLM to expand."
+            });
+        }
+
+        // 2. Backend Sync
+        fetch(BACKEND_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ session_id: sessionID, syllabus: JSON.stringify(path) })});
+        
+        // 3. PDF Gen (Uses original path for cleaner PDF)
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
         ENGINE_STATE.researchPath.forEach((item, i) => { if(i>0) doc.addPage(); doc.text(item.title, 20, 20); doc.text(doc.splitTextToSize(item.summary, 170), 20, 40); doc.text(`Search ID: ${sessionID}`, 20, 280); });
         doc.save(`Research_${sessionID}.pdf`);
-        const payload = { session_id: sessionID, syllabus: ENGINE_STATE.researchPath };
+        
+        // 4. Clipboard Copy (Uses Padded Path for Media Forge Validity)
+        const payload = { session_id: sessionID, syllabus: path };
         navigator.clipboard.writeText(JSON.stringify(payload, null, 2)).then(() => showToast("PDF SAVED & COPIED")).catch(() => showToast("PDF SAVED"));
     }
 
