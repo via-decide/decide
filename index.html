@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v67.9 |</title>
+    <title>| decide.engine v68.1 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -91,7 +91,7 @@
             background: #232f3e; color: #FF9900; border: 1px solid #FF9900; 
             padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; 
             margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
+            text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; cursor: pointer;
         }
         .pdf-btn { background: #222; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
 
@@ -122,7 +122,6 @@
         .btn-yt { background: #cc0000; color: #fff; border: none; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-speak { background: #333; color: #aaa; border: 1px solid #444; }
         
-        /* 🟢 SCROLLABLE LOBBY */
         .lobby-container { 
             display: flex; flex-direction: column; gap: 15px; padding: 30px; height: 100%; 
             overflow-y: auto; justify-content: flex-start; 
@@ -155,20 +154,32 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v67.9
+       KUTCH AUTOMATION | UNIVERSAL OS v68.1
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
-    
-    // 🟢 UPDATED SMARTPHONE LINK (From Prompt)
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
-    
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
     const AMZN_TAG = "decideos-21";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🧠 1. DATABASES (RESTORED 8-FACTOR)
+    // 🔧 BOOK SEARCH HELPER
+    function buildBookQuery() {
+        if (!ENGINE_STATE.researchPath || ENGINE_STATE.researchPath.length === 0) return null;
+        const titles = ENGINE_STATE.researchPath
+            .slice(-2)
+            .map(n => n.title || "")
+            .join(" ");
+        const clean = titles
+            .replace(/\([^)]*\)/g, "")
+            .replace(/[^a-zA-Z0-9 ]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        return clean.length > 2 ? clean + " book" : null;
+    }
+
+    // 🧠 DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -249,7 +260,7 @@
         container.innerHTML = "";
         const section = document.createElement('section');
         section.className = "main-slide active";
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v67.9</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.1</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -361,7 +372,6 @@
         const final = document.createElement('section');
         final.className = "main-slide next";
         
-        // 🟢 RESTORED UI GRID (Like Image 1000205310.jpg)
         final.innerHTML = `
             <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
             <div class="winner-container">
@@ -409,7 +419,6 @@
         const list = document.getElementById('final-list');
         const winner = calculateVerdict();
         
-        // 🟢 UI MATCH: "THE CHAMPION" in green, white product name
         list.innerHTML = `
             <div style="text-align:left;">
                 <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span>
@@ -437,45 +446,87 @@
         goToSlide(1);
     }
 
+    // 🔧 PATCH 5: SAFE API EXECUTION + NAV FIX
     async function executeSearch() {
         const q = document.getElementById('search-input').value;
         if(!q) return showToast("ENTER TOPIC");
         showToast("EXTRACTING...");
-        const title = await WIKI_ENGINE.search(q);
-        if(!title) return showToast("NOT FOUND");
-        const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath = [{ title: context.title, summary: context.summary }];
-        buildResearchDeck(context);
+        
+        try {
+            const title = await WIKI_ENGINE.search(q);
+            if(!title) return showToast("NOT FOUND");
+            
+            const context = await WIKI_ENGINE.getContext(title);
+            
+            ENGINE_STATE.researchPath = []; 
+            ENGINE_STATE.researchPath.push({ title: context.title, summary: context.summary });
+            
+            buildResearchDeck(context);
+        } catch(e) {
+            showToast("CONNECTION ERROR");
+        }
     }
 
-    function buildResearchDeck(ctx) {
+    function buildResearchDeck(context) {
         const container = document.getElementById('master-container');
         while(container.children.length > 2) container.removeChild(container.lastChild);
         slideElements = slideElements.slice(0, 2);
+        
+        const bookQuery = buildBookQuery();
+        const bookLink = bookQuery
+            ? `https://www.amazon.in/s?k=${encodeURIComponent(bookQuery)}&i=stripbooks&tag=${AMZN_TAG}`
+            : null;
+        
         const sumSlide = document.createElement('section');
-        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research";
-        sumSlide.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><h1>${ctx.title}</h1><div class="wiki-summary">${ctx.summary}</div><div class="nav-hint"><span>DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div></div>`;
+        sumSlide.className = "main-slide next"; sumSlide.dataset.mode = "research"; 
+        sumSlide.innerHTML = `
+            <div class="slide-header">
+                <span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span>
+                <button class="pdf-btn" onclick="generateStoryPDF()">SAVE JOURNEY 💾</button>
+            </div>
+            <div class="carousel-viewport">
+                <div class="sub-slide static">
+                    <div class="role-label">KNOWLEDGE NODE</div>
+                    <h1>${context.title}</h1>
+                    <div class="wiki-summary">${context.summary}</div>
+                    
+                    <div class="resources-section">
+                        ${bookLink 
+                          ? `<button class="book-btn" onclick="window.open('${bookLink}', '_blank')">📚 Find Books</button>`
+                          : `<button class="book-btn" style="opacity:0.4" disabled>📚 Books Unavailable</button>`
+                        }
+                        <a href="${SUPPORT_URL}" target="_blank" class="support-link" style="display:block; text-align:center; color:#666; font-size:0.7rem; margin-top:5px; text-decoration:none;">Fuel the Engine ⚡</a>
+                    </div>
+                    
+                    <div class="nav-hint">
+                        <span>SWIPE DOWN: BACK</span>
+                        <span style="color:var(--accent-go)">UP: DIG DEEPER</span>
+                    </div>
+                </div>
+                ${(context.links || []).slice(0, 5).map((link, i) => `
+                    <div class="sub-slide opt-hidden" data-val="${link.name}" onclick="diveDeeper(this.dataset.val)">
+                        <div class="role-label">RELATED PATH</div>
+                        <h1>${link.name}</h1>
+                        <div class="nav-hint"><span>TAP TO EXPLORE</span></div>
+                    </div>
+                `).join('')}
+            </div>`;
         container.appendChild(sumSlide);
         slideElements.push(sumSlide);
-        const linkSlide = document.createElement('section');
-        linkSlide.className = "main-slide next"; linkSlide.dataset.mode = "research";
-        let html = `<div class="slide-header"><span class="header-title">RELATED</span></div><div class="carousel-viewport">`;
-        if(ctx.links.length > 0) {
-            ctx.links.slice(0,5).forEach((l, i) => {
-                html += `<div class="sub-slide ${i===0?'opt-active':'opt-hidden'}" onclick="diveDeeper('${l.name.replace(/'/g, "\\'")}')"><h1>${l.name}</h1><div class="nav-hint"><span>NEXT</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
-            });
-        } else { html += `<div class="sub-slide opt-active"><h1>No links.</h1></div>`; }
-        html += `</div>`;
-        linkSlide.innerHTML = html;
-        container.appendChild(linkSlide);
-        slideElements.push(linkSlide);
-        goToSlide(2);
+        
+        // 🚨 CRITICAL FIX: NAVIGATE TO RESULT
+        goToSlide(slideElements.length - 1);
     }
 
     async function diveDeeper(t) {
-        const ctx = await WIKI_ENGINE.getContext(t);
-        ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
-        buildResearchDeck(ctx);
+        showToast("DIVING...");
+        try {
+            const ctx = await WIKI_ENGINE.getContext(t);
+            ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
+            buildResearchDeck(ctx);
+        } catch(e) {
+            showToast("DIVE FAILED");
+        }
     }
 
     async function generateStoryPDF() {
@@ -505,9 +556,23 @@
 
             if(dy < -80) { // UP -> FORWARD
                 const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
-                const val = active ? active.dataset.val : null;
-                if(mode === "research" && active.onclick) active.onclick();
+                
+                // If in research mode and active slide is a link (opt-active), trigger dive
+                if(mode === "research" && active && active.classList.contains('opt-active')) {
+                    if(active.onclick) active.onclick();
+                }
+                // If in research mode and active slide is static (main content), show links
+                else if(mode === "research" && active && active.classList.contains('static')) {
+                     const firstLink = view.querySelector('.sub-slide:nth-child(2)');
+                     if(firstLink) {
+                         active.classList.add('opt-hidden');
+                         active.classList.remove('static');
+                         firstLink.classList.remove('opt-hidden');
+                         firstLink.classList.add('opt-active');
+                     } else showToast("NO LINKS");
+                }
                 else {
+                    const val = active ? active.dataset.val : null;
                     if(val) {
                         ENGINE_STATE.items_detected[val] = true;
                         if(val.includes("Poco") || val.includes("iQOO")) ENGINE_STATE.session_weights.gam += 0.3;
@@ -522,10 +587,15 @@
                 } else goToSlide(currentIdx - 1);
             } else if(Math.abs(dx) > 60) {
                 const slides = Array.from(view.querySelectorAll('.sub-slide'));
-                const currIdx = slides.findIndex(s => s.classList.contains('opt-active'));
-                if(currIdx === -1) return;
-                slides[currIdx].classList.replace('opt-active', 'opt-hidden');
-                slides[(currIdx + (dx < 0 ? 1 : -1) + slides.length) % slides.length].classList.replace('opt-hidden', 'opt-active');
+                const linkSlides = slides.filter(s => !s.classList.contains('static'));
+                
+                if(linkSlides.length > 0) {
+                    const currIdx = linkSlides.findIndex(s => s.classList.contains('opt-active'));
+                    if(currIdx !== -1) {
+                        linkSlides[currIdx].classList.replace('opt-active', 'opt-hidden');
+                        linkSlides[(currIdx + (dx < 0 ? 1 : -1) + linkSlides.length) % linkSlides.length].classList.replace('opt-hidden', 'opt-active');
+                    }
+                }
             }
         });
     }
