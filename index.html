@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v68.8 |</title>
+    <title>| decide.engine |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -68,6 +68,7 @@
         .winner-container {
             flex-grow: 1; display: flex; flex-direction: column; 
             justify-content: flex-end; padding: 30px; 
+            padding-bottom: 100px; /* 🔧 FIX: Added clearance for Mic Toggle */
             background: linear-gradient(to top, #000 95%, transparent);
         }
 
@@ -166,7 +167,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v68.8
+       KUTCH AUTOMATION | UNIVERSAL OS v68.9
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -325,7 +326,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         ENGINE_STATE.triviaMode = false;
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.8</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.9</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -515,8 +516,10 @@
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
         
-        // 🆕 ADDED: YOUTUBE VIDEO BUTTON BELOW FILTER
-        html += `<button class="btn btn-yt" style="margin-top:15px; background:#cc0000; color:#fff;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`;
+        // 🔧 FIX: ADD VIDEO BUTTON TO FILTER SCREEN
+        if(module.review) {
+            html += `<button class="btn btn-yt" style="margin-top:15px; background:#cc0000; color:#fff;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`;
+        }
         
         html += `<button class="btn btn-auto btn-full" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html; container.appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
@@ -555,7 +558,18 @@
             html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
         });
         const final = document.createElement('section'); final.className = "main-slide next";
-        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video><div class="winner-container"><div id="final-list"></div><div class="final-actions"><button class="btn btn-amazon" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-full" onclick="location.reload()">RESTART</button></div></div>`;
+        
+        // 🔧 FIX: VERTICAL STACK END CARD BUTTONS
+        final.innerHTML = `
+            <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
+            <div class="winner-container">
+                <div id="final-list"></div>
+                <div class="final-actions">
+                    <button class="btn btn-amazon btn-full" onclick="redirect('amazon')">BUY NOW ↗</button>
+                    <button class="btn btn-yt btn-full" onclick="window.open('${currentMod.review}', '_blank')">▶ WATCH REVIEW</button>
+                    <button class="btn btn-full" onclick="location.reload()">RESTART</button>
+                </div>
+            </div>`;
         container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
     }
 
