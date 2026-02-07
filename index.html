@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine |</title>
+    <title>| decide.engine v69.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0a">
@@ -68,7 +68,7 @@
         .winner-container {
             flex-grow: 1; display: flex; flex-direction: column; 
             justify-content: flex-end; padding: 30px; 
-            padding-bottom: 100px; /* 🔧 FIX: Added clearance for Mic Toggle */
+            padding-bottom: 100px; 
             background: linear-gradient(to top, #000 95%, transparent);
         }
 
@@ -167,7 +167,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | UNIVERSAL OS v68.9
+       KUTCH AUTOMATION | UNIVERSAL OS v69.0
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -177,7 +177,6 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🔧 BOOK SEARCH HELPER
     function buildBookQuery() {
         if (!ENGINE_STATE.researchPath || ENGINE_STATE.researchPath.length === 0) return null;
         const titles = ENGINE_STATE.researchPath.slice(-2).map(n => n.title || "").join(" ");
@@ -185,12 +184,8 @@
         return clean.length > 2 ? clean + " book" : null;
     }
 
-    // 🔧 HTML ATTRIBUTE SANITIZER
-    function safe(str) {
-        return (str || '').replace(/"/g, '&quot;');
-    }
+    function safe(str) { return (str || '').replace(/"/g, '&quot;'); }
 
-    // 🧠 DATABASES
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -213,7 +208,6 @@
 
     const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy", "FAST CHARGE": "slow_charge" };
 
-    // 🆕 TRIVIA ENGINE (OpenTDB)
     const TRIVIA_ENGINE = {
         api: "https://opentdb.com/api.php?amount=5&type=multiple",
         async fetch(category = "") {
@@ -225,7 +219,6 @@
         }
     };
 
-    // 🧠 MODULES
     const MODULES = {
         smartphones: { 
             label: "SMARTPHONES", 
@@ -256,7 +249,6 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
-    // 🔧 WIKI ENGINE (FIXED)
     const WIKI_ENGINE = {
         source: "wiki",
         endpoints: { wiki: "https://en.wikipedia.org/w/api.php", rest: "https://wikimedia.org/api/rest_v1" },
@@ -326,7 +318,7 @@
         const section = document.createElement('section');
         section.className = "main-slide active";
         ENGINE_STATE.triviaMode = false;
-        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v68.9</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">DECIDE OS v69.0</span></div><div class="lobby-container"><h1 style="text-align:center">SELECT DOMAIN</h1>`;
         for(let key in MODULES) {
             const isSelected = ENGINE_STATE.currentDomain === key ? "selected" : "";
             html += `<button class="cuisine-btn ${isSelected}" onclick="toggleDomain('${key}', this)">${MODULES[key].label}</button>`;
@@ -352,7 +344,6 @@
         MODULES[ENGINE_STATE.currentDomain].init();
     }
 
-    /* === TRIVIA PIPELINE === */
     function renderTriviaGate() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -376,16 +367,21 @@
     async function startTrivia(cat) {
         showToast("FETCHING Qs...");
         ENGINE_STATE.triviaMode = true;
+        
         try {
             const data = await TRIVIA_ENGINE.fetch(cat);
             if(!data || data.length === 0) return showToast("NOT ENOUGH Qs");
             
             const container = document.getElementById('master-container');
+            
             data.forEach((q, i) => {
                 const el = document.createElement('section');
                 el.className = `main-slide next`;
+                
                 const answers = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
+                
                 let html = `<div class="slide-header"><span class="header-title">Q${i+1} · ${q.category}</span></div><div class="carousel-viewport">`;
+                
                 answers.forEach((ans, idx) => {
                     html += `
                     <div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" 
@@ -398,12 +394,15 @@
                          <div class="nav-hint"><span>SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
                     </div>`;
                 });
+                
                 html += `</div>`;
                 el.innerHTML = html;
                 container.appendChild(el);
                 slideElements.push(el);
             });
+            
             goToSlide(slideElements.length - data.length); 
+            
         } catch(e) { showToast("FAILED TO LOAD"); }
     }
 
@@ -426,7 +425,6 @@
         }
     }
 
-    // 🆕 INJECTOR FOR TRIVIA CONTEXT
     function injectTriviaContext(context) {
         const el = document.createElement('section');
         el.className = "main-slide next";
@@ -460,7 +458,6 @@
         goToSlide(currentIdx + 1);
     }
 
-    // 🔧 IMPROVED DEEP DIVER
     async function diveDeeper(t) {
         if (!t || t === "undefined" || t === "null") { 
              if(ENGINE_STATE.triviaMode) return goToSlide(currentIdx + 1);
@@ -495,7 +492,6 @@
         }
     }
 
-    // --- OTHER GATES ---
     function renderEcosystemGate() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -516,7 +512,6 @@
             html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`;
         });
         
-        // 🔧 FIX: ADD VIDEO BUTTON TO FILTER SCREEN
         if(module.review) {
             html += `<button class="btn btn-yt" style="margin-top:15px; background:#cc0000; color:#fff;" onclick="window.open('${module.review}', '_blank')">▶ WATCH REVIEW</button>`;
         }
@@ -559,7 +554,6 @@
         });
         const final = document.createElement('section'); final.className = "main-slide next";
         
-        // 🔧 FIX: VERTICAL STACK END CARD BUTTONS
         final.innerHTML = `
             <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
             <div class="winner-container">
@@ -576,7 +570,6 @@
     function calculateVerdict() { return {name: "Poco F7", price: 29999}; }
     function updateFinal() { const list = document.getElementById('final-list'); const winner = calculateVerdict(); list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; }
 
-    // 🆕 RESEARCH PRO LOBBY
     async function renderSearchSlide() {
         const container = document.getElementById('master-container');
         const section = document.createElement('section');
@@ -670,7 +663,7 @@
             if(dy < -80) { // UP -> FORWARD
                 const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
                 if (ENGINE_STATE.triviaMode && active) { handleTriviaSelection(active); return; }
-                if(mode === "research" && active && active.classList.contains('opt-active')) { if(active.onclick) active.onclick(); }
+                if (mode === "research" && active && active.classList.contains('opt-active')) { const val = active.dataset.val; if(val) diveDeeper(val); }
                 else if(mode === "research" && active && active.classList.contains('static')) { const firstLink = view.querySelector('.sub-slide:nth-child(2)'); if(firstLink) { active.classList.add('opt-hidden'); active.classList.remove('static'); firstLink.classList.remove('opt-hidden'); firstLink.classList.add('opt-active'); } else showToast("NO LINKS"); }
                 else { const val = active ? active.dataset.val : null; if(val) { ENGINE_STATE.items_detected[val] = true; } goToSlide(currentIdx + 1); }
             } else if (dy > 80) { // DOWN -> BACK
