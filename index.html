@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v71.0 |</title>
+    <title>| decide.engine |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -13,14 +13,14 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v71.0 (GRID)
+           CORE SYSTEM | DECIDE OS v71.0 (FIXED)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
             --brand-gold: #ffb700;
             --brand-dark: #050505;
-            --glass-surface: rgba(20, 20, 20, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-surface: rgba(20, 20, 20, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --accent-go: #00e676; 
@@ -70,7 +70,9 @@
             display: flex; align-items: center; justify-content: space-between;
             position: absolute; top: 0; left: 0; right: 0; z-index: 100;
             background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
         }
+        .slide-header > * { pointer-events: auto; }
 
         .header-title {
             font-family: var(--font-tech); font-size: 0.7rem; color: var(--brand-orange);
@@ -83,37 +85,53 @@
         .status-dot { width: 6px; height: 6px; background: var(--accent-go); border-radius: 50%; box-shadow: 0 0 5px var(--accent-go); animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* GRID LOBBY */
+        /* GLOBAL EXIT BUTTON */
+        .exit-btn {
+            padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+            background: rgba(0,0,0,0.6); color: #fff; font-family: var(--font-tech);
+            font-size: 0.7rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px);
+            text-transform: uppercase; transition: all 0.2s;
+        }
+        .exit-btn:active { background: #fff; color: #000; transform: scale(0.95); }
+
+        /* 🎛️ GRID LOBBY */
         .lobby-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 24px; 
-            margin-top: 20px; overflow-y: auto; padding-bottom: 100px;
+            margin-top: 20px; overflow-y: auto; padding-bottom: 120px; box-sizing: border-box;
+            height: 100%; align-content: start; padding-top: 80px;
+        }
+
+        .lobby-container {
+             display: flex; flex-direction: column; gap: 15px; padding: 24px; height: 100%; 
+             overflow-y: auto; justify-content: flex-start; padding-top: 80px; box-sizing: border-box;
         }
 
         .grid-btn {
             background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
             border-radius: 16px; padding: 20px; display: flex; flex-direction: column;
             align-items: center; justify-content: center; gap: 8px;
-            aspect-ratio: 1.2; transition: all 0.2s; cursor: pointer;
+            aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer;
             backdrop-filter: blur(10px);
         }
-        .grid-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
         
         .grid-icon { font-size: 1.8rem; margin-bottom: 5px; }
-        .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.9rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
-        .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; }
+        .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
+        .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
 
         .btn-fuel { border-color: var(--brand-gold); background: rgba(255, 183, 0, 0.05); }
         .btn-fuel .grid-label { color: var(--brand-gold); }
+        .btn-fuel .grid-status { color: #fff; }
         .btn-fuel:active { background: rgba(255, 183, 0, 0.15); box-shadow: 0 0 20px rgba(255, 183, 0, 0.2); }
 
-        .full-width-btn { grid-column: span 2; aspect-ratio: auto; padding: 15px; flex-direction: row; }
+        .full-width-btn { grid-column: span 2; aspect-ratio: auto; padding: 18px; flex-direction: row; gap: 15px; }
 
         .footer-seal {
-            position: absolute; bottom: 20px; left: 0; right: 0; text-align: center;
+            margin-top: 20px; margin-bottom: 20px; text-align: center;
             font-family: var(--font-tech); font-size: 0.6rem; color: #444; pointer-events: none;
         }
 
-        /* CARDS & UI */
+        /* 🃏 CARDS & UI */
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; margin-top: 70px; perspective: 1000px; }
 
         .sub-slide {
@@ -131,15 +149,17 @@
 
         .sub-slide.opt-active, .sub-slide.static { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); z-index: 30; }
 
-        h1 { font-family: var(--font-ui); font-size: 2.2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .wiki-summary { font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; font-weight: 400; max-height: 300px; overflow-y: auto; mask-image: linear-gradient(to bottom, black 85%, transparent 100%); }
         .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
 
-        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); }
+        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); text-align: center; }
         .cuisine-btn.selected { background: rgba(255, 103, 31, 0.15); color: var(--brand-orange); border-color: var(--brand-orange); }
         .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
-        .btn-primary { background: var(--brand-orange); color: #000; border: none; }
+        .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
+        .btn-yt { background: #cc0000; border: none; }
+        
         .search-wrapper { position: relative; margin-bottom: 20px; }
         #search-input { width: 100%; padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; font-family: var(--font-ui); font-size: 1.1rem; box-sizing: border-box; }
         
@@ -147,7 +167,7 @@
         .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
         .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
 
-        /* PAYMENT MODAL */
+        /* 💳 PAYMENT MODAL */
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
             z-index: 5000; display: flex; align-items: center; justify-content: center;
@@ -163,18 +183,17 @@
             background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0;
             border-radius: 12px; cursor: pointer; border: 1px solid #333;
             display: flex; align-items: center; justify-content: space-between;
-            font-weight: 600; color: #fff;
+            font-weight: 600; color: #fff; transition: 0.2s;
         }
-        .pay-option:hover { border-color: var(--brand-gold); }
-        .pay-qr { width: 200px; height: 200px; margin: 10px auto; border-radius: 10px; border: 2px solid #fff; display: block; }
-        .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; }
+        .pay-option:active { transform: scale(0.98); background: rgba(255,255,255,0.15); }
+        .pay-qr-container { background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 15px; margin-top: 15px; }
+        .pay-qr { width: 100%; max-width: 200px; display: block; margin: 0 auto; }
+        .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; padding: 10px; }
 
-        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; }
-        .toast-msg.visible { opacity: 1; }
-
-        /* RESEARCH TOPICS */
-        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
-        .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; }
+        /* TOPICS & UTILS */
+        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
+        .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .topic-card:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
         .topic-title { font-weight: bold; color: #fff; font-size: 0.85rem; margin-bottom: 4px; font-family: var(--font-tech); }
         .topic-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
@@ -182,6 +201,9 @@
         .winner-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; padding-bottom: 120px; background: linear-gradient(to top, #000 95%, transparent); }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
         .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 200; background: #000; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        
+        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; font-weight: bold; }
+        .toast-msg.visible { opacity: 1; }
     </style>
 </head>
 <body>
@@ -196,8 +218,7 @@
         <h2 style="color:var(--brand-gold); margin-top:0;">FUEL THE SYSTEM ⚡</h2>
         <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">Keep the servers running.</p>
         
-        <div id="upi-container">
-            </div>
+        <div id="upi-container"></div>
 
         <div class="pay-option" onclick="window.open('https://buymeacoffee.com/dharamdaxini', '_blank')">
             <span>🌍 International Cards</span>
@@ -208,21 +229,19 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v71.0 (REVENUE GRID)
+       KUTCH AUTOMATION | v71.0 (FINAL MERGE)
        ========================================= */
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
     const AMZN_TAG = "decideos-21";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
-   const UPI_URL = "https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg"; 
+    
     // 🇮🇳 UPI CONFIG
     const UPI_ID = "6351537770@yapl";
-    const UPI_NAME = "Kutch Automation";
-    const QR_IMAGE = "1000206276.png"; // MUST BE UPLOADED TO REPO
+    const QR_IMAGE = "1000206276.png"; 
 
-    // 🏆 FULL CURATED PATHS (20 TOPICS)
+    // 🏆 FULL CURATED PATHS (Research)
     const CURATED_PATHS = {
         "THE DARK FOREST": { title: "The Dark Forest", summary: "The terrifying solution to the Fermi Paradox. The universe is a dark forest, and every civilization is a hunter. To survive, you must stay silent.", links: [{name: "Cosmic Sociology"}, {name: "Chain of Suspicion"}, {name: "Technology Explosion"}, {name: "The Cleansing"}, {name: "Dimensional Strikes"}] },
         "ROKOS BASILISK": { title: "Roko's Basilisk", summary: "The most dangerous thought experiment in history. A future AI will punish those who didn't help build it.", links: [{name: "Timeless Decision Theory"}, {name: "Acausal Trade"}, {name: "Information Hazard"}, {name: "Pascal's Wager for AI"}, {name: "Effective Altruism"}] },
@@ -246,7 +265,7 @@
         "PANPSYCHISM": { title: "Panpsychism", summary: "Consciousness is a fundamental property of matter. Everything feels.", links: [{name: "The Hard Problem"}, {name: "Integrated Information"}, {name: "Electron Awareness"}, {name: "Universal Consciousness"}, {name: "Implications for AI"}] }
     };
 
-    // 🧠 DATABASES
+    // 🧠 DATABASES (Product)
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
@@ -405,19 +424,38 @@
                     <div class="grid-icon">▶</div>
                     <div class="grid-label">ENGINE REVIEW ↗</div>
                 </div>
+                <div class="footer-seal">Systems by VIACO | Gandhidham, IN</div>
             </div>
-            <div class="footer-seal">Systems by VIACO | Gandhidham, IN</div>
         `;
         container.appendChild(section);
         slideElements = [section];
         currentIdx = 0;
+        
+        // Ensure exit button is handled dynamically
+        let exitBtn = document.getElementById('global-exit');
+        if(exitBtn) exitBtn.remove();
     }
 
     function loadDomain(key) {
         ENGINE_STATE.currentDomain = key;
+        ENGINE_STATE.triviaMode = false; // FIX: Reset logic mode
+        
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
+        
+        // Add Global Exit Button for modules
+        let exitBtn = document.createElement('button');
+        exitBtn.id = 'global-exit';
+        exitBtn.className = 'exit-btn';
+        exitBtn.innerText = 'EXIT';
+        exitBtn.onclick = () => { renderLobby(); };
+        exitBtn.style.position = 'fixed';
+        exitBtn.style.top = '20px';
+        exitBtn.style.right = '20px';
+        exitBtn.style.zIndex = '5000';
+        document.body.appendChild(exitBtn);
+
         MODULES[key].init();
     }
 
@@ -443,7 +481,9 @@
             } else {
                 // Desktop: Show QR Code
                 container.innerHTML = `
-                    <img src="${QR_IMAGE}" class="pay-qr" alt="Scan QR">
+                    <div class="pay-qr-container">
+                        <img src="${QR_IMAGE}" class="pay-qr" alt="Scan QR">
+                    </div>
                     <div style="font-size:0.8rem; color:#fff; margin-top:5px;">Scan with any UPI App</div>
                     <div style="font-size:0.7rem; color:#666;">${UPI_ID}</div>
                 `;
@@ -453,23 +493,17 @@
         }
     }
 
-    // 🔬 RESEARCH LOGIC
+    // 🔬 RESEARCH LOGIC (Source 1 - Robust)
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
-        if(ENGINE_STATE.currentDomain === 'research') section.className = "main-slide active";
-        
         let topicsHTML = `<div class="topic-grid">`;
         for(let key in CURATED_PATHS) {
             const t = CURATED_PATHS[key];
             topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
         }
         topicsHTML += `</div>`;
-
         section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Stoicism, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button>${topicsHTML}</div>`;
-        
-        const c = document.getElementById('master-container');
-        if(ENGINE_STATE.currentDomain === 'research') { c.innerHTML = ""; c.appendChild(section); slideElements=[section]; currentIdx=0; } 
-        else { c.appendChild(section); slideElements.push(section); goToSlide(1); }
+        document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
     function triggerCurated(key) {
@@ -496,13 +530,18 @@
         }
         links = links.slice(0, 5);
         const section = document.createElement('section'); section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="skip-btn-clickable" onclick="saveJSON()">SAVE 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${links.map((link, i) => `<div class="sub-slide opt-hidden" data-val="${link.name}" onclick="diveDeeper('${link.name}')"><div class="role-label">RELATED PATH ${i+1}/5</div><h1>${link.name}</h1><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`).join('')}</div>`;
+        section.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="skip-btn-clickable" onclick="saveJSON()">SAVE PDF 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${links.map((link, i) => `<div class="sub-slide opt-hidden" data-val="${link.name}" onclick="diveDeeper('${link.name}')"><div class="role-label">RELATED PATH ${i+1}/5</div><h1>${link.name}</h1><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`).join('')}</div>`;
         document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
     }
 
     async function diveDeeper(t) {
         showToast("DIVING...");
         const ctx = await WIKI_ENGINE.getContext(t);
+        // FIX: Ensure valid context
+        if(!ctx || !ctx.title || ctx.title === "Error" || ctx.title === "Not Found") {
+             showToast("DATA CORRUPTED", "error");
+             return;
+        }
         ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
         buildResearchDeck(ctx);
     }
@@ -512,11 +551,9 @@
         const { jsPDF } = window.jspdf; 
         const doc = new jsPDF();
         let y = 20;
-
         doc.setFont("courier", "bold"); doc.setFontSize(18); doc.setTextColor(0, 0, 0);
         doc.text("DECIDE.ENGINE // RESEARCH PATH", 20, y); y += 15;
         doc.setFontSize(12); doc.setFont("courier", "normal");
-
         ENGINE_STATE.researchPath.forEach((item, i) => {
             if (y > 270) { doc.addPage(); y = 20; }
             doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y += 8;
@@ -524,16 +561,23 @@
             const lines = doc.splitTextToSize(item.summary, 170); doc.text(lines, 20, y);
             y += (lines.length * 6) + 10;
         });
-
         const date = new Date().toLocaleString();
         doc.setFontSize(10); doc.text(`GENERATED: ${date} | viadecide.com`, 20, 280);
         doc.save("Decide_Journey.pdf"); showToast("PDF DOWNLOADING...");
     }
 
-    // 📱 HARDWARE & TRIVIA LOGIC
+    // 📱 HARDWARE UI FIX & AUTO-VERDICT (Source 2)
     function renderEcosystemGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">PHILOSOPHY</span></div><div class="lobby-container"><h1 style="text-align:center">WHAT MATTERS?</h1><div style="display:grid; gap:20px;"><button class="cuisine-btn" onclick="selectEcosystem('specs')">PURE SPECS</button><button class="cuisine-btn" onclick="selectEcosystem('peace')">PEACE OF MIND</button></div></div>`;
+        section.innerHTML = `
+            <div class="slide-header"><span class="header-title">PHILOSOPHY</span></div>
+            <div class="lobby-container">
+                <h1 style="text-align:center">WHAT MATTERS?</h1>
+                <div style="display:grid; gap:20px; margin-top:20px;">
+                    <button class="cuisine-btn" onclick="selectEcosystem('specs')">🚀 PURE SPECS</button>
+                    <button class="cuisine-btn" onclick="selectEcosystem('peace')">🛡️ PEACE OF MIND</button>
+                </div>
+            </div>`;
         document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
     }
     
@@ -542,9 +586,9 @@
     function renderSubLobby(domain) {
         const section = document.createElement('section'); section.className = "main-slide next"; 
         const module = MODULES[domain];
-        let html = `<div class="slide-header"><span class="header-title">FILTER</span></div><div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1>`;
+        let html = `<div class="slide-header"><span class="header-title">FILTER</span></div><div class="lobby-container"><h1 style="text-align:center">PRIORITIES</h1><div style="display:grid; gap:10px; margin-top:20px;">`;
         module.categories.forEach((cat, idx) => { html += `<button class="cuisine-btn" id="filter-btn-${idx}" onclick="toggleFilter('${cat.label}', ${idx})">${cat.label}</button>`; });
-        html += `<button class="btn btn-primary" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
+        html += `</div><button class="btn btn-primary" style="margin-top:30px" onclick="startHunt()">HUNT &rarr;</button></div>`;
         section.innerHTML = html; document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
     }
 
@@ -595,6 +639,7 @@
         scores.sort((a, b) => b.score - a.score); return scores[0] || {name: "No Match", price: 0};
     }
 
+    // 🎓 TRIVIA LOGIC
     function renderTriviaGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
         section.innerHTML = `<div class="slide-header"><span class="header-title">TRIVIA</span></div><div class="lobby-container"><h1 style="text-align:center">CATEGORY</h1><div style="display:grid; gap:15px;"><button class="cuisine-btn" onclick="startTrivia(9)">GENERAL</button><button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button><button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button><button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button></div></div>`;
@@ -619,6 +664,16 @@
         goToSlide(slideElements.length - data.length);
     }
 
+    function renderExternalModule(url) {
+        const section = document.createElement('section');
+        section.className = "main-slide next";
+        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="renderLobby()">EXIT</button>`; 
+        document.getElementById('master-container').appendChild(section);
+        slideElements.push(section);
+        goToSlide(slideElements.length - 1);
+    }
+
+    // 🕹️ SYSTEM CORE
     function manualSkip(el) {
         if (event) event.stopPropagation();
         const view = el.closest('.carousel-viewport');
@@ -648,34 +703,48 @@
     function initSwipeSystem() {
         document.addEventListener('touchstart', e => { tsY = e.touches[0].clientY; tsX = e.touches[0].clientX; }, {passive: true});
         document.addEventListener('touchend', e => {
-            const view = e.target.closest('.carousel-viewport');
+            // FIX: Scope touch to active slide only
+            const view = e.target.closest('.main-slide.active .carousel-viewport');
             if(!view || document.querySelector('iframe')) return;
             const dy = e.changedTouches[0].clientY - tsY;
             const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
 
-            if(dy < -80) { // UP
+            if(dy < -60) { // UP SWIPE
                 if(active.classList.contains('static')) {
+                    // Wiki Navigation
                     active.classList.remove('static'); active.classList.add('opt-hidden');
                     view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
                 } else if(ENGINE_STATE.triviaMode) {
-                    if(active.dataset.correct === "true") { showToast("CORRECT!", "success"); diveDeeper(active.dataset.real); }
-                    else { showToast("WRONG!", "error"); setTimeout(() => diveDeeper(active.dataset.real), 1000); }
+                    // Trivia Check -> FIX: Correct Answer connects to Wiki
+                    if(active.dataset.correct === "true") { 
+                        showToast("CORRECT! RESEARCHING...", "success"); 
+                        diveDeeper(active.dataset.real); // Open Wiki Node
+                    } else { 
+                        showToast("WRONG!", "error"); 
+                        setTimeout(() => goToSlide(currentIdx + 1), 1000); 
+                    }
                 } else if(active.dataset.val) {
+                    // Universal Selection (Research or Products)
                     if(ENGINE_STATE.currentDomain === 'smartphones' || ENGINE_STATE.currentDomain === 'earbuds') {
                         ENGINE_STATE.items_detected[active.dataset.val] = true; goToSlide(currentIdx + 1);
-                    } else { diveDeeper(active.dataset.val); }
+                    } else { 
+                        diveDeeper(active.dataset.val); 
+                    }
                 }
-            } else if(dy > 80) { // DOWN
+            } else if(dy > 60) { // DOWN SWIPE
                 if(ENGINE_STATE.currentDomain === 'research' && ENGINE_STATE.researchPath.length > 1) {
+                    // Wiki Back
                     ENGINE_STATE.researchPath.pop(); WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c));
-                } else { goToSlide(currentIdx - 1); }
+                } else { 
+                    // Standard Back
+                    goToSlide(currentIdx - 1); 
+                }
             }
         });
     }
 
     function showToast(m, type="normal") { const t = document.getElementById('toast'); t.innerText = m; t.style.borderColor = type === 'error' ? '#f44' : 'rgba(255,255,255,0.1)'; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2000); }
     function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
-    function renderExternalModule(url) { document.getElementById('master-container').innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="location.reload()">EXIT</button>`; }
     function redirect(type) { const item = Object.keys(ENGINE_STATE.items_detected)[0]; if(!item) return showToast("NOTHING SELECTED"); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank'); }
 
     boot();
