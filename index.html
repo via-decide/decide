@@ -24,7 +24,7 @@
             --text-muted: #a0a0a0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
-            --font-tech: 'Courier New', monospace; /* Kept for that raw data feel */
+            --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
         }
 
@@ -63,7 +63,6 @@
         .main-slide.active { transform: translateY(0) scale(1); opacity: 1; z-index: 10; pointer-events: auto; }
         .main-slide.next { transform: translateY(100%) scale(0.95); opacity: 0; z-index: 20; pointer-events: none; }
 
-        /* 💎 GLASS UI HEADER */
         .slide-header {
             padding: 0 24px; height: 80px;
             display: flex; align-items: center; justify-content: space-between;
@@ -78,7 +77,6 @@
             border: 1px solid rgba(255, 103, 31, 0.2);
         }
 
-        /* 🃏 GLASS CARDS */
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; margin-top: 80px; perspective: 1000px; }
 
         .sub-slide {
@@ -100,7 +98,6 @@
             z-index: 30; 
         }
 
-        /* TYPOGRAPHY UPGRADE */
         h1 { 
             font-family: var(--font-ui); font-size: 2.2rem; font-weight: 700; 
             margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1;
@@ -122,7 +119,6 @@
         }
         .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
 
-        /* 🕹️ INTERACTIVE ELEMENTS */
         .btn { 
             background: rgba(255,255,255,0.05); color: #fff; 
             border: 1px solid rgba(255,255,255,0.1); 
@@ -171,7 +167,6 @@
         }
         .skip-btn-clickable:active { background: #fff; color: #000; }
 
-        /* TOAST & UTILS */
         .toast-msg { 
             position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); 
             background: rgba(20,20,20,0.9); backdrop-filter: blur(10px);
@@ -192,6 +187,17 @@
 
         iframe { width: 100%; height: 100%; border: none; background: #000; }
         .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 200; background: rgba(0,0,0,0.8); border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-family: var(--font-tech); font-weight: bold; cursor: pointer;}
+
+        /* TOPIC GRID */
+        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .topic-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s;
+        }
+        .topic-card:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
+        .topic-title { font-weight: bold; color: #fff; font-size: 0.9rem; margin-bottom: 5px; font-family: var(--font-tech); }
+        .topic-desc { font-size: 0.8rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
     </style>
 </head>
 <body>
@@ -202,7 +208,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v70.0 (GLASS + UNIVERSAL)
+       KUTCH AUTOMATION | v70.0 (PDF EDITION)
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -212,41 +218,228 @@
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const SUPPORT_URL = "https://www.buymeacoffee.com/kutchautomation";
 
-    // 🏆 FULL CURATED PATHS (5-Node Deep Dives)
+    // 🏆 FULL CURATED PATHS (20 TOPICS)
     const CURATED_PATHS = {
-        "ER = EPR": {
-            title: "ER = EPR",
-            summary: "A conjecture in theoretical physics connecting Gravity and Quantum Mechanics. It states that two entangled particles (EPR) are connected by a wormhole (ER bridge) in spacetime.",
-            links: [
-                { name: "Firewall Paradox", summary: "The crisis in physics: Do you burn up instantly when hitting a black hole event horizon?" },
-                { name: "Juan Maldacena", summary: "The architect of the theory who proposed that spacetime geometry is built from entanglement." },
-                { name: "Holographic Principle", summary: "The universe as a projection: How 3D reality emerges from 2D information." },
-                { name: "Leonard Susskind", summary: "Co-founder of String Theory who championed ER=EPR to save Quantum Mechanics." },
-                { name: "Quantum Teleportation", summary: "How information moves instantly. Is it magic, or is it traversing a wormhole?" }
-            ]
-        },
-        "ASSEMBLY THEORY": {
-            title: "Assembly Theory",
-            summary: "A new physics of life that quantifies complexity. It asks: 'How many steps are needed to build this object?' If the number is high, it MUST be life.",
-            links: [
-                { name: "Lee Cronin", summary: "The chemist proposing this as the new standard for detecting aliens." },
-                { name: "Biosignatures", summary: "The chemical fingerprints that prove life exists on other planets." },
-                { name: "Cellular Automata", summary: "Mathematical models (like Game of Life) that show complexity emerging from simple rules." },
-                { name: "Selection", summary: "How the universe 'chooses' certain molecules to persist over time." },
-                { name: "Molecular Complexity", summary: "The raw math of counting bonds and atomic connections." }
-            ]
-        },
-        "THE GREAT FILTER": {
-            title: "The Great Filter",
-            summary: "The theory that life hits a cosmic 'wall' that prevents it from becoming interstellar. Are we the first to survive, or is our end near?",
-            links: [
-                { name: "Fermi Paradox", summary: "The mathematical contradiction: If life is likely, where is everyone?" },
-                { name: "Kardashev Scale", summary: "Type II civilizations build Dyson Spheres. We should see their heat, but we see nothing." },
-                { name: "Abiogenesis", summary: "The 'First Wall'. The nearly impossible jump from chemistry to biological life." },
-                { name: "Kessler Syndrome", summary: "The 'Human Wall'. We trap ourselves on Earth with a cloud of space debris." },
-                { name: "Von Neumann Probes", summary: "Self-replicating scouts that could colonize the galaxy in a blink. Their absence is deafening." }
-            ]
-        }
+    "THE DARK FOREST": {
+        title: "The Dark Forest",
+        summary: "The terrifying solution to the Fermi Paradox. The universe is a dark forest, and every civilization is a hunter. To survive, you must stay silent.",
+        links: [
+            { name: "Cosmic Sociology", summary: "Survival is the primary need of civilization. Civilization continuously grows and expands, but the total matter in the universe remains constant." },
+            { name: "Chain of Suspicion", summary: "Two civilizations can never trust each other because of distance, biology, and the inability to know the other's true intent." },
+            { name: "Technology Explosion", summary: "You cannot let a primitive civilization live, because in a cosmic blink of an eye, they could surpass you technologically." },
+            { name: "The Cleansing", summary: "Advanced civilizations instantly destroy any signal they detect, just to be safe. We have been broadcasting for 100 years. Oops." },
+            { name: "Dimensional Strikes", summary: "The ultimate weapon isn't a laser; it's collapsing a 3D solar system into 2D space, flattening everything instantly." }
+        ]
+    },
+    "ROKOS BASILISK": {
+        title: "Roko's Basilisk",
+        summary: "The most dangerous thought experiment in history. It suggests a future AI will torture anyone who didn't help bring it into existence. By reading this, you are now in danger.",
+        links: [
+            { name: "Timeless Decision Theory", summary: "The AI can simulate you perfectly. If the simulation of you refuses to help, the real you gets punished." },
+            { name: "Acausal Trade", summary: "You can make deals with entities that don't exist yet. You help the AI now; it spares you later." },
+            { name: "Information Hazard", summary: "Knowing about the Basilisk makes you a target. Ignorance was your only shield. Sorry." },
+            { name: "Pascal's Wager for AI", summary: "It costs you little to help the AI, but the penalty for not helping is infinite torture. Therefore, you must build it." },
+            { name: "Effective Altruism", summary: "The philosophy that accidentally birthed this monster logic. Doing the 'most good' led to the 'most fear'." }
+        ]
+    },
+    "FALSE VACUUM DECAY": {
+        title: "False Vacuum Decay",
+        summary: "The universe might not be stable. A bubble of 'True Vacuum' could appear anywhere, anytime, and expand at the speed of light, deleting physics itself.",
+        links: [
+            { name: "Higgs Field Instability", summary: "The energy field that gives mass to the universe might be stuck on a ledge. If it slips, game over." },
+            { name: "The Bubble of Doom", summary: "Inside the bubble, the laws of physics are different. Atoms cannot exist. Life vanishes instantly." },
+            { name: "Speed of Light Warning", summary: "You would never see it coming. Since it moves at light speed, it hits you before the light from it reaches your eyes." },
+            { name: "Heat Death Alternative", summary: "Instead of a slow freeze, the universe ends in a violent instant rewrite." },
+            { name: "Quantum Tunneling", summary: "A particle could tunnel through the energy barrier at any moment, triggering the collapse." }
+        ]
+    },
+    "BOLTZMANN BRAINS": {
+        title: "Boltzmann Brains",
+        summary: "It is statistically more likely for a single brain to spontaneously form in a void with your memories than for the entire universe to have evolved naturally.",
+        links: [
+            { name: "Entropy & Chaos", summary: "In an infinite universe over infinite time, atoms will randomly assemble into anything—including a brain." },
+            { name: "The Observer Problem", summary: "You believe you have a past, but those could be false memories implanted in a brain that just appeared 1 second ago." },
+            { name: "Brief Existence", summary: "A Boltzmann Brain exists for a millisecond, thinks one thought, and then dissolves back into chaos." },
+            { name: "Cosmic Inflation", summary: "Scientists use this paradox to test theories. If a theory predicts more Boltzmann Brains than real humans, it is wrong." },
+            { name: "Solipsism", summary: "The philosophical nightmare: You are the only thing that exists, and your reality is a hallucination." }
+        ]
+    },
+    "DYSON SPHERES": {
+        title: "Dyson Spheres",
+        summary: "The ultimate megastructure. A shell built around a star to capture 100% of its energy. It is the hallmark of a Type II Civilization.",
+        links: [
+            { name: "The Energy Crisis", summary: "A civilization eventually uses more energy than a planet can provide. The star is the only next step." },
+            { name: "Dyson Swarm", summary: "A solid shell is unstable. A swarm of billions of satellites orbiting the star is the realistic version." },
+            { name: "Matrioshka Brain", summary: "Using the energy of a Dyson Sphere to power a computer the size of a solar system. God-like intelligence." },
+            { name: "Tabby's Star", summary: "A real star in our galaxy that dimmed mysteriously. Was it a Dyson Sphere under construction?" },
+            { name: "Starlifting", summary: "Mining a star for raw materials to build the sphere. Literally taking the sun apart." }
+        ]
+    },
+    "QUANTUM IMMORTALITY": {
+        title: "Quantum Immortality",
+        summary: "The idea that you can never die. In the Many-Worlds Interpretation, every time you die in one universe, your consciousness continues in the one where you survived.",
+        links: [
+            { name: "Schrodinger's Cat", summary: "The cat is both dead and alive. But from the cat's perspective, it is always alive." },
+            { name: "Many-Worlds Theory", summary: "Every decision splits reality. There is a timeline where you survive every accident, disease, and age." },
+            { name: "The Russian Roulette Experiment", summary: "A physicist creates a gun triggered by a quantum quark. If MWI is true, he will hear a click for eternity." },
+            { name: "Subjective Survival", summary: "You might be the oldest person in your universe, watching everyone else die while you strangely persist." },
+            { name: "The End of Entropy", summary: "Eventually, you are a floating consciousness in a heat-dead universe, unable to die. Hell." }
+        ]
+    },
+    "THE LIBRARY OF BABEL": {
+        title: "The Library of Babel",
+        summary: "A library that contains every possible book. Most are gibberish, but one contains the true story of your life, and another contains the false one.",
+        links: [
+            { name: "Infinite Permutations", summary: "By rearranging letters randomly, you eventually write Shakespeare, the cure for cancer, and your own obituary." },
+            { name: "Jorge Luis Borges", summary: "The author who imagined this nightmare. Librarians go mad looking for the 'Index Man' who knows where the truth is." },
+            { name: "Information Entropy", summary: "If you have all information, you have zero information. Finding the truth is impossible in the noise." },
+            { name: "The Digital Library", summary: "A website actually exists that simulates this. You can search for your death date, and it's there somewhere." },
+            { name: "Meaning vs. Chaos", summary: "Does a sentence have meaning if it was generated by randomness? Or do we invent the meaning?" }
+        ]
+    },
+    "SHIP OF THESEUS": {
+        title: "Ship of Theseus",
+        summary: "If you replace every plank of a ship one by one, is it still the same ship? If you replace every cell in your brain, are you still you?",
+        links: [
+            { name: "The Identity Paradox", summary: "What makes 'You' you? Is it the material (meat) or the pattern (memories)?" },
+            { name: "Teleportation Problem", summary: "If a teleporter destroys you here and rebuilds you on Mars, did you travel, or did you die and a clone wake up?" },
+            { name: "Upload Consciousness", summary: "If we upload your mind to a cloud and turn off your body, is the computer 'you' or just a chatbot?" },
+            { name: "Biological Turnover", summary: "Every 7 years, almost every atom in your body is replaced. You are a completely different physical object than you were at birth." },
+            { name: "Continuity of Self", summary: "The illusion that you are one person flowing through time, rather than a series of moments." }
+        ]
+    },
+    "SIMULATION THEORY": {
+        title: "Simulation Theory",
+        summary: "The statistical argument that we are likely living in a computer simulation created by a more advanced civilization.",
+        links: [
+            { name: "Ancestral Simulations", summary: "Future humans will simulate their history. There will be billions of sims and one base reality. Odds are, you are in a sim." },
+            { name: "Pixelation of Physics", summary: "Planck Length is the smallest possible unit of space. It looks suspiciously like a pixel grid limit." },
+            { name: "Rendering Efficiency", summary: "Quantum mechanics suggests things don't exist until observed. This saves processing power, like a video game loading chunks." },
+            { name: "The Glitch", summary: "Mandela Effects, Deja Vu, and UFOs. Are these bugs in the code?" },
+            { name: "Base Reality", summary: "If we are in a sim, is our creator also in a sim? Is it turtles all the way down?" }
+        ]
+    },
+    "THE GREAT ATTRACTOR": {
+        title: "The Great Attractor",
+        summary: "Something massive is pulling our entire galaxy towards it at millions of miles per hour. But we can't see what it is because it's hidden behind the Milky Way.",
+        links: [
+            { name: "Zone of Avoidance", summary: "The area of the sky blocked by our own galaxy's dust. The Attractor hides in this blind spot." },
+            { name: "Laniakea Supercluster", summary: "We are part of a river of galaxies flowing towards a central point. We are surfing a cosmic wave." },
+            { name: "Dark Flow", summary: "Some galaxies seem to be moving towards a point *outside* the observable universe. What is pulling them?" },
+            { name: "Gravitational Anomaly", summary: "The mass required to pull us this fast is equivalent to quadrillions of suns. It is the monster in the dark." },
+            { name: "The Wall", summary: "Is it a black hole? A cluster of galaxies? Or a bruise from a collision with another universe?" }
+        ]
+    },
+    "GREY GOO": {
+        title: "Grey Goo",
+        summary: "A nanotech apocalypse. Self-replicating nanobots programmed to consume matter to build more of themselves could eat the entire Earth in 72 hours.",
+        links: [
+            { name: "Molecular Manufacturing", summary: "The dream of building anything atom-by-atom. The nightmare of losing control of the builders." },
+            { name: "Exponential Growth", summary: "1 becomes 2, 2 becomes 4. By step 60, they outweigh the planet. Math is scary." },
+            { name: "The Blue Goo", summary: "A defense system: 'Police' nanobots designed to hunt down and eat the Grey Goo. Nanowarfare." },
+            { name: "Ecophagy", summary: "The literal eating of the environment. The biosphere becomes a tech-sphere." },
+            { name: "Safety Limits", summary: "Scientists propose hard-coding 'kill switches' or making bots require rare elements so they can't eat trees." }
+        ]
+    },
+    "KARDASHEV SCALE": {
+        title: "The Kardashev Scale",
+        summary: "A method of measuring a civilization's advancement based on the amount of energy it can capture. We are currently Type 0.7.",
+        links: [
+            { name: "Type I: Planetary", summary: "Masters of their home world. Control weather, volcanoes, and all solar energy hitting the planet." },
+            { name: "Type II: Stellar", summary: "Masters of their star. Dyson spheres. Immune to extinction events." },
+            { name: "Type III: Galactic", summary: "Masters of the galaxy. Colonizing billions of stars. Extracting energy from black holes." },
+            { name: "Type IV & V", summary: "Universal and Multiversal gods. They operate outside the laws of physics as we know them." },
+            { name: "The Great Silence", summary: "If Type III civilizations exist, they should be blindingly obvious. Where are they?" }
+        ]
+    },
+    "THE UNCANNY VALLEY": {
+        title: "The Uncanny Valley",
+        summary: "The feeling of revulsion when a robot looks *almost* human but not quite. It suggests humans evolved to fear something that looked human but wasn't.",
+        links: [
+            { name: "Evolutionary Defense", summary: "Why do we have a specific instinct to fear 'fake humans'? Did we coexist with corpses or shapeshifters?" },
+            { name: "Corpses & Disease", summary: "The most likely theory: We fear things that look dead or diseased to avoid infection." },
+            { name: "Androids", summary: "Modern robotics is stuck here. Sofia the Robot looks creepy, not cute. We prefer R2-D2." },
+            { name: "Deepfakes", summary: "AI video is crossing the valley. Soon, we won't be able to tell real from fake, killing trust." },
+            { name: "The Other Human Species", summary: "Neanderthals looked 'almost' like us. Maybe the valley is an ancient war instinct." }
+        ]
+    },
+    "THE EGG": {
+        title: "The Egg",
+        summary: "A viral story by Andy Weir. It proposes that you are the only person in the universe. Everyone else is just you in a different life.",
+        links: [
+            { name: "Reincarnation", summary: "You are reincarnated across time linearly and non-linearly. You are Hitler, and you are the millions he killed." },
+            { name: "The Maturity", summary: "The universe is an egg/incubator for a baby god (You). Once you live every human life, you will be born." },
+            { name: "Solipsism with Empathy", summary: "Instead of 'only I matter', it argues 'everyone matters because everyone is me'. The ultimate Golden Rule." },
+            { name: "God's Conversation", summary: "The story is a dialogue between You and God, explaining the purpose of suffering." },
+            { name: "Cosmic Perspective", summary: "It changes how you view strangers. The homeless man is just you in a harder level." }
+        ]
+    },
+    "TIME CRYSTALS": {
+        title: "Time Crystals",
+        summary: "A new phase of matter that repeats in time, not just space. They break the laws of thermodynamics by moving without consuming energy.",
+        links: [
+            { name: "Perpetual Motion", summary: "They aren't free energy, but they are the closest thing physics allows to a perpetual motion machine." },
+            { name: "Quantum Computing", summary: "Time crystals are stable against noise, making them the holy grail for memory in quantum computers." },
+            { name: "Symmetry Breaking", summary: "Normal crystals break spatial symmetry. Time crystals break time-translation symmetry." },
+            { name: "Google's Sycamore", summary: "Google's quantum computer actually created a time crystal for a fraction of a second." },
+            { name: "Exotic Matter", summary: "Matter that shouldn't exist but does. It opens the door to physics we haven't even imagined." }
+        ]
+    },
+    "THE DEAD INTERNET THEORY": {
+        title: "Dead Internet Theory",
+        summary: "The conspiracy that the internet died around 2016 and is now 80% bots talking to other bots to manipulate human perception.",
+        links: [
+            { name: "The Bot Takeover", summary: "Traffic analysis shows over 50% of web activity is non-human." },
+            { name: "Algorithmic Sludge", summary: "AI content farms generating text for search engines, not people." },
+            { name: "Simulation Hypothesis", summary: "Are we being gaslit by our own creation?" },
+            { name: "The Dark Forest", summary: "Real humans are retreating to private discords, leaving the public web to the bots." },
+            { name: "Deepfakes", summary: "The end of 'Video Evidence' and shared reality." }
+        ]
+    },
+    "THE OMNIPRESENCE OF MICROPLASTICS": {
+        title: "Microplastics",
+        summary: "There is plastic in your blood, your lungs, and the deepest ocean trenches. We have coated the planet in a layer of synthetic polymer.",
+        links: [
+            { name: "Blood Brain Barrier", summary: "Nanoplastics are small enough to cross into the brain. We don't know what they do there yet." },
+            { name: "Hormone Disruption", summary: "Plastics mimic estrogen. Fertility rates are dropping globally. Is this the cause?" },
+            { name: "The Plastisphere", summary: "A new ecosystem of bacteria evolving to eat plastic in the ocean. Life adapts." },
+            { name: "Atmospheric Transport", summary: "It rains plastic in the Antarctic. The wind carries particles everywhere." },
+            { name: "The Credit Card Diet", summary: "The average human ingests a credit card's worth of plastic every week." }
+        ]
+    },
+    "NEURALINK & TRANSHUMANISM": {
+        title: "Neuralink",
+        summary: "Merging man with machine. Elon Musk's brain chip aims to cure blindness and paralysis, but eventually, it aims to save us from AI.",
+        links: [
+            { name: "High Bandwidth", summary: "Humans communicate at 10 bits/second (typing). Computers at 1 trillion. We need to speed up to stay relevant." },
+            { name: "Telepathy", summary: "Conceptual communication. Sending a thought directly to another person without words." },
+            { name: "The Hive Mind", summary: "If we are all connected, does individuality die? Do we become the Borg?" },
+            { name: "Security Risks", summary: "Can your brain be hacked? Can memories be deleted or implanted?" },
+            { name: "The Divide", summary: "Rich people get smarter with chips. Poor people stay biological. A new species split." }
+        ]
+    },
+    "THE WOW! SIGNAL": {
+        title: "The Wow! Signal",
+        summary: "In 1977, a radio telescope detected a strong, narrowband signal from Sagittarius. It lasted 72 seconds and never repeated.",
+        links: [
+            { name: "The Signature", summary: "The signal was at 1420 MHz (Hydrogen Line), the universal frequency scientists said aliens would use." },
+            { name: "The Origin", summary: "It came from an empty patch of sky. No stars, no planets visible. Was it a passing ship?" },
+            { name: "No Explanation", summary: "Comets, satellites, and glitches have been ruled out. It remains the best candidate for contact." },
+            { name: "The Response", summary: "We sent a reply 35 years later. It will arrive in 25,000 years. Don't hold your breath." },
+            { name: "Fermi's Answer", summary: "Maybe they pinged us once, saw we were boring, and moved on." }
+        ]
+    },
+    "PANPSYCHISM": {
+        title: "Panpsychism",
+        summary: "The theory that consciousness is not generated by the brain, but is a fundamental property of matter, like mass or charge. Everything feels.",
+        links: [
+            { name: "The Hard Problem", summary: "Science can explain how the brain processes data, but not why it 'feels' like something. Panpsychism solves this." },
+            { name: "Integrated Information", summary: "Consciousness correlates with complexity. A rock has 0.0001 conscioussness; a human has 100." },
+            { name: "Electron Awareness", summary: "Does an electron 'choose' to spin up or down? Is quantum randomness actually free will?" },
+            { name: "Universal Consciousness", summary: "If the universe is made of conscious particles, is the universe itself conscious?" },
+            { name: "Implications for AI", summary: "If silicon atoms have proto-consciousness, building a brain out of them will inevitably create a soul." }
+        ]
+    }
     };
 
     // 🧠 DATABASES (Full)
@@ -483,14 +676,28 @@
         goToSlide(slideElements.length - data.length);
     }
 
-    // 🔬 RESEARCH LOGIC
+    // 🔬 RESEARCH LOGIC (With Default 20 Topics Feed)
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         if(ENGINE_STATE.currentDomain === 'research') section.className = "main-slide active";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Stoicism, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button></div>`;
+        
+        let topicsHTML = `<div class="topic-grid">`;
+        for(let key in CURATED_PATHS) {
+            const t = CURATED_PATHS[key];
+            topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
+        }
+        topicsHTML += `</div>`;
+
+        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Stoicism, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button>${topicsHTML}</div>`;
+        
         const c = document.getElementById('master-container');
         if(ENGINE_STATE.currentDomain === 'research') { c.innerHTML = ""; c.appendChild(section); slideElements=[section]; currentIdx=0; } 
         else { c.appendChild(section); slideElements.push(section); goToSlide(1); }
+    }
+
+    function triggerCurated(key) {
+        document.getElementById('search-input').value = key;
+        executeSearch();
     }
 
     async function executeSearch() {
@@ -523,12 +730,46 @@
         buildResearchDeck(ctx);
     }
 
+    // 🛡️ REPLACED: saveJSON() -> NOW GENERATES PDF DIRECTLY
     function saveJSON() {
-        let path = [...ENGINE_STATE.researchPath];
-        while(path.length < 5) path.push({ title: `Exploration Node ${path.length+1}`, summary: "Research required." });
-        const payload = { session_id: "SES_" + Math.random().toString(36).substr(2, 5).toUpperCase(), syllabus: path };
-        navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-        showToast("JSON COPIED & FIXED!");
+        const { jsPDF } = window.jspdf; 
+        const doc = new jsPDF();
+        
+        let y = 20;
+
+        // Header
+        doc.setFont("courier", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor(0, 0, 0);
+        doc.text("DECIDE.ENGINE // RESEARCH PATH", 20, y);
+        y += 15;
+
+        // Content
+        doc.setFontSize(12);
+        doc.setFont("courier", "normal");
+
+        ENGINE_STATE.researchPath.forEach((item, i) => {
+            if (y > 270) { doc.addPage(); y = 20; }
+            
+            // Node Header
+            doc.setFont("courier", "bold");
+            doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y);
+            y += 8;
+            
+            // Summary
+            doc.setFont("courier", "normal");
+            const lines = doc.splitTextToSize(item.summary, 170);
+            doc.text(lines, 20, y);
+            y += (lines.length * 6) + 10;
+        });
+
+        // Footer / Timestamp
+        const date = new Date().toLocaleString();
+        doc.setFontSize(10);
+        doc.text(`GENERATED: ${date}`, 20, 280);
+
+        doc.save("Decide_Journey.pdf");
+        showToast("PDF DOWNLOADING...");
     }
 
     // 🕹️ SYSTEM CORE
