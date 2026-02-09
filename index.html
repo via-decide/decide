@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine |</title>
+    <title>| decide.engine v78.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -13,7 +13,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v72.0 (STABLE)
+           CORE SYSTEM | DECIDE OS v78.0 (CUSTOM INTEGRATION)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -229,8 +229,9 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v72.0 (FINAL)
+       KUTCH AUTOMATION | v78.0 (CUSTOM INTEGRATION)
        ========================================= */
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
@@ -243,121 +244,16 @@
 
     // 🏆 FULL CURATED PATHS (Research)
     const CURATED_PATHS = {
-  "version": "1.0",
-  "source": "wikipedia",
-  "depth": 5,
-  "topics": [
-    {
-      "id": "decision_fatigue",
-      "label": "Decision Fatigue",
-      "nodes": [
-        { "depth": 1, "title": "Decision fatigue" },
-        { "depth": 2, "title": "Ego depletion" },
-        { "depth": 3, "title": "Self-control" },
-        { "depth": 4, "title": "Cognitive load" },
-        { "depth": 5, "title": "Working memory" }
-      ]
-    },
-    {
-      "id": "metrics_failure",
-      "label": "Why Metrics Fail",
-      "nodes": [
-        { "depth": 1, "title": "Goodhart’s law" },
-        { "depth": 2, "title": "Campbell’s law" },
-        { "depth": 3, "title": "Performance measurement" },
-        { "depth": 4, "title": "Statistics" },
-        { "depth": 5, "title": "Measurement theory" }
-      ]
-    },
-    {
-      "id": "feedback_loops",
-      "label": "Feedback Loops",
-      "nodes": [
-        { "depth": 1, "title": "Feedback" },
-        { "depth": 2, "title": "Feedback loop" },
-        { "depth": 3, "title": "Control theory" },
-        { "depth": 4, "title": "Systems theory" },
-        { "depth": 5, "title": "Cybernetics" }
-      ]
-    },
-    {
-      "id": "optimization_failure",
-      "label": "Why Optimization Backfires",
-      "nodes": [
-        { "depth": 1, "title": "Local optimum" },
-        { "depth": 2, "title": "Global optimum" },
-        { "depth": 3, "title": "Optimization" },
-        { "depth": 4, "title": "Mathematical optimization" },
-        { "depth": 5, "title": "Applied mathematics" }
-      ]
-    },
-    {
-      "id": "attention_economy",
-      "label": "Attention Economy",
-      "nodes": [
-        { "depth": 1, "title": "Attention economy" },
-        { "depth": 2, "title": "Human attention" },
-        { "depth": 3, "title": "Cognitive psychology" },
-        { "depth": 4, "title": "Psychology" },
-        { "depth": 5, "title": "Behavioral science" }
-      ]
-    },
-    {
-      "id": "cognitive_biases",
-      "label": "Cognitive Biases",
-      "nodes": [
-        { "depth": 1, "title": "Cognitive bias" },
-        { "depth": 2, "title": "Heuristics" },
-        { "depth": 3, "title": "Bounded rationality" },
-        { "depth": 4, "title": "Rational choice theory" },
-        { "depth": 5, "title": "Decision theory" }
-      ]
-    },
-    {
-      "id": "complexity_systems",
-      "label": "Complex Systems",
-      "nodes": [
-        { "depth": 1, "title": "Complex system" },
-        { "depth": 2, "title": "Emergence" },
-        { "depth": 3, "title": "Nonlinear system" },
-        { "depth": 4, "title": "Chaos theory" },
-        { "depth": 5, "title": "Dynamical systems" }
-      ]
-    },
-    {
-      "id": "planning_failure",
-      "label": "Why Plans Fail",
-      "nodes": [
-        { "depth": 1, "title": "Planning fallacy" },
-        { "depth": 2, "title": "Optimism bias" },
-        { "depth": 3, "title": "Cognitive bias" },
-        { "depth": 4, "title": "Judgment and decision making" },
-        { "depth": 5, "title": "Psychology" }
-      ]
-    },
-    {
-      "id": "scale_growth",
-      "label": "Scale and Growth",
-      "nodes": [
-        { "depth": 1, "title": "Exponential growth" },
-        { "depth": 2, "title": "Compound interest" },
-        { "depth": 3, "title": "Mathematical finance" },
-        { "depth": 4, "title": "Finance" },
-        { "depth": 5, "title": "Economics" }
-      ]
-    },
-    {
-      "id": "signal_noise",
-      "label": "Signal vs Noise",
-      "nodes": [
-        { "depth": 1, "title": "Signal-to-noise ratio" },
-        { "depth": 2, "title": "Noise (statistics)" },
-        { "depth": 3, "title": "Statistical inference" },
-        { "depth": 4, "title": "Statistics" },
-        { "depth": 5, "title": "Probability theory" }
-      ]
-    }
-  ]
+        "DECISION FATIGUE": { title: "Decision Fatigue", summary: "The deteriorating quality of decisions made by an individual after a long session of decision making. It is now understood as one of the causes of irrational trade-offs in decision making.", links: [{name: "Ego Depletion"}, {name: "Self-Control"}, {name: "Cognitive Load"}, {name: "Working Memory"}, {name: "Choice Overload"}] },
+        "WHY METRICS FAIL": { title: "Why Metrics Fail", summary: "When a measure becomes a target, it ceases to be a good measure. This principle highlights how systems can be gamed when performance is tied to specific metrics.", links: [{name: "Goodhart's Law"}, {name: "Campbell's Law"}, {name: "Performance Measurement"}, {name: "Surrogation"}, {name: "Gaming the System"}] },
+        "FEEDBACK LOOPS": { title: "Feedback Loops", summary: "A process in which the outputs of a system are circled back and used as inputs. Positive feedback amplifies change, while negative feedback reduces it.", links: [{name: "Cybernetics"}, {name: "Control Theory"}, {name: "Systems Theory"}, {name: "Homeostasis"}, {name: "Runaway Effect"}] },
+        "OPTIMIZATION FAILURE": { title: "Optimization Failure", summary: "The pursuit of the 'best' solution can often lead to fragility. Over-optimization removes redundancy, making systems vulnerable to unexpected shocks.", links: [{name: "Local Optimum"}, {name: "Global Optimum"}, {name: "Fragility"}, {name: "Robustness"}, {name: "Pareto Efficiency"}] },
+        "ATTENTION ECONOMY": { title: "Attention Economy", summary: "An approach to the management of information that treats human attention as a scarce commodity. Economics applies to attention just as it applies to money.", links: [{name: "Information Overload"}, {name: "Cognitive Surplus"}, {name: "Persuasive Technology"}, {name: "Surveillance Capitalism"}, {name: "Deep Work"}] },
+        "COGNITIVE BIASES": { title: "Cognitive Biases", summary: "Systematic patterns of deviation from norm or rationality in judgment. Individuals create their own 'subjective reality' from their perception of the input.", links: [{name: "Heuristics"}, {name: "Bounded Rationality"}, {name: "Confirmation Bias"}, {name: "Survivorship Bias"}, {name: "Dunning-Kruger Effect"}] },
+        "COMPLEX SYSTEMS": { title: "Complex Systems", summary: "Systems composed of many components which may interact with each other. In many cases, it is useful to represent such a system as a network where the nodes represent the components and links their interactions.", links: [{name: "Emergence"}, {name: "Chaos Theory"}, {name: "Nonlinear System"}, {name: "Butterfly Effect"}, {name: "Network Theory"}] },
+        "WHY PLANS FAIL": { title: "Why Plans Fail", summary: "The tendency to underestimate the time, costs, and risks of future actions and at the same time overestimate the benefits of the same actions.", links: [{name: "Planning Fallacy"}, {name: "Optimism Bias"}, {name: "Hofstadter's Law"}, {name: "Risk Management"}, {name: "Black Swan Theory"}] },
+        "SCALE AND GROWTH": { title: "Scale and Growth", summary: "Growth whose rate becomes ever more rapid in proportion to the growing total number or size. Often seen in bacteria, pandemics, and compounding interest.", links: [{name: "Exponential Growth"}, {name: "Compound Interest"}, {name: "Economies of Scale"}, {name: "Network Effects"}, {name: "Metcalfe's Law"}] },
+        "SIGNAL VS NOISE": { title: "Signal vs Noise", summary: "The ratio of useful information (signal) to false or irrelevant data (noise). In the information age, filtering noise is the primary challenge.", links: [{name: "Signal-to-Noise Ratio"}, {name: "Information Theory"}, {name: "Statistical Inference"}, {name: "Filter Failure"}, {name: "Pattern Recognition"}] }
     };
 
     // 🧠 DATABASES (Product)
@@ -413,6 +309,10 @@
         trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
         research: { label: "RESEARCH", init: () => renderSearchSlide() },
         food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
+        custom: { 
+            label: "CUSTOM REQ", 
+            init: () => renderExternalModule('https://via-decide.github.io/food.decide-custom/') 
+        },
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
@@ -486,6 +386,27 @@
         }
     }
 
+    // 🔥 BACKEND LOGGER (FIXED "NO CONTEXT" ERROR)
+    function sendFeedback(type, payload) {
+        if(!BACKEND_URL) return;
+        
+        const payloadStr = typeof payload === 'string' ? payload : JSON.stringify(payload);
+        
+        const data = new URLSearchParams();
+        data.append("type", type);
+        data.append("timestamp", new Date().toISOString());
+        data.append("context", payloadStr); 
+        data.append("payload", payloadStr); 
+        data.append("data", payloadStr);    
+
+        fetch(BACKEND_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: data.toString()
+        }).catch(e => console.log("Feedback Sync Skipped"));
+    }
+
     // 🎨 RENDER LOBBY (GRID SYSTEM)
     function renderLobby() {
         const container = document.getElementById('master-container');
@@ -495,7 +416,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v72.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v78.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -523,7 +444,12 @@
                     <div class="grid-label">DINING</div>
                     <div class="grid-status">EXT: LINK</div>
                 </div>
-                <div class="grid-btn btn-fuel" onclick="togglePayment(true)">
+                <div class="grid-btn" onclick="loadDomain('custom')">
+                    <div class="grid-icon">🛠️</div>
+                    <div class="grid-label">CUSTOM REQ</div>
+                    <div class="grid-status">DEMO: LINK</div>
+                </div>
+                <div class="grid-btn btn-fuel full-width-btn" onclick="togglePayment(true)">
                     <div class="grid-icon">⚡</div>
                     <div class="grid-label">SYSTEM FUEL</div>
                     <div class="grid-status">SUPPORT DEV</div>
@@ -662,6 +588,10 @@
         doc.setFont("courier", "bold"); doc.setFontSize(18); doc.setTextColor(0, 0, 0);
         doc.text("DECIDE.ENGINE // RESEARCH PATH", 20, y); y += 15;
         doc.setFontSize(12); doc.setFont("courier", "normal");
+        
+        // 🔥 LOG DATA TO BACKEND
+        sendFeedback('RESEARCH_EXPORT', ENGINE_STATE.researchPath);
+
         ENGINE_STATE.researchPath.forEach((item, i) => {
             if (y > 270) { doc.addPage(); y = 20; }
             doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y += 8;
@@ -828,6 +758,8 @@
                         showToast("CORRECT! RESEARCHING...", "success"); 
                         // FEATURE: Connect Correct Answer to Wiki Research
                         diveDeeper(active.dataset.real); 
+                        // 🔥 LOG TRIVIA SUCCESS (FIXED NO CONTEXT)
+                        sendFeedback('TRIVIA_WIN', JSON.stringify({ question: active.parentElement.querySelector('h1').innerText, answer: active.dataset.real }));
                     } else { 
                         showToast("WRONG!", "error"); 
                         setTimeout(() => goToSlide(currentIdx + 1), 1000); 
