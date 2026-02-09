@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v79.1 |</title>
+    <title>| decide.engine v80.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -14,7 +14,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v79.1 (ARTIFACT LOOP)
+           CORE SYSTEM | DECIDE OS v80.0 (REVENUE ENGINE)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -160,8 +160,6 @@
         .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
         .btn-yt { background: #cc0000; border: none; }
-        
-        /* 🟣 SHARE BUTTON STYLE */
         .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-share:active { background: #fff; color: #000; }
         
@@ -221,6 +219,17 @@
         }
         
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
+        
+        .deal-tag {
+            color: var(--accent-go);
+            font-size: 0.8rem;
+            font-weight: bold;
+            background: rgba(0, 230, 118, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-family: var(--font-tech);
+        }
     </style>
 </head>
 <body>
@@ -254,7 +263,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v79.1 (SHARE FIXED)
+       KUTCH AUTOMATION | v80.0 (REVENUE ENGINE)
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -316,25 +325,26 @@
     };
 
     // 🧠 DATABASES (Product)
+    // Updated with MRP for Deal Logic
     const PHONE_DB = {
-      "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999 },
-      "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999 },
-      "Nothing 3a Pro": { attr: { cam: 8, gam: 7, bat: 8, ui: 10, dis: 9, srv: 9, thm: 8, dur: 8 }, tags: ["clean_ui", "no_charger"], price: 27999 },
-      "Xiaomi 14 Civi": { attr: { cam: 10, gam: 6, bat: 6, ui: 6, dis: 10, srv: 6, thm: 6, dur: 7 }, tags: ["camera_king", "compact"], price: 32999 },
-      "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999 },
-      "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999 },
-      "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999 },
-      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust", "val"], price: 7499 },
-      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value", "val"], price: 7999 },
-      "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999 }
+      "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999, mrp: 34999, review: PHONE_REVIEW_URL },
+      "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999, mrp: 34999, review: PHONE_REVIEW_URL },
+      "Nothing 3a Pro": { attr: { cam: 8, gam: 7, bat: 8, ui: 10, dis: 9, srv: 9, thm: 8, dur: 8 }, tags: ["clean_ui", "no_charger"], price: 27999, mrp: 29999, review: PHONE_REVIEW_URL },
+      "Xiaomi 14 Civi": { attr: { cam: 10, gam: 6, bat: 6, ui: 6, dis: 10, srv: 6, thm: 6, dur: 7 }, tags: ["camera_king", "compact"], price: 32999, mrp: 39999, review: PHONE_REVIEW_URL },
+      "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999, mrp: 32999, review: PHONE_REVIEW_URL },
+      "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999, mrp: 38999, review: PHONE_REVIEW_URL },
+      "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999, mrp: 35999, review: PHONE_REVIEW_URL },
+      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust", "val"], price: 7499, mrp: 8999, review: PHONE_REVIEW_URL },
+      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value", "val"], price: 7999, mrp: 9999, review: PHONE_REVIEW_URL },
+      "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999, mrp: 34999, review: PHONE_REVIEW_URL }
     };
 
     const AUDIO_DB = {
-      "Technics AZ100": { attr: { anc: 9.5, snd: 10.0, mic: 9, lat: 8, bat: 7, fit: 10, bld: 9, app: 9 }, price: 22990 },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, snd: 9.5, mic: 8, lat: 6, bat: 8, fit: 8, bld: 9, app: 10 }, price: 24990 },
-      "SteelSeries Arctis": { attr: { anc: 7.0, snd: 8.0, mic: 8, lat: 10, bat: 9, fit: 8, bld: 7, app: 7 }, price: 17999 },
-      "OnePlus Nord Buds 3": { attr: { anc: 8.5, snd: 8.0, mic: 8, lat: 7, bat: 8, fit: 9, bld: 8, app: 8 }, price: 3299 },
-      "Tribit FlyBuds 3": { attr: { anc: 5.0, snd: 6, mic: 6, lat: 6, bat: 10, fit: 7, bld: 7, app: 5 }, price: 3999 }
+      "Technics AZ100": { attr: { anc: 9.5, snd: 10.0, mic: 9, lat: 8, bat: 7, fit: 10, bld: 9, app: 9 }, price: 22990, review: AUDIO_REVIEW_URL },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, snd: 9.5, mic: 8, lat: 6, bat: 8, fit: 8, bld: 9, app: 10 }, price: 24990, review: AUDIO_REVIEW_URL },
+      "SteelSeries Arctis": { attr: { anc: 7.0, snd: 8.0, mic: 8, lat: 10, bat: 9, fit: 8, bld: 7, app: 7 }, price: 17999, review: AUDIO_REVIEW_URL },
+      "OnePlus Nord Buds 3": { attr: { anc: 8.5, snd: 8.0, mic: 8, lat: 7, bat: 8, fit: 9, bld: 8, app: 8 }, price: 3299, review: AUDIO_REVIEW_URL },
+      "Tribit FlyBuds 3": { attr: { anc: 5.0, snd: 6, mic: 6, lat: 6, bat: 10, fit: 7, bld: 7, app: 5 }, price: 3999, review: AUDIO_REVIEW_URL }
     };
 
     const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy", "FAST CHARGE": "slow_charge" };
@@ -471,7 +481,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v79.1 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v80.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -779,7 +789,7 @@
             <div class="winner-container">
                 <div id="final-list"></div>
                 <div class="final-actions">
-                    <button class="btn btn-primary" onclick="redirect('amazon')">BUY NOW ↗</button>
+                    <button class="btn btn-primary" onclick="redirect('amazon')">CHECK LIVE PRICE ↗</button>
                     <button class="btn btn-yt" onclick="openReview()">▶ REVIEW</button>
                     <button class="btn btn-share" onclick="generateShareCard()">📷 SHARE CARD</button>
                     <button class="btn" onclick="location.reload()">RESTART</button>
@@ -799,8 +809,14 @@
             if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
             if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
             for(let attr in item.attr) { let w = ENGINE_STATE.session_weights[attr] || 0.1; score += item.attr[attr] * w; }
+            
+            // 💸 DEAL HOOK LOGIC
+            if (ENGINE_STATE.active_filters.includes("BUDGET BUY") && item.mrp && item.mrp > item.price) {
+                score += 5; // Artificial boost for deals
+            }
+
             if(ENGINE_STATE.items_detected[name]) score += 10;
-            scores.push({name, score, price: item.price});
+            scores.push({name, score, price: item.price, mrp: item.mrp});
         }
         scores.sort((a, b) => b.score - a.score); return scores[0] || {name: "No Match", price: 0};
     }
@@ -835,7 +851,16 @@
 
     function updateFinal() { 
         const list = document.getElementById('final-list'); const winner = calculateVerdict(); 
-        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; 
+        
+        // 💸 DISCOUNT LOGIC
+        let priceHtml = `Est. Price: ₹${winner.price}`;
+        if(winner.mrp && winner.mrp > winner.price) {
+            const off = Math.round(((winner.mrp - winner.price) / winner.mrp) * 100);
+            priceHtml = `₹${winner.price} <span class="deal-tag">(${off}% OFF)</span>`;
+        }
+
+        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">${priceHtml}</p></div>`; 
+        
         ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; 
         setTimeout(() => triggerVerdictSpeech(), 800);
     }
