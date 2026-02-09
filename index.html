@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <meta name="description" content="A free AI-powered tool to compare smartphones, research topics, and test your trivia knowledge. The ultimate decision-making engine.">
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>| decide.engine |</title>
@@ -16,7 +13,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v71.0 (FIXED)
+           CORE SYSTEM | DECIDE OS v72.0 (STABLE)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -85,8 +82,8 @@
             display: flex; align-items: center; gap: 8px;
         }
         
-        .status-dot { width: 6px; height: 6px; background: var(--accent-go); border-radius: 50%; box-shadow: 0 0 5px var(--accent-go); animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .status-dot { width: 6px; height: 6px; background: var(--accent-go); border-radius: 50%; box-shadow: 0 0 5px var(--accent-go); transition: background 0.3s; }
+        .status-dot.offline { background: var(--accent-skip); box-shadow: 0 0 5px var(--accent-skip); }
 
         /* GLOBAL EXIT BUTTON */
         .exit-btn {
@@ -232,7 +229,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v71.0 (FINAL MERGE)
+       KUTCH AUTOMATION | v72.0 (FINAL)
        ========================================= */
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
@@ -370,6 +367,11 @@
     let currentIdx = 0;
 
     async function boot() { 
+        // Connectivity Check
+        updateStatus(navigator.onLine);
+        window.addEventListener('online', () => updateStatus(true));
+        window.addEventListener('offline', () => updateStatus(false));
+
         const params = new URLSearchParams(window.location.search);
         const syllabus = params.get('syllabus');
         if (syllabus) {
@@ -381,6 +383,14 @@
         initSwipeSystem(); 
     }
 
+    function updateStatus(isOnline) {
+        const dot = document.querySelector('.status-dot');
+        if(dot) {
+            if(isOnline) dot.classList.remove('offline');
+            else dot.classList.add('offline');
+        }
+    }
+
     // 🎨 RENDER LOBBY (GRID SYSTEM)
     function renderLobby() {
         const container = document.getElementById('master-container');
@@ -390,7 +400,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v71.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v72.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -433,6 +443,7 @@
         container.appendChild(section);
         slideElements = [section];
         currentIdx = 0;
+        updateStatus(navigator.onLine);
         
         // Ensure exit button is handled dynamically
         let exitBtn = document.getElementById('global-exit');
@@ -441,7 +452,7 @@
 
     function loadDomain(key) {
         ENGINE_STATE.currentDomain = key;
-        ENGINE_STATE.triviaMode = false; // FIX: Reset logic mode
+        ENGINE_STATE.triviaMode = false; // FIX: Strict reset to prevent "Wrong" bug
         
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
@@ -496,7 +507,7 @@
         }
     }
 
-    // 🔬 RESEARCH LOGIC (Source 1 - Robust)
+    // 🔬 RESEARCH LOGIC
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         let topicsHTML = `<div class="topic-grid">`;
@@ -540,7 +551,6 @@
     async function diveDeeper(t) {
         showToast("DIVING...");
         const ctx = await WIKI_ENGINE.getContext(t);
-        // FIX: Ensure valid context
         if(!ctx || !ctx.title || ctx.title === "Error" || ctx.title === "Not Found") {
              showToast("DATA CORRUPTED", "error");
              return;
@@ -569,7 +579,7 @@
         doc.save("Decide_Journey.pdf"); showToast("PDF DOWNLOADING...");
     }
 
-    // 📱 HARDWARE UI FIX & AUTO-VERDICT (Source 2)
+    // 📱 HARDWARE UI FIX & AUTO-VERDICT
     function renderEcosystemGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
         section.innerHTML = `
@@ -706,7 +716,7 @@
     function initSwipeSystem() {
         document.addEventListener('touchstart', e => { tsY = e.touches[0].clientY; tsX = e.touches[0].clientX; }, {passive: true});
         document.addEventListener('touchend', e => {
-            // FIX: Scope touch to active slide only
+            // FIX: Scope touch to active slide only to prevent ghost swipes
             const view = e.target.closest('.main-slide.active .carousel-viewport');
             if(!view || document.querySelector('iframe')) return;
             const dy = e.changedTouches[0].clientY - tsY;
@@ -718,10 +728,11 @@
                     active.classList.remove('static'); active.classList.add('opt-hidden');
                     view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
                 } else if(ENGINE_STATE.triviaMode) {
-                    // Trivia Check -> FIX: Correct Answer connects to Wiki
+                    // Trivia Check
                     if(active.dataset.correct === "true") { 
                         showToast("CORRECT! RESEARCHING...", "success"); 
-                        diveDeeper(active.dataset.real); // Open Wiki Node
+                        // FEATURE: Connect Correct Answer to Wiki Research
+                        diveDeeper(active.dataset.real); 
                     } else { 
                         showToast("WRONG!", "error"); 
                         setTimeout(() => goToSlide(currentIdx + 1), 1000); 
