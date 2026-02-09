@@ -3,292 +3,365 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEDIA FORGE | Studio v1.0</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <title>MEDIA FORGE | Studio v3.1 (Debug)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root {
-            --studio-bg: #050505;
-            --studio-panel: #0a0a0a;
-            --studio-green: #00e676;
-            --studio-border: #333;
-            --font-mono: 'Courier New', monospace;
-            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --bg: #09090b;
+            --panel: #121214;
+            --border: #27272a;
+            --text-main: #e4e4e7;
+            --text-muted: #a1a1aa;
+            --accent-green: #22c55e;
+            --accent-green-dim: rgba(34, 197, 94, 0.1);
+            --accent-orange: #f59e0b;
+            --font: 'Courier New', monospace;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            background-color: var(--studio-bg);
-            color: #fff;
-            font-family: var(--font-mono);
-            margin: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
             padding: 20px;
         }
 
-        .studio-container {
+        .studio-card {
             width: 100%;
             max-width: 600px;
-            background: var(--studio-panel);
-            border: 1px solid var(--studio-border);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
         }
 
+        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--studio-border);
-            padding-bottom: 20px;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
         }
+        .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: -1px; }
+        .version { font-size: 0.7rem; background: var(--border); padding: 4px 8px; border-radius: 4px; color: var(--text-muted); }
 
-        .title {
-            font-size: 1.5rem;
-            color: var(--studio-green);
-            font-weight: bold;
+        /* DROP ZONE */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255,255,255,0.01);
+        }
+        .drop-zone:hover { border-color: var(--text-muted); background: rgba(255,255,255,0.03); }
+        .drop-zone.active { border-color: var(--accent-green); background: var(--accent-green-dim); }
+        .drop-zone.error { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        
+        .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.7; }
+
+        /* STATUS & DEBUG */
+        .status-bar {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .reset-btn {
-            background: none;
-            border: none;
-            color: #666;
-            font-family: var(--font-mono);
-            cursor: pointer;
-            text-transform: uppercase;
+            gap: 12px;
             font-size: 0.8rem;
         }
-        .reset-btn:hover { color: #fff; }
+        .light { width: 10px; height: 10px; border-radius: 50%; background: #333; transition: 0.3s; }
+        .light.green { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+        .light.orange { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
+        .status-text { text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); flex-grow: 1; }
 
-        .label {
+        .debug-log {
+            margin-top: 10px;
             font-size: 0.7rem;
             color: #666;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            height: 60px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 5px;
+            display: none; /* Hidden by default unless error */
         }
+        .debug-log.show { display: block; }
 
-        .input-area {
+        /* BUTTON */
+        .export-btn {
             width: 100%;
-            height: 200px;
-            background: #000;
-            border: 1px solid var(--studio-border);
-            color: var(--studio-green);
-            font-family: var(--font-mono);
-            padding: 15px;
-            border-radius: 8px;
-            resize: none;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            box-sizing: border-box;
-        }
-        .input-area:focus { outline: 1px solid var(--studio-green); }
-
-        .file-upload-box {
-            border: 1px dashed var(--studio-border);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .file-upload-box:hover { border-color: var(--studio-green); background: rgba(0, 230, 118, 0.05); }
-        .file-upload-box input { display: none; }
-
-        .action-btn {
-            width: 100%;
-            padding: 18px;
-            background: var(--studio-green);
-            color: #000;
+            margin-top: 1.5rem;
+            padding: 1.2rem;
             border: none;
             border-radius: 8px;
-            font-family: var(--font-mono);
-            font-weight: bold;
+            background: var(--border);
+            color: #666;
+            font-family: var(--font);
+            font-weight: 800;
             font-size: 1rem;
+            text-transform: uppercase;
+            cursor: not-allowed;
+            transition: 0.3s;
+        }
+        .export-btn.ready {
+            background: var(--accent-green);
+            color: #000;
             cursor: pointer;
-            transition: 0.2s;
-            margin-top: 10px;
+            box-shadow: 0 0 20px var(--accent-green-dim);
         }
-        .action-btn:active { transform: scale(0.98); opacity: 0.9; }
-
-        .console-log {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #444;
-            min-height: 40px;
-        }
-        .console-line { margin: 4px 0; }
-        .error { color: #ff3333; }
-        .success { color: var(--studio-green); }
+        .export-btn.ready:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--accent-green-dim); }
 
         /* SCRIPT OUTPUT */
-        .script-output {
+        .script-display {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
             display: none;
-            margin-top: 30px;
-            border-top: 1px solid var(--studio-border);
-            padding-top: 20px;
         }
-        .script-output.visible { display: block; }
-        
-        .script-node {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            border-left: 3px solid var(--studio-green);
-        }
-        .speaker { color: var(--studio-green); font-weight: bold; font-size: 0.8rem; margin-bottom: 5px; }
-        .dialogue { color: #ddd; line-height: 1.5; }
+        .script-display.show { display: block; }
+
+        .line-block { margin-bottom: 1rem; padding: 1rem; background: #121214; border: 1px solid var(--border); border-radius: 6px; border-left: 3px solid #333; }
+        .line-block.HOST { border-color: var(--accent-green); }
+        .line-block.AI { border-color: var(--accent-orange); }
+        .role { font-weight: bold; font-size: 0.7rem; margin-bottom: 0.5rem; opacity: 0.6; }
+        .text { font-size: 0.9rem; line-height: 1.5; color: #fff; }
 
     </style>
 </head>
 <body>
 
-<div class="studio-container">
+<div class="studio-card">
     <div class="header">
-        <div class="title">⚗️ MEDIA FORGE</div>
-        <button class="reset-btn" onclick="location.reload()">[RESET]</button>
+        <div class="brand">⚗️ MEDIA FORGE</div>
+        <div class="version">v3.1</div>
     </div>
 
-    <div class="label">IMPORT SOURCE (PDF)</div>
-    <label class="file-upload-box">
-        <input type="file" id="pdf-upload" accept="application/pdf" onchange="handlePDF(this)">
-        <span style="color:#888; font-size:0.8rem;">📂 CLICK TO UPLOAD 'DECIDE_JOURNEY.PDF'</span>
-    </label>
-
-    <div class="label">RAW DATA (JSON PAYLOAD)</div>
-    <textarea id="json-input" class="input-area" placeholder="Paste JSON here or upload PDF..."></textarea>
-
-    <div class="label">SESSION ID (OPTIONAL)</div>
-    <input type="text" id="session-id" placeholder="SES_..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; margin-bottom:20px; box-sizing:border-box;">
-
-    <button class="action-btn" onclick="generateScript()">GENERATE NOTEBOOK SCRIPT 📄</button>
-
-    <div id="console" class="console-log">
-        <div class="console-line">> System Ready.</div>
+    <div class="drop-zone" id="dropArea">
+        <input type="file" id="fileInput" accept=".pdf,.json">
+        <div class="icon">📂</div>
+        <div id="dropText"><strong>CLICK TO UPLOAD PDF</strong></div>
+        <div class="hint" style="font-size:0.7rem; color:#666; margin-top:5px;">Supports 'Decide_Journey.pdf'</div>
     </div>
 
-    <div id="output" class="script-output"></div>
+    <div class="status-bar">
+        <div class="light" id="statusLight"></div>
+        <div class="status-text" id="statusText">SYSTEM IDLE</div>
+    </div>
+    
+    <div class="debug-log" id="debugLog"></div>
+
+    <button class="export-btn" id="exportBtn" onclick="generateScript()">GENERATE SCRIPT</button>
 </div>
 
-<script>
-    // 🧠 STUDIO CORE LOGIC
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+<div class="script-display" id="scriptOutput"></div>
 
-    function log(msg, type='') {
-        const c = document.getElementById('console');
-        c.innerHTML += `<div class="console-line ${type}">> ${msg}</div>`;
-        c.scrollTop = c.scrollHeight;
+<script>
+    // --- V3.1 CORE ---
+    // Explicit Worker Setting
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+    const fileInput = document.getElementById('fileInput');
+    const statusText = document.getElementById('statusText');
+    const statusLight = document.getElementById('statusLight');
+    const exportBtn = document.getElementById('exportBtn');
+    const dropArea = document.getElementById('dropArea');
+    const debugLog = document.getElementById('debugLog');
+    
+    let PARSED_DATA = null;
+
+    function log(msg) {
+        console.log(msg);
+        debugLog.innerHTML += `> ${msg}<br>`;
+        debugLog.scrollTop = debugLog.scrollHeight;
     }
 
-    async function handlePDF(input) {
-        if (input.files.length === 0) return;
-        const file = input.files[0];
-        log(`Reading ${file.name}...`);
+    function setStatus(state, msg) {
+        statusText.innerText = msg;
+        statusLight.className = 'light'; 
+        exportBtn.className = 'export-btn';
+        exportBtn.disabled = true;
+        dropArea.className = 'drop-zone';
 
+        if(state === 'loading') {
+            statusLight.classList.add('orange');
+            debugLog.classList.add('show');
+        } else if(state === 'ready') {
+            statusLight.classList.add('green');
+            exportBtn.classList.add('ready');
+            exportBtn.disabled = false;
+            dropArea.classList.add('active');
+            document.getElementById('dropText').innerHTML = "<strong>FILE LOCKED & LOADED</strong>";
+        } else if(state === 'error') {
+            dropArea.classList.add('error');
+            debugLog.classList.add('show');
+        }
+    }
+
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+
+        setStatus('loading', 'INITIALIZING READER...');
+        log(`File selected: ${file.name} (${file.type})`);
+
+        if(file.type === 'application/pdf') {
+            await parsePDF(file);
+        } else if (file.name.endsWith('.json') || file.type === 'application/json') {
+            await parseJSON(file);
+        } else {
+            setStatus('error', 'INVALID FILE FORMAT');
+            log("Error: Please upload .pdf or .json");
+        }
+    });
+
+    async function parsePDF(file) {
         const reader = new FileReader();
         reader.onload = async function() {
-            const typedarray = new Uint8Array(this.result);
             try {
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let fullText = "";
+                log("Binary read complete. Loading PDF.js...");
+                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+                log(`PDF Loaded. Pages: ${pdf.numPages}`);
                 
-                for (let i = 1; i <= pdf.numPages; i++) {
+                let fullText = "";
+                for(let i=1; i<=pdf.numPages; i++) {
+                    setStatus('loading', `READING PAGE ${i}/${pdf.numPages}...`);
                     const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(" ");
-                    fullText += pageText + "\n";
+                    const txt = await page.getTextContent();
+                    fullText += txt.items.map(s => s.str).join(" ") + "\n";
                 }
                 
-                parsePDFText(fullText);
-            } catch (e) {
-                log("PDF Error: " + e.message, 'error');
+                log("Text extraction complete. Parsing Nodes...");
+                extractNodes(fullText);
+
+            } catch(err) {
+                setStatus('error', 'PDF READ FAILED');
+                log("CRITICAL ERROR: " + err.message);
             }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function parsePDFText(text) {
-        log("Parsing PDF Nodes...");
-        // Regex to find [NODE XX] TITLE ... Body
-        // This is a simplified parser based on your PDF structure
+    function extractNodes(text) {
         const nodes = [];
-        const parts = text.split(/\[NODE \d+\]/);
         
-        // Skip preamble
-        for(let i=1; i<parts.length; i++) {
-            let chunk = parts[i].trim();
-            // Split title (first few words usually caps) from body
-            // Heuristic: First chunk of text before newline or period
-            let title = "UNKNOWN TOPIC";
-            let summary = chunk;
-            
-            // Clean up PDF artifacts
-            summary = summary.replace(/\/g, ""); 
-            
-            // Guess title (first 3-5 words)
-            const words = summary.split(' ');
-            if(words.length > 0) {
-                title = words.slice(0, 4).join(" ").toUpperCase(); // Approximate title
-            }
+        // 🔧 FUZZY PARSER V3.1
+        // Finds "NODE" followed by digits, allows for missing brackets
+        // Captures everything until the next "NODE" or End of File
+        // Regex: /\[?NODE\s*\d+\]?/gi
+        
+        // Strategy: Split by the word NODE followed by numbers
+        const parts = text.split(/NODE\s*\d+/i);
 
-            nodes.push({ title: title, summary: summary });
-        }
+        parts.forEach((part, idx) => {
+            if(idx === 0) return; // Intro text
+            
+            let chunk = part.trim();
+            // Remove leftover brackets or "]" at start
+            chunk = chunk.replace(/^[\]\)\s]+/, "");
+
+            // Heuristic: The Title is the first sentence or chunk before a newline
+            // If PDF.js ate newlines, we look for capitalization changes or length
+            let titleEnd = chunk.indexOf('\n');
+            if(titleEnd === -1 || titleEnd > 60) titleEnd = 50; 
+
+            let title = chunk.substring(0, titleEnd).trim().toUpperCase();
+            let body = chunk.substring(titleEnd).trim();
+
+            // Clean artifacts
+            body = body.replace(/\/g, "");
+            title = title.replace(/\/g, "");
+
+            if(body.length > 20) {
+                nodes.push({ title, summary: body });
+                log(`Found Node: ${title.substring(0, 15)}...`);
+            }
+        });
 
         if(nodes.length > 0) {
-            document.getElementById('json-input').value = JSON.stringify(nodes, null, 2);
-            log(`Success: Extracted ${nodes.length} Nodes.`, 'success');
+            PARSED_DATA = nodes;
+            setStatus('ready', `READY: ${nodes.length} NODES EXTRACTED`);
+            log("Success: Data structure valid.");
         } else {
-            log("No Nodes found in text stream.", 'error');
+            setStatus('error', 'NO DATA FOUND');
+            log("Parser Error: Regex found no matches. Is the PDF empty?");
+            // Fallback: Treat whole text as one node
+            if(text.length > 100) {
+                PARSED_DATA = [{title: "FULL DOCUMENT", summary: text}];
+                setStatus('ready', 'FALLBACK: RAW TEXT MODE');
+                log("Switched to Raw Text mode.");
+            }
         }
+    }
+
+    async function parseJSON(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                if(Array.isArray(json)) {
+                    PARSED_DATA = json;
+                    setStatus('ready', `JSON IMPORT: ${json.length} ITEMS`);
+                } else {
+                    throw new Error("JSON is not an array");
+                }
+            } catch(err) {
+                setStatus('error', 'INVALID JSON');
+                log(err.message);
+            }
+        };
+        reader.readAsText(file);
     }
 
     function generateScript() {
-        const input = document.getElementById('json-input').value;
-        const output = document.getElementById('output');
-        output.innerHTML = "";
+        if(!PARSED_DATA) return;
         
-        try {
-            if(!input) throw new Error("Input is empty.");
-            const data = JSON.parse(input);
+        const out = document.getElementById('scriptOutput');
+        out.innerHTML = "";
+        out.classList.add('show');
+
+        // SCROLL TO OUTPUT
+        setTimeout(() => out.scrollIntoView({behavior: "smooth"}), 100);
+
+        addBlock("HOST", "System Online. Let's analyze the data path.");
+
+        PARSED_DATA.forEach((node, i) => {
+            // Clean up body text for script
+            let cleanBody = node.summary.replace(/\s+/g, ' ').trim();
+            if(cleanBody.length > 350) cleanBody = cleanBody.substring(0, 350) + "...";
+
+            addBlock("AI_ASSISTANT", `Processing Node ${i+1}: ${node.title}`);
+            addBlock("HOST", "What's the core concept here?");
+            addBlock("AI_ASSISTANT", cleanBody);
             
-            if(!Array.isArray(data)) throw new Error("Data must be an array.");
+            if(i < PARSED_DATA.length - 1) {
+                addBlock("HOST", "Connect this to the next node.");
+            }
+        });
 
-            log("Generating Script...", 'success');
-            output.classList.add('visible');
-
-            // HOST INTRO
-            addScriptLine("HOST", "Welcome back to the forge. Today we're analyzing a new data path.");
-            
-            data.forEach((node, i) => {
-                // AI LOGIC TO MAKE IT SOUND LIKE A SCRIPT
-                addScriptLine("AI ASSISTANT", `Node ${i+1} identified: ${node.title}.`);
-                addScriptLine("HOST", "Break it down for me.");
-                addScriptLine("AI ASSISTANT", node.summary.substring(0, 200) + "...");
-                addScriptLine("HOST", "Interesting. What connects to this?");
-            });
-
-            addScriptLine("HOST", "End of stream. Archive this session.");
-
-        } catch(e) {
-            log(e.message, 'error');
-        }
+        addBlock("HOST", "Analysis complete. Save to archives.");
     }
 
-    function addScriptLine(speaker, text) {
+    function addBlock(role, text) {
         const div = document.createElement('div');
-        div.className = 'script-node';
-        div.innerHTML = `<div class="speaker">${speaker}</div><div class="dialogue">${text}</div>`;
-        document.getElementById('output').appendChild(div);
+        div.className = `line-block ${role}`;
+        div.innerHTML = `<div class="role">${role}</div><div class="text">${text}</div>`;
+        document.getElementById('scriptOutput').appendChild(div);
     }
-</script>
 
+</script>
 </body>
 </html>
