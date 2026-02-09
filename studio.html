@@ -1,203 +1,294 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decide Studio | Media Forge</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>MEDIA FORGE | Studio v1.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
-        :root { --bg: #050505; --panel: #111; --text: #eee; --accent: #00e676; --border: #333; --code-bg: #1a1a1a; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 90vh; }
-        
-        .console { width: 100%; max-width: 700px; background: var(--panel); border: 1px solid var(--border); padding: 30px; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        h1 { margin-top: 0; color: var(--accent); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid var(--border); padding-bottom: 15px; display: flex; justify-content: space-between; }
-        
-        .mode-switch { font-size: 0.8rem; opacity: 0.6; cursor: pointer; }
-        .mode-switch:hover { opacity: 1; color: #fff; }
+        :root {
+            --studio-bg: #050505;
+            --studio-panel: #0a0a0a;
+            --studio-green: #00e676;
+            --studio-border: #333;
+            --font-mono: 'Courier New', monospace;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-        .input-group { margin: 20px 0; }
-        label { display: block; color: #888; font-size: 0.7rem; margin-bottom: 8px; text-transform: uppercase; }
+        body {
+            background-color: var(--studio-bg);
+            color: #fff;
+            font-family: var(--font-mono);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .studio-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--studio-panel);
+            border: 1px solid var(--studio-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--studio-border);
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            color: var(--studio-green);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .reset-btn:hover { color: #fff; }
+
+        .label {
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-area {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border: 1px solid var(--studio-border);
+            color: var(--studio-green);
+            font-family: var(--font-mono);
+            padding: 15px;
+            border-radius: 8px;
+            resize: none;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .input-area:focus { outline: 1px solid var(--studio-green); }
+
+        .file-upload-box {
+            border: 1px dashed var(--studio-border);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .file-upload-box:hover { border-color: var(--studio-green); background: rgba(0, 230, 118, 0.05); }
+        .file-upload-box input { display: none; }
+
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--studio-green);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .action-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+        .console-log {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #444;
+            min-height: 40px;
+        }
+        .console-line { margin: 4px 0; }
+        .error { color: #ff3333; }
+        .success { color: var(--studio-green); }
+
+        /* SCRIPT OUTPUT */
+        .script-output {
+            display: none;
+            margin-top: 30px;
+            border-top: 1px solid var(--studio-border);
+            padding-top: 20px;
+        }
+        .script-output.visible { display: block; }
         
-        textarea { width: 100%; height: 200px; background: var(--code-bg); border: 1px solid var(--border); color: #0f0; padding: 15px; font-family: 'Courier New', monospace; font-size: 0.85rem; border-radius: 6px; box-sizing: border-box; resize: vertical; }
-        textarea:focus { outline: none; border-color: var(--accent); }
+        .script-node {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--studio-green);
+        }
+        .speaker { color: var(--studio-green); font-weight: bold; font-size: 0.8rem; margin-bottom: 5px; }
+        .dialogue { color: #ddd; line-height: 1.5; }
 
-        .btn-action { width: 100%; padding: 15px; background: var(--text); color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; margin-top: 10px; transition: 0.2s; letter-spacing: 1px; }
-        .btn-action:hover { background: var(--accent); }
-
-        .log-area { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; font-size: 0.75rem; color: #666; }
-        .log-item { margin-bottom: 5px; }
-        .success { color: var(--accent); }
-        .error { color: #ff4444; }
     </style>
 </head>
 <body>
 
-    <div class="console">
-        <h1>
-            <span>⚗️ Media Forge</span>
-            <span class="mode-switch" onclick="location.reload()">[RESET]</span>
-        </h1>
-        
-        <div class="input-group">
-            <label>Input Source (JSON Payload)</label>
-            <textarea id="jsonInput" placeholder='Paste your Decide OS JSON here... 
-Example: [{"title":"Gravity","summary":"..."}]'></textarea>
-        </div>
-
-        <div class="input-group" style="display:flex; gap:10px;">
-            <div style="flex:1">
-                <label>Session ID (Optional)</label>
-                <input type="text" id="sessionId" style="width:100%; background:#111; border:1px solid #333; color:white; padding:10px;" placeholder="SES_...">
-            </div>
-        </div>
-
-        <button class="btn-action" onclick="forgeNotebookPDF()">GENERATE NOTEBOOK SCRIPT 📄</button>
-
-        <div class="log-area" id="consoleLog">
-            <div class="log-item">> Waiting for data stream...</div>
-        </div>
+<div class="studio-container">
+    <div class="header">
+        <div class="title">⚗️ MEDIA FORGE</div>
+        <button class="reset-btn" onclick="location.reload()">[RESET]</button>
     </div>
 
+    <div class="label">IMPORT SOURCE (PDF)</div>
+    <label class="file-upload-box">
+        <input type="file" id="pdf-upload" accept="application/pdf" onchange="handlePDF(this)">
+        <span style="color:#888; font-size:0.8rem;">📂 CLICK TO UPLOAD 'DECIDE_JOURNEY.PDF'</span>
+    </label>
+
+    <div class="label">RAW DATA (JSON PAYLOAD)</div>
+    <textarea id="json-input" class="input-area" placeholder="Paste JSON here or upload PDF..."></textarea>
+
+    <div class="label">SESSION ID (OPTIONAL)</div>
+    <input type="text" id="session-id" placeholder="SES_..." style="width:100%; padding:12px; background:#000; border:1px solid #333; color:#fff; border-radius:8px; margin-bottom:20px; box-sizing:border-box;">
+
+    <button class="action-btn" onclick="generateScript()">GENERATE NOTEBOOK SCRIPT 📄</button>
+
+    <div id="console" class="console-log">
+        <div class="console-line">> System Ready.</div>
+    </div>
+
+    <div id="output" class="script-output"></div>
+</div>
+
 <script>
-    const ALCHEMIST_BASE = "https://via-decide.github.io/alchemist_app/";
+    // 🧠 STUDIO CORE LOGIC
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    const log = (msg, type='') => {
-        const d = document.getElementById('consoleLog');
-        d.innerHTML += `<div class="log-item ${type}">> ${msg}</div>`;
-    };
+    function log(msg, type='') {
+        const c = document.getElementById('console');
+        c.innerHTML += `<div class="console-line ${type}">> ${msg}</div>`;
+        c.scrollTop = c.scrollHeight;
+    }
 
-    async function forgeNotebookPDF() {
-        const rawInput = document.getElementById('jsonInput').value.trim();
-        let sessionID = document.getElementById('sessionId').value.trim();
+    async function handlePDF(input) {
+        if (input.files.length === 0) return;
+        const file = input.files[0];
+        log(`Reading ${file.name}...`);
 
-        if(!rawInput) return log("Error: JSON payload empty.", "error");
-        if(!sessionID) sessionID = "SES_" + Math.random().toString(36).substr(2, 6).toUpperCase();
-
-        try {
-            log("Parsing Data Stream...");
-            
-            // 1. Intelligent Parsing (Handles raw array or Sheet wrapper)
-            let parsedData;
+        const reader = new FileReader();
+        reader.onload = async function() {
+            const typedarray = new Uint8Array(this.result);
             try {
-                const temp = JSON.parse(rawInput);
-                // If it's the full sheet payload, extract the syllabus
-                if (temp.syllabus && typeof temp.syllabus === 'string') {
-                    // It might be a double-encoded JSON string if coming from sheet
-                    try { parsedData = JSON.parse(temp.syllabus); } 
-                    catch { parsedData = temp.syllabus; } // Or just raw text
-                } 
-                else if (temp.syllabus && Array.isArray(temp.syllabus)) {
-                     parsedData = temp.syllabus;
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let fullText = "";
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(" ");
+                    fullText += pageText + "\n";
                 }
-                else {
-                    parsedData = temp; // Assume it's the raw array
-                }
+                
+                parsePDFText(fullText);
             } catch (e) {
-                throw new Error("Invalid JSON format. Please check syntax.");
+                log("PDF Error: " + e.message, 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function parsePDFText(text) {
+        log("Parsing PDF Nodes...");
+        // Regex to find [NODE XX] TITLE ... Body
+        // This is a simplified parser based on your PDF structure
+        const nodes = [];
+        const parts = text.split(/\[NODE \d+\]/);
+        
+        // Skip preamble
+        for(let i=1; i<parts.length; i++) {
+            let chunk = parts[i].trim();
+            // Split title (first few words usually caps) from body
+            // Heuristic: First chunk of text before newline or period
+            let title = "UNKNOWN TOPIC";
+            let summary = chunk;
+            
+            // Clean up PDF artifacts
+            summary = summary.replace(/\/g, ""); 
+            
+            // Guess title (first 3-5 words)
+            const words = summary.split(' ');
+            if(words.length > 0) {
+                title = words.slice(0, 4).join(" ").toUpperCase(); // Approximate title
             }
 
-            // If parsedData is just a string (Stretch Mode), wrap it
-            if (typeof parsedData === 'string') {
-                parsedData = [{ title: parsedData, summary: "Deep Dive Topic Request." }];
-            }
+            nodes.push({ title: title, summary: summary });
+        }
 
-            if (!Array.isArray(parsedData)) throw new Error("Data must be an array of topics.");
-
-            // 2. Initialize PDF Engine
-            log("Initializing NotebookLM Template...", "success");
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const margin = 20;
-            let cursorY = 20;
-
-            // 3. Header Construction
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10); 
-            doc.setTextColor(100);
-            doc.text(`AUDIO BRIEFING SCRIPT | ID: ${sessionID}`, margin, cursorY);
-            
-            cursorY += 15;
-            doc.setFontSize(22); 
-            doc.setTextColor(0);
-            doc.text("RESEARCH BRIEFING", margin, cursorY);
-            
-            cursorY += 10;
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            doc.text("Input Source: Decide OS Research Module", margin, cursorY);
-
-            // 4. Content Loop
-            cursorY += 20;
-            
-            parsedData.forEach((item, index) => {
-                // Page Break Check
-                if (cursorY > pageHeight - 60) {
-                    doc.addPage();
-                    cursorY = 20;
-                }
-
-                // Section Title
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(14);
-                doc.setTextColor(0, 200, 100); // Green Accent
-                doc.text(`[SEGMENT ${index + 1}] ${item.title.toUpperCase()}`, margin, cursorY);
-                cursorY += 8;
-
-                // Summary Body
-                doc.setFont("times", "normal");
-                doc.setFontSize(11);
-                doc.setTextColor(0);
-                
-                // Clean text
-                const cleanSummary = item.summary ? item.summary.replace(/<[^>]*>?/gm, '') : "No data provided.";
-                const lines = doc.splitTextToSize(cleanSummary, pageWidth - (margin * 2));
-                doc.text(lines, margin, cursorY);
-                
-                cursorY += (lines.length * 5) + 15;
-            });
-
-            // 5. Footer (The Alchemist Bridge)
-            const masterLink = `${ALCHEMIST_BASE}?mode=portal&session=${sessionID}&syllabus=${encodeURIComponent(parsedData[0].title)}`; // Simplified link
-
-            // Always add new page for the call to action to ensure visibility
-            doc.addPage();
-            
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(18);
-            doc.setTextColor(0);
-            doc.text("MEDIA PRODUCTION NOTES", margin, 30);
-
-            doc.setFontSize(12);
-            doc.setFont("courier", "normal");
-            doc.text("1. Upload this PDF to NotebookLM.", margin, 50);
-            doc.text("2. Generate Audio Overview.", margin, 60);
-            doc.text("3. Paste the YouTube Link below into Google Sheet.", margin, 70);
-
-            // The Box
-            doc.setFillColor(240, 240, 240);
-            doc.rect(margin, 90, pageWidth - (margin*2), 40, 'F');
-            
-            doc.setTextColor(0, 0, 255);
-            doc.setFontSize(10);
-            doc.text("USER ACTION LINK (Include in Video Description):", margin + 5, 100);
-            
-            doc.setTextColor(0);
-            doc.setFontSize(11);
-            doc.text(masterLink, margin + 5, 115, { maxWidth: pageWidth - 50 });
-
-            // 6. Save
-            const fileName = `Notebook_Source_${sessionID}.pdf`;
-            doc.save(fileName);
-            log(`Successfully exported: ${fileName}`, "success");
-
-        } catch (e) {
-            console.error(e);
-            log(e.message, "error");
+        if(nodes.length > 0) {
+            document.getElementById('json-input').value = JSON.stringify(nodes, null, 2);
+            log(`Success: Extracted ${nodes.length} Nodes.`, 'success');
+        } else {
+            log("No Nodes found in text stream.", 'error');
         }
     }
+
+    function generateScript() {
+        const input = document.getElementById('json-input').value;
+        const output = document.getElementById('output');
+        output.innerHTML = "";
+        
+        try {
+            if(!input) throw new Error("Input is empty.");
+            const data = JSON.parse(input);
+            
+            if(!Array.isArray(data)) throw new Error("Data must be an array.");
+
+            log("Generating Script...", 'success');
+            output.classList.add('visible');
+
+            // HOST INTRO
+            addScriptLine("HOST", "Welcome back to the forge. Today we're analyzing a new data path.");
+            
+            data.forEach((node, i) => {
+                // AI LOGIC TO MAKE IT SOUND LIKE A SCRIPT
+                addScriptLine("AI ASSISTANT", `Node ${i+1} identified: ${node.title}.`);
+                addScriptLine("HOST", "Break it down for me.");
+                addScriptLine("AI ASSISTANT", node.summary.substring(0, 200) + "...");
+                addScriptLine("HOST", "Interesting. What connects to this?");
+            });
+
+            addScriptLine("HOST", "End of stream. Archive this session.");
+
+        } catch(e) {
+            log(e.message, 'error');
+        }
+    }
+
+    function addScriptLine(speaker, text) {
+        const div = document.createElement('div');
+        div.className = 'script-node';
+        div.innerHTML = `<div class="speaker">${speaker}</div><div class="dialogue">${text}</div>`;
+        document.getElementById('output').appendChild(div);
+    }
 </script>
+
 </body>
 </html>
