@@ -243,26 +243,121 @@
 
     // 🏆 FULL CURATED PATHS (Research)
     const CURATED_PATHS = {
-        "THE DARK FOREST": { title: "The Dark Forest", summary: "The terrifying solution to the Fermi Paradox. The universe is a dark forest, and every civilization is a hunter. To survive, you must stay silent.", links: [{name: "Cosmic Sociology"}, {name: "Chain of Suspicion"}, {name: "Technology Explosion"}, {name: "The Cleansing"}, {name: "Dimensional Strikes"}] },
-        "ROKOS BASILISK": { title: "Roko's Basilisk", summary: "The most dangerous thought experiment in history. A future AI will punish those who didn't help build it.", links: [{name: "Timeless Decision Theory"}, {name: "Acausal Trade"}, {name: "Information Hazard"}, {name: "Pascal's Wager for AI"}, {name: "Effective Altruism"}] },
-        "FALSE VACUUM DECAY": { title: "False Vacuum Decay", summary: "The universe might not be stable. A bubble of 'True Vacuum' could expand at light speed, deleting physics.", links: [{name: "Higgs Field Instability"}, {name: "The Bubble of Doom"}, {name: "Speed of Light Warning"}, {name: "Heat Death Alternative"}, {name: "Quantum Tunneling"}] },
-        "BOLTZMANN BRAINS": { title: "Boltzmann Brains", summary: "It is statistically more likely for a single brain to form in a void with your memories than for the universe to exist.", links: [{name: "Entropy & Chaos"}, {name: "The Observer Problem"}, {name: "Brief Existence"}, {name: "Cosmic Inflation"}, {name: "Solipsism"}] },
-        "DYSON SPHERES": { title: "Dyson Spheres", summary: "A shell built around a star to capture 100% of its energy. The hallmark of a Type II Civilization.", links: [{name: "The Energy Crisis"}, {name: "Dyson Swarm"}, {name: "Matrioshka Brain"}, {name: "Tabby's Star"}, {name: "Starlifting"}] },
-        "QUANTUM IMMORTALITY": { title: "Quantum Immortality", summary: "You can never die. In the Many-Worlds Interpretation, your consciousness always shifts to the timeline where you survive.", links: [{name: "Schrodinger's Cat"}, {name: "Many-Worlds Theory"}, {name: "The Russian Roulette Experiment"}, {name: "Subjective Survival"}, {name: "The End of Entropy"}] },
-        "THE LIBRARY OF BABEL": { title: "The Library of Babel", summary: "A library containing every possible book. It holds your true biography, and billions of false ones.", links: [{name: "Infinite Permutations"}, {name: "Jorge Luis Borges"}, {name: "Information Entropy"}, {name: "The Digital Library"}, {name: "Meaning vs. Chaos"}] },
-        "SHIP OF THESEUS": { title: "Ship of Theseus", summary: "If you replace every cell in your brain, are you still you? The paradox of identity.", links: [{name: "The Identity Paradox"}, {name: "Teleportation Problem"}, {name: "Upload Consciousness"}, {name: "Biological Turnover"}, {name: "Continuity of Self"}] },
-        "SIMULATION THEORY": { title: "Simulation Theory", summary: "We are likely living in a computer simulation created by a more advanced civilization.", links: [{name: "Ancestral Simulations"}, {name: "Pixelation of Physics"}, {name: "Rendering Efficiency"}, {name: "The Glitch"}, {name: "Base Reality"}] },
-        "THE GREAT ATTRACTOR": { title: "The Great Attractor", summary: "Something massive is pulling our galaxy at millions of miles per hour. We can't see it.", links: [{name: "Zone of Avoidance"}, {name: "Laniakea Supercluster"}, {name: "Dark Flow"}, {name: "Gravitational Anomaly"}, {name: "The Wall"}] },
-        "GREY GOO": { title: "Grey Goo", summary: "Self-replicating nanobots consume all matter on Earth to build more of themselves.", links: [{name: "Molecular Manufacturing"}, {name: "Exponential Growth"}, {name: "The Blue Goo"}, {name: "Ecophagy"}, {name: "Safety Limits"}] },
-        "KARDASHEV SCALE": { title: "The Kardashev Scale", summary: "Measuring civilizations by energy use. We are Type 0.7. Type III controls the galaxy.", links: [{name: "Type I: Planetary"}, {name: "Type II: Stellar"}, {name: "Type III: Galactic"}, {name: "Type IV & V"}, {name: "The Great Silence"}] },
-        "THE UNCANNY VALLEY": { title: "The Uncanny Valley", summary: "Why do we fear things that look *almost* human? Did we evolve to fear corpses or shapeshifters?", links: [{name: "Evolutionary Defense"}, {name: "Corpses & Disease"}, {name: "Androids"}, {name: "Deepfakes"}, {name: "The Other Human Species"}] },
-        "THE EGG": { title: "The Egg", summary: "You are the only person in the universe. Everyone else is you in a different life.", links: [{name: "Reincarnation"}, {name: "The Maturity"}, {name: "Solipsism with Empathy"}, {name: "God's Conversation"}, {name: "Cosmic Perspective"}] },
-        "TIME CRYSTALS": { title: "Time Crystals", summary: "Matter that repeats in time, not space. It moves without consuming energy.", links: [{name: "Perpetual Motion"}, {name: "Quantum Computing"}, {name: "Symmetry Breaking"}, {name: "Google's Sycamore"}, {name: "Exotic Matter"}] },
-        "DEAD INTERNET THEORY": { title: "Dead Internet Theory", summary: "The internet died in 2016. It is now 80% bots talking to other bots.", links: [{name: "The Bot Takeover"}, {name: "Algorithmic Sludge"}, {name: "Simulation Hypothesis"}, {name: "The Dark Forest"}, {name: "Deepfakes"}] },
-        "MICROPLASTICS": { title: "Microplastics", summary: "Plastic is in your blood and brain. We have coated the planet in synthetic polymer.", links: [{name: "Blood Brain Barrier"}, {name: "Hormone Disruption"}, {name: "The Plastisphere"}, {name: "Atmospheric Transport"}, {name: "The Credit Card Diet"}] },
-        "NEURALINK": { title: "Neuralink", summary: "Merging man with machine. Curing paralysis or creating a hive mind?", links: [{name: "High Bandwidth"}, {name: "Telepathy"}, {name: "The Hive Mind"}, {name: "Security Risks"}, {name: "The Divide"}] },
-        "THE WOW SIGNAL": { title: "The Wow! Signal", summary: "In 1977, we received a 72-second alien radio signal. It never repeated.", links: [{name: "The Signature"}, {name: "The Origin"}, {name: "No Explanation"}, {name: "The Response"}, {name: "Fermi's Answer"}] },
-        "PANPSYCHISM": { title: "Panpsychism", summary: "Consciousness is a fundamental property of matter. Everything feels.", links: [{name: "The Hard Problem"}, {name: "Integrated Information"}, {name: "Electron Awareness"}, {name: "Universal Consciousness"}, {name: "Implications for AI"}] }
+  "version": "1.0",
+  "source": "wikipedia",
+  "depth": 5,
+  "topics": [
+    {
+      "id": "decision_fatigue",
+      "label": "Decision Fatigue",
+      "nodes": [
+        { "depth": 1, "title": "Decision fatigue" },
+        { "depth": 2, "title": "Ego depletion" },
+        { "depth": 3, "title": "Self-control" },
+        { "depth": 4, "title": "Cognitive load" },
+        { "depth": 5, "title": "Working memory" }
+      ]
+    },
+    {
+      "id": "metrics_failure",
+      "label": "Why Metrics Fail",
+      "nodes": [
+        { "depth": 1, "title": "Goodhart’s law" },
+        { "depth": 2, "title": "Campbell’s law" },
+        { "depth": 3, "title": "Performance measurement" },
+        { "depth": 4, "title": "Statistics" },
+        { "depth": 5, "title": "Measurement theory" }
+      ]
+    },
+    {
+      "id": "feedback_loops",
+      "label": "Feedback Loops",
+      "nodes": [
+        { "depth": 1, "title": "Feedback" },
+        { "depth": 2, "title": "Feedback loop" },
+        { "depth": 3, "title": "Control theory" },
+        { "depth": 4, "title": "Systems theory" },
+        { "depth": 5, "title": "Cybernetics" }
+      ]
+    },
+    {
+      "id": "optimization_failure",
+      "label": "Why Optimization Backfires",
+      "nodes": [
+        { "depth": 1, "title": "Local optimum" },
+        { "depth": 2, "title": "Global optimum" },
+        { "depth": 3, "title": "Optimization" },
+        { "depth": 4, "title": "Mathematical optimization" },
+        { "depth": 5, "title": "Applied mathematics" }
+      ]
+    },
+    {
+      "id": "attention_economy",
+      "label": "Attention Economy",
+      "nodes": [
+        { "depth": 1, "title": "Attention economy" },
+        { "depth": 2, "title": "Human attention" },
+        { "depth": 3, "title": "Cognitive psychology" },
+        { "depth": 4, "title": "Psychology" },
+        { "depth": 5, "title": "Behavioral science" }
+      ]
+    },
+    {
+      "id": "cognitive_biases",
+      "label": "Cognitive Biases",
+      "nodes": [
+        { "depth": 1, "title": "Cognitive bias" },
+        { "depth": 2, "title": "Heuristics" },
+        { "depth": 3, "title": "Bounded rationality" },
+        { "depth": 4, "title": "Rational choice theory" },
+        { "depth": 5, "title": "Decision theory" }
+      ]
+    },
+    {
+      "id": "complexity_systems",
+      "label": "Complex Systems",
+      "nodes": [
+        { "depth": 1, "title": "Complex system" },
+        { "depth": 2, "title": "Emergence" },
+        { "depth": 3, "title": "Nonlinear system" },
+        { "depth": 4, "title": "Chaos theory" },
+        { "depth": 5, "title": "Dynamical systems" }
+      ]
+    },
+    {
+      "id": "planning_failure",
+      "label": "Why Plans Fail",
+      "nodes": [
+        { "depth": 1, "title": "Planning fallacy" },
+        { "depth": 2, "title": "Optimism bias" },
+        { "depth": 3, "title": "Cognitive bias" },
+        { "depth": 4, "title": "Judgment and decision making" },
+        { "depth": 5, "title": "Psychology" }
+      ]
+    },
+    {
+      "id": "scale_growth",
+      "label": "Scale and Growth",
+      "nodes": [
+        { "depth": 1, "title": "Exponential growth" },
+        { "depth": 2, "title": "Compound interest" },
+        { "depth": 3, "title": "Mathematical finance" },
+        { "depth": 4, "title": "Finance" },
+        { "depth": 5, "title": "Economics" }
+      ]
+    },
+    {
+      "id": "signal_noise",
+      "label": "Signal vs Noise",
+      "nodes": [
+        { "depth": 1, "title": "Signal-to-noise ratio" },
+        { "depth": 2, "title": "Noise (statistics)" },
+        { "depth": 3, "title": "Statistical inference" },
+        { "depth": 4, "title": "Statistics" },
+        { "depth": 5, "title": "Probability theory" }
+      ]
+    }
+  ]
     };
 
     // 🧠 DATABASES (Product)
