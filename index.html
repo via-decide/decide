@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v78.0 |</title>
+    <title>| decide.engine v79.0 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -13,7 +13,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v78.0 (CUSTOM INTEGRATION)
+           CORE SYSTEM | DECIDE OS v79.0 (VOICE MODULE)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -229,7 +229,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v78.0 (CUSTOM INTEGRATION)
+       KUTCH AUTOMATION | v79.0 (VOICE FEED)
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -241,6 +241,40 @@
     // 🇮🇳 UPI CONFIG
     const UPI_ID = "6351537770@yapl";
     const QR_IMAGE = "1000206276.png"; 
+
+    // 🎙️ VOICE FEED DATA
+    const VOICE_FEED = [
+      {
+        id: "voice_focus_ai",
+        title: "Voice Focus AI – Call Clarity Explained",
+        mode: "explain",
+        blocks: [
+          { role: "SYSTEM", text: "Voice Focus AI is a call-clarity technology used in Technics AZ100 earbuds." },
+          { role: "EXPLAIN", text: "It uses a six-microphone array combined with an AI-equipped chip to isolate human voice from background chaos." },
+          { role: "DETAIL", text: "The system improves both outgoing voice clarity and incoming audio, unlike traditional one-way noise reduction." },
+          { role: "EDGE", text: "At maximum suppression levels, aggressive processing can sometimes produce a robotic vocal tone." }
+        ]
+      },
+      {
+        id: "earbuds_buy_wait_2026",
+        title: "Wireless Earbuds – Buy vs Wait (Feb 2026)",
+        mode: "decision",
+        blocks: [
+          { role: "BUY", text: "Buy today: Technics AZ100 for work and audiophiles, AirPods Pro 3 for iPhone users, Bose QC Ultra for pure ANC." },
+          { role: "WAIT", text: "Wait for Sony WF-1000XM6 launching around Feb 12 and Samsung Galaxy Buds 4 Pro expected Feb 25." }
+        ]
+      },
+      {
+        id: "beast_mode_boat",
+        title: "Beast Mode – boAt Airdopes 141",
+        mode: "tech_breakdown",
+        blocks: [
+          { role: "DEFINE", text: "Beast Mode is boAt’s low-latency gaming mode designed to reduce Bluetooth audio lag." },
+          { role: "METRIC", text: "Latency drops to 80 milliseconds, improving sync in games like BGMI and COD Mobile." },
+          { role: "CONTEXT", text: "While better than standard Bluetooth, 80ms is slower than premium competitors operating at 40ms or below." }
+        ]
+      }
+    ];
 
     // 🏆 FULL CURATED PATHS (Research)
     const CURATED_PATHS = {
@@ -309,10 +343,7 @@
         trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
         research: { label: "RESEARCH", init: () => renderSearchSlide() },
         food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
-        custom: { 
-            label: "CUSTOM REQ", 
-            init: () => renderExternalModule('https://via-decide.github.io/food.decide-custom/') 
-        },
+        custom: { label: "CUSTOM REQ", init: () => renderExternalModule('https://via-decide.github.io/food.decide-custom/') },
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
@@ -386,12 +417,11 @@
         }
     }
 
-    // 🔥 BACKEND LOGGER (FIXED "NO CONTEXT" ERROR)
+    // 🔥 BACKEND LOGGER
     function sendFeedback(type, payload) {
         if(!BACKEND_URL) return;
         
         const payloadStr = typeof payload === 'string' ? payload : JSON.stringify(payload);
-        
         const data = new URLSearchParams();
         data.append("type", type);
         data.append("timestamp", new Date().toISOString());
@@ -416,7 +446,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v78.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v79.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -449,7 +479,12 @@
                     <div class="grid-label">CUSTOM REQ</div>
                     <div class="grid-status">DEMO: LINK</div>
                 </div>
-                <div class="grid-btn btn-fuel full-width-btn" onclick="togglePayment(true)">
+                <div class="grid-btn" onclick="openVoiceLobby()">
+                    <div class="grid-icon">🎙️</div>
+                    <div class="grid-label">VOICE FEED</div>
+                    <div class="grid-status">AI READY</div>
+                </div>
+                <div class="grid-btn btn-fuel" onclick="togglePayment(true)">
                     <div class="grid-icon">⚡</div>
                     <div class="grid-label">SYSTEM FUEL</div>
                     <div class="grid-status">SUPPORT DEV</div>
@@ -472,19 +507,19 @@
     }
 
     function loadDomain(key) {
+        stopAudio(); // Safety Audio Cut
         ENGINE_STATE.currentDomain = key;
-        ENGINE_STATE.triviaMode = false; // FIX: Strict reset to prevent "Wrong" bug
+        ENGINE_STATE.triviaMode = false;
         
         const container = document.getElementById('master-container');
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         
-        // Add Global Exit Button for modules
         let exitBtn = document.createElement('button');
         exitBtn.id = 'global-exit';
         exitBtn.className = 'exit-btn';
         exitBtn.innerText = 'EXIT';
-        exitBtn.onclick = () => { renderLobby(); };
+        exitBtn.onclick = () => { stopAudio(); renderLobby(); };
         exitBtn.style.position = 'fixed';
         exitBtn.style.top = '20px';
         exitBtn.style.right = '20px';
@@ -492,6 +527,67 @@
         document.body.appendChild(exitBtn);
 
         MODULES[key].init();
+    }
+
+    // 🎙️ VOICE LOBBY
+    function openVoiceLobby() {
+        stopAudio();
+        const container = document.getElementById('master-container');
+        while(container.children.length > 1) container.removeChild(container.lastChild);
+        
+        let exitBtn = document.createElement('button');
+        exitBtn.id = 'global-exit';
+        exitBtn.className = 'exit-btn';
+        exitBtn.innerText = 'EXIT';
+        exitBtn.onclick = () => { stopAudio(); renderLobby(); };
+        exitBtn.style.position = 'fixed';
+        exitBtn.style.top = '20px';
+        exitBtn.style.right = '20px';
+        exitBtn.style.zIndex = '5000';
+        document.body.appendChild(exitBtn);
+
+        const section = document.createElement('section');
+        section.className = "main-slide next";
+        section.innerHTML = `
+            <div class="slide-header"><span class="header-title">VOICE MODULE</span></div>
+            <div class="lobby-container">
+              <h1>VOICE FEEDS</h1>
+              <div class="topic-grid">
+              ${VOICE_FEED.map(v => `
+                <div class="topic-card" onclick="playVoiceFeed('${v.id}')">
+                  <div class="topic-title">${v.title}</div>
+                  <div class="topic-desc">MODE: ${v.mode.toUpperCase()}</div>
+                </div>
+              `).join("")}
+              </div>
+            </div>`;
+        container.appendChild(section);
+        slideElements.push(section);
+        goToSlide(1);
+    }
+
+    function playVoiceFeed(id) {
+        stopAudio();
+        const feed = VOICE_FEED.find(v => v.id === id);
+        if (!feed) return;
+
+        let text = feed.blocks.map(b => b.text).join(". ");
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+        utterance.lang = "en-US"; // Fallback
+        
+        // Try to select a better voice
+        const voices = window.speechSynthesis.getVoices();
+        const preferred = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
+        if(preferred) utterance.voice = preferred;
+
+        window.speechSynthesis.speak(utterance);
+        showToast("VOICE PLAYING");
+    }
+
+    function stopAudio() {
+        window.speechSynthesis.cancel();
     }
 
     // 💸 PAYMENT LOGIC
@@ -504,7 +600,6 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if(isMobile) {
-                // Mobile: Direct Deep Link
                 const deepLink = `https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg`;
                 container.innerHTML = `
                     <div class="pay-option" onclick="window.location.href='${deepLink}'" style="border-color:var(--accent-go);">
@@ -514,11 +609,8 @@
                     <div style="font-size:0.7rem; color:#666; margin-top:5px;">Opens GPay / PhonePe / Paytm</div>
                 `;
             } else {
-                // Desktop: Show QR Code
                 container.innerHTML = `
-                    <div class="pay-qr-container">
-                        <img src="${QR_IMAGE}" class="pay-qr" alt="Scan QR">
-                    </div>
+                    <div class="pay-qr-container"><img src="${QR_IMAGE}" class="pay-qr" alt="Scan QR"></div>
                     <div style="font-size:0.8rem; color:#fff; margin-top:5px;">Scan with any UPI App</div>
                     <div style="font-size:0.7rem; color:#666;">${UPI_ID}</div>
                 `;
@@ -589,7 +681,6 @@
         doc.text("DECIDE.ENGINE // RESEARCH PATH", 20, y); y += 15;
         doc.setFontSize(12); doc.setFont("courier", "normal");
         
-        // 🔥 LOG DATA TO BACKEND
         sendFeedback('RESEARCH_EXPORT', ENGINE_STATE.researchPath);
 
         ENGINE_STATE.researchPath.forEach((item, i) => {
@@ -703,9 +794,10 @@
     }
 
     function renderExternalModule(url) {
+        stopAudio();
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="renderLobby()">EXIT</button>`; 
+        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="stopAudio(); renderLobby()">EXIT</button>`; 
         document.getElementById('master-container').appendChild(section);
         slideElements.push(section);
         goToSlide(slideElements.length - 1);
