@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v79.0 |</title>
+    <title>| decide.engine v79.1 |</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v79.0 (VOICE MODULE)
+           CORE SYSTEM | DECIDE OS v79.1 (ARTIFACT LOOP)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -160,6 +161,10 @@
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
         .btn-yt { background: #cc0000; border: none; }
         
+        /* 🟣 SHARE BUTTON STYLE */
+        .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-share:active { background: #fff; color: #000; }
+        
         .search-wrapper { position: relative; margin-bottom: 20px; }
         #search-input { width: 100%; padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; font-family: var(--font-ui); font-size: 1.1rem; box-sizing: border-box; }
         
@@ -204,6 +209,18 @@
         
         .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; font-weight: bold; }
         .toast-msg.visible { opacity: 1; }
+
+        /* 📸 HIDDEN SHARE CARD (For Generation) */
+        #share-card-canvas {
+            position: fixed; top: -200vh; left: 0; width: 360px; padding: 40px 30px;
+            background: linear-gradient(145deg, #111, #050505);
+            border: 2px solid var(--brand-orange); border-radius: 24px;
+            text-align: center; color: #fff; font-family: var(--font-ui);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-sizing: border-box; z-index: 9000;
+        }
+        
+        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
@@ -211,6 +228,14 @@
 <div class="aurora-bg"></div>
 <div id="master-container"></div>
 <div id="toast" class="toast-msg"></div>
+
+<div id="share-card-canvas">
+    <div style="font-family:var(--font-tech); color:var(--brand-orange); font-size:0.8rem; letter-spacing:2px; margin-bottom:20px;">DECIDE ENGINE</div>
+    <div style="font-size:0.7rem; color:#888; text-transform:uppercase;">THE WINNER IS</div>
+    <h1 id="share-winner-name" style="font-size:2.5rem; margin:15px 0; line-height:1; color:#fff; word-wrap:break-word;">WINNER</h1>
+    <div id="share-winner-price" style="font-size:1.5rem; color:var(--accent-go); font-weight:bold;">₹0</div>
+    <div style="margin-top:30px; font-size:0.7rem; color:#666; border-top:1px solid #333; padding-top:15px; width:100%;">viadecide.com</div>
+</div>
 
 <div id="payment-modal" class="modal-backdrop">
     <div class="payment-card">
@@ -229,7 +254,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v79.0 (VOICE FEED)
+       KUTCH AUTOMATION | v79.1 (SHARE FIXED)
        ========================================= */
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
@@ -446,7 +471,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v79.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v79.1 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -747,7 +772,19 @@
             html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
         });
         const final = document.createElement('section'); final.className = "main-slide next";
-        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video><div class="winner-container"><div id="final-list"></div><div class="final-actions"><button class="btn btn-primary" onclick="redirect('amazon')">BUY NOW ↗</button><button class="btn btn-yt" onclick="window.open('${currentMod.review}', '_blank')">▶ WATCH REVIEW</button><button class="btn" onclick="location.reload()">RESTART</button></div></div>`;
+        
+        // 📷 ADDED SHARE BUTTON
+        final.innerHTML = `
+            <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
+            <div class="winner-container">
+                <div id="final-list"></div>
+                <div class="final-actions">
+                    <button class="btn btn-primary" onclick="redirect('amazon')">BUY NOW ↗</button>
+                    <button class="btn btn-yt" onclick="openReview()">▶ REVIEW</button>
+                    <button class="btn btn-share" onclick="generateShareCard()">📷 SHARE CARD</button>
+                    <button class="btn" onclick="location.reload()">RESTART</button>
+                </div>
+            </div>`;
         container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
     }
 
@@ -766,6 +803,54 @@
             scores.push({name, score, price: item.price});
         }
         scores.sort((a, b) => b.score - a.score); return scores[0] || {name: "No Match", price: 0};
+    }
+
+    // 📸 SHARE CARD ENGINE
+    async function generateShareCard() {
+        const w = calculateVerdict();
+        // POPULATE HIDDEN CARD
+        document.getElementById('share-winner-name').innerText = w.name;
+        document.getElementById('share-winner-price').innerText = "₹" + w.price;
+        
+        const card = document.getElementById('share-card-canvas');
+        showToast("GENERATING CARD...");
+        
+        try {
+            // MOVE CARD INTO VIEW TEMPORARILY
+            card.style.top = "0"; 
+            const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
+            card.style.top = "-200vh"; // HIDE AGAIN
+
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "Decide_Winner.png", { type: "image/png" });
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'My Winner', text: `Decide Engine picked ${w.name}`, files: [file] });
+                } else {
+                    const link = document.createElement('a'); link.download = 'Decide_Winner.png';
+                    link.href = canvas.toDataURL(); link.click(); showToast("DOWNLOADED");
+                }
+            });
+        } catch(e) { card.style.top = "-200vh"; showToast("ERROR"); }
+    }
+
+    function updateFinal() { 
+        const list = document.getElementById('final-list'); const winner = calculateVerdict(); 
+        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; 
+        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; 
+        setTimeout(() => triggerVerdictSpeech(), 800);
+    }
+
+    // 🟢 MISSING FUNCTIONS RESTORED
+    function openReview() { 
+        const m = MODULES[ENGINE_STATE.currentDomain];
+        if (m && m.review) window.open(m.review, '_blank');
+        else showToast("NO REVIEW LINK");
+    }
+
+    function triggerVerdictSpeech() {
+        const w = calculateVerdict();
+        const u = new SpeechSynthesisUtterance(`The winner is ${w.name}. It costs ${w.price} rupees.`);
+        window.speechSynthesis.speak(u);
     }
 
     // 🎓 TRIVIA LOGIC
@@ -794,10 +879,9 @@
     }
 
     function renderExternalModule(url) {
-        stopAudio();
         const section = document.createElement('section');
         section.className = "main-slide next";
-        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="stopAudio(); renderLobby()">EXIT</button>`; 
+        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="renderLobby()">EXIT</button>`; 
         document.getElementById('master-container').appendChild(section);
         slideElements.push(section);
         goToSlide(slideElements.length - 1);
@@ -823,12 +907,6 @@
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
     }
     
-    function updateFinal() { 
-        const list = document.getElementById('final-list'); const winner = calculateVerdict(); 
-        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">Est. Price: ₹${winner.price}</p></div>`; 
-        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; 
-    }
-
     let tsY = 0, tsX = 0;
     function initSwipeSystem() {
         document.addEventListener('touchstart', e => { tsY = e.touches[0].clientY; tsX = e.touches[0].clientX; }, {passive: true});
