@@ -1,366 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEDIA FORGE | Studio v3.1 (Debug)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <style>
-        :root {
-            --bg: #09090b;
-            --panel: #121214;
-            --border: #27272a;
-            --text-main: #e4e4e7;
-            --text-muted: #a1a1aa;
-            --accent-green: #22c55e;
-            --accent-green-dim: rgba(34, 197, 94, 0.1);
-            --accent-orange: #f59e0b;
-            --font: 'Courier New', monospace;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDIA FORGE | Studio v4.5 (JSON Engine)</title>
 
-        * { box-sizing: border-box; }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: var(--font);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+<style>
+:root{
+  --bg:#09090b;--panel:#121214;--border:#27272a;
+  --text:#e4e4e7;--muted:#a1a1aa;
+  --green:#22c55e;--blue:#3b82f6;--purple:#a855f7;
+  --font:'Courier New',monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;padding:20px;background:var(--bg);color:var(--text);
+  font-family:var(--font);display:flex;flex-direction:column;align-items:center;
+}
+.card{
+  width:100%;max-width:900px;background:var(--panel);
+  border:1px solid var(--border);border-radius:16px;padding:2rem;
+  margin-bottom: 20px;
+}
+.header{display:flex;justify-content:space-between;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:10px}
 
-        .studio-card {
-            width: 100%;
-            max-width: 600px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
-        }
 
-        /* HEADER */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1rem;
-        }
-        .brand { font-size: 1.2rem; font-weight: 800; letter-spacing: -1px; }
-        .version { font-size: 0.7rem; background: var(--border); padding: 4px 8px; border-radius: 4px; color: var(--text-muted); }
+/* ZONES */
+.grid-zones { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.zone{
+  border:2px dashed var(--border);border-radius:12px;padding:2rem;
+  text-align:center;cursor:pointer;position:relative;display:flex;
+  flex-direction:column;justify-content:center;align-items:center;
+  min-height: 150px; transition: 0.2s;
+}
+.zone:hover { border-color: var(--muted); }
+.zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.zone.active{border-color:var(--green);background:rgba(34,197,94,.05)}
 
-        /* DROP ZONE */
-        .drop-zone {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 3rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            background: rgba(255,255,255,0.01);
-        }
-        .drop-zone:hover { border-color: var(--text-muted); background: rgba(255,255,255,0.03); }
-        .drop-zone.active { border-color: var(--accent-green); background: var(--accent-green-dim); }
-        .drop-zone.error { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
-        
-        .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-        .icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.7; }
+/* JSON AREA */
+.json-box {
+    width: 100%; height: 100px; background: #000; border: 1px solid var(--border);
+    color: var(--green); font-family: var(--font); padding: 10px; font-size: 0.7rem;
+    resize: none; border-radius: 8px; margin-bottom: 10px;
+}
+.json-box:focus { outline: 1px solid var(--green); }
 
-        /* STATUS & DEBUG */
-        .status-bar {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background: #000;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.8rem;
-        }
-        .light { width: 10px; height: 10px; border-radius: 50%; background: #333; transition: 0.3s; }
-        .light.green { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
-        .light.orange { background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); }
-        .status-text { text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); flex-grow: 1; }
+/* CONTROLS */
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+button{
+  padding:1rem;border-radius:8px;border:none;
+  background:#27272a;color:#666;font-weight:800;
+  cursor:not-allowed; transition:0.2s; font-family: var(--font);
+}
+button.ready{background:var(--green);color:#000;cursor:pointer}
+button.blue{background:var(--blue);color:#fff;cursor:pointer}
+button.purple{background:var(--purple);color:#fff;cursor:pointer}
+button:active { transform: scale(0.98); }
 
-        .debug-log {
-            margin-top: 10px;
-            font-size: 0.7rem;
-            color: #666;
-            height: 60px;
-            overflow-y: auto;
-            border-top: 1px solid var(--border);
-            padding-top: 5px;
-            display: none; /* Hidden by default unless error */
-        }
-        .debug-log.show { display: block; }
+/* OUTPUT */
+.output{max-width:900px;width:100%;}
+.block{
+  border:1px solid var(--border);
+  border-left:4px solid var(--green);
+  border-radius:8px;padding:1rem;margin-bottom:1rem;
+  background:#0b0b0e
+}
+.label{font-size:.65rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.text{white-space:pre-wrap;font-size:.85rem;line-height:1.5}
+.actions{display:flex;gap:10px;margin-top:10px;border-top:1px solid #222;padding-top:10px}
+.copy-btn{
+  padding:.4rem .8rem;border-radius:4px;
+  background:#222;color:#aaa;border:1px solid #333;
+  cursor:pointer;font-size:.7rem;
+}
+.copy-btn:hover{color:#fff;border-color:var(--green)}
 
-        /* BUTTON */
-        .export-btn {
-            width: 100%;
-            margin-top: 1.5rem;
-            padding: 1.2rem;
-            border: none;
-            border-radius: 8px;
-            background: var(--border);
-            color: #666;
-            font-family: var(--font);
-            font-weight: 800;
-            font-size: 1rem;
-            text-transform: uppercase;
-            cursor: not-allowed;
-            transition: 0.3s;
-        }
-        .export-btn.ready {
-            background: var(--accent-green);
-            color: #000;
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--accent-green-dim);
-        }
-        .export-btn.ready:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--accent-green-dim); }
-
-        /* SCRIPT OUTPUT */
-        .script-display {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-            display: none;
-        }
-        .script-display.show { display: block; }
-
-        .line-block { margin-bottom: 1rem; padding: 1rem; background: #121214; border: 1px solid var(--border); border-radius: 6px; border-left: 3px solid #333; }
-        .line-block.HOST { border-color: var(--accent-green); }
-        .line-block.AI { border-color: var(--accent-orange); }
-        .role { font-weight: bold; font-size: 0.7rem; margin-bottom: 0.5rem; opacity: 0.6; }
-        .text { font-size: 0.9rem; line-height: 1.5; color: #fff; }
-
-    </style>
+.status-bar { margin-top: 10px; font-size: 0.75rem; color: var(--muted); text-align: right; }
+</style>
 </head>
+
 <body>
 
-<div class="studio-card">
-    <div class="header">
-        <div class="brand">⚗️ MEDIA FORGE</div>
-        <div class="version">v3.1</div>
-    </div>
+<div class="card">
+  <div class="header">
+    <strong>⚗️ MEDIA FORGE STUDIO v4.5</strong>
+    <span id="system-status">System Ready</span>
+  </div>
 
-    <div class="drop-zone" id="dropArea">
-        <input type="file" id="fileInput" accept=".pdf,.json">
-        <div class="icon">📂</div>
-        <div id="dropText"><strong>CLICK TO UPLOAD PDF</strong></div>
-        <div class="hint" style="font-size:0.7rem; color:#666; margin-top:5px;">Supports 'Decide_Journey.pdf'</div>
-    </div>
+  <div class="grid-zones">
+      <div class="zone" id="zone">
+        <input type="file" id="file" accept=".pdf" multiple>
+        <div style="font-size:2rem;margin-bottom:10px">📄</div>
+        <strong>UPLOAD PDF</strong>
+        <div style="font-size:0.7rem;color:#666;margin-top:5px">Multi-file supported</div>
+      </div>
 
-    <div class="status-bar">
-        <div class="light" id="statusLight"></div>
-        <div class="status-text" id="statusText">SYSTEM IDLE</div>
-    </div>
-    
-    <div class="debug-log" id="debugLog"></div>
+      <div style="display:flex; flex-direction:column;">
+          <textarea id="json-input" class="json-box" placeholder="PASTE JSON PAYLOAD HERE..."></textarea>
+          <button id="load-json" class="blue" style="margin-top:0; padding:0.5rem">LOAD JSON PAYLOAD</button>
+      </div>
+  </div>
 
-    <button class="export-btn" id="exportBtn" onclick="generateScript()">GENERATE SCRIPT</button>
+  <div class="controls">
+      <button id="gen">1. GENERATE SCRIPT</button>
+      <button id="export-json" class="purple">2. EXPORT DATA JSON</button>
+      <button id="pdf-script">3. SAVE SCRIPT PDF</button>
+      <button id="pdf-source">4. REGEN USER PDF</button>
+  </div>
+  
+  <div class="status-bar" id="status">Waiting for data...</div>
 </div>
 
-<div class="script-display" id="scriptOutput"></div>
+<div class="output" id="out"></div>
 
 <script>
-    // --- V3.1 CORE ---
-    // Explicit Worker Setting
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-    const fileInput = document.getElementById('fileInput');
-    const statusText = document.getElementById('statusText');
-    const statusLight = document.getElementById('statusLight');
-    const exportBtn = document.getElementById('exportBtn');
-    const dropArea = document.getElementById('dropArea');
-    const debugLog = document.getElementById('debugLog');
-    
-    let PARSED_DATA = null;
+/* --- DOM ELEMENTS --- */
+const fileInput = document.getElementById('file');
+const jsonInput = document.getElementById('json-input');
+const status = document.getElementById('status');
+const out = document.getElementById('out');
 
-    function log(msg) {
-        console.log(msg);
-        debugLog.innerHTML += `> ${msg}<br>`;
-        debugLog.scrollTop = debugLog.scrollHeight;
-    }
+const btnGen = document.getElementById('gen');
+const btnJson = document.getElementById('export-json');
+const btnPdfScript = document.getElementById('pdf-script');
+const btnPdfSource = document.getElementById('pdf-source');
+const btnLoadJson = document.getElementById('load-json');
 
-    function setStatus(state, msg) {
-        statusText.innerText = msg;
-        statusLight.className = 'light'; 
-        exportBtn.className = 'export-btn';
-        exportBtn.disabled = true;
-        dropArea.className = 'drop-zone';
+/* --- STATE --- */
+let ALL_NODES = [];
+let SCRIPT_TEXTS = [];
 
-        if(state === 'loading') {
-            statusLight.classList.add('orange');
-            debugLog.classList.add('show');
-        } else if(state === 'ready') {
-            statusLight.classList.add('green');
-            exportBtn.classList.add('ready');
-            exportBtn.disabled = false;
-            dropArea.classList.add('active');
-            document.getElementById('dropText').innerHTML = "<strong>FILE LOCKED & LOADED</strong>";
-        } else if(state === 'error') {
-            dropArea.classList.add('error');
-            debugLog.classList.add('show');
+/* --- 1. PDF INGESTION --- */
+fileInput.onchange = async e => {
+  const files = [...e.target.files];
+  if(!files.length) return;
+
+  status.textContent = `Processing ${files.length} documents...`;
+  ALL_NODES = [];
+
+  for(const file of files){
+    try {
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+        let text = '';
+
+        for(let i=1; i<=pdf.numPages; i++){
+            const p = await pdf.getPage(i);
+            const c = await p.getTextContent();
+            text += c.items.map(x=>x.str).join(' ') + '\n';
         }
+        extractNodes(text, file.name);
+    } catch(err) {
+        console.error(err);
+        status.textContent = "Error reading PDF";
     }
+  }
 
-    fileInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if(!file) return;
+  finishLoad();
+};
 
-        setStatus('loading', 'INITIALIZING READER...');
-        log(`File selected: ${file.name} (${file.type})`);
-
-        if(file.type === 'application/pdf') {
-            await parsePDF(file);
-        } else if (file.name.endsWith('.json') || file.type === 'application/json') {
-            await parseJSON(file);
+/* --- 2. JSON INGESTION --- */
+btnLoadJson.onclick = () => {
+    try {
+        const raw = jsonInput.value.trim();
+        if(!raw) return alert("Paste JSON code first");
+        
+        const data = JSON.parse(raw);
+        if(Array.isArray(data)) {
+            ALL_NODES = data;
+            status.textContent = `Payload Loaded: ${ALL_NODES.length} Nodes`;
+            finishLoad();
         } else {
-            setStatus('error', 'INVALID FILE FORMAT');
-            log("Error: Please upload .pdf or .json");
+            alert("Invalid JSON Format (Must be Array)");
         }
+    } catch(e) {
+        alert("JSON Parse Error");
+    }
+};
+
+/* --- LOGIC: NODE PARSER --- */
+function extractNodes(t, source){
+  // Simple regex to split by "NODE X" or assume full doc
+  const parts = t.split(/NODE\s*\d+/i);
+  
+  if(parts.length > 1) {
+      parts.forEach((p,i)=>{
+        if(i===0) return; // skip pre-match
+        p = p.trim();
+        if(p.length < 20) return;
+        ALL_NODES.push({
+          id: `NODE_${Date.now()}_${i}`,
+          title: p.slice(0, 50).replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase(),
+          body: p,
+          source: source
+        });
+      });
+  } else {
+      // Fallback for non-formatted docs
+      ALL_NODES.push({
+          id: `DOC_${Date.now()}`,
+          title: `FULL DOC (${source})`,
+          body: t.slice(0, 5000), // Cap at 5k chars for safety
+          source: source
+      });
+  }
+}
+
+function finishLoad() {
+    status.textContent = `Ready: ${ALL_NODES.length} data nodes loaded.`;
+    btnGen.classList.add('ready');
+    btnGen.disabled = false;
+    btnJson.disabled = false;
+    
+    // Auto-fill JSON box for safety
+    jsonInput.value = JSON.stringify(ALL_NODES, null, 2);
+}
+
+/* --- 3. GENERATE SCRIPT --- */
+btnGen.onclick = () => {
+  out.innerHTML = '';
+  SCRIPT_TEXTS = [];
+  let totalTime = 0;
+
+  if(ALL_NODES.length === 0) return alert("No data loaded!");
+
+  ALL_NODES.forEach((n, i) => {
+    // Logic: 150 words = ~1 minute (avg speaking)
+    const words = n.body.split(/\s+/).length;
+    const seconds = Math.min(60, Math.max(15, Math.round(words / 2.5))); 
+    totalTime += seconds;
+
+    const scriptBlock = 
+`SCENE ${i+1} [${n.title}]
+SOURCE: ${n.source}
+TIMING: ${seconds}s Est.
+
+VISUAL CUE:
+Minimalist kinetic type, dark background, green accent.
+
+NARRATION:
+"${trim(n.body, 400)}"
+`;
+
+    SCRIPT_TEXTS.push(scriptBlock);
+    renderUIBlock(scriptBlock, i);
+  });
+
+  // Enable Exports
+  btnPdfScript.classList.add('ready');
+  btnPdfScript.disabled = false;
+  btnPdfSource.classList.add('ready');
+  btnPdfSource.disabled = false;
+  
+  status.textContent = `Generated ${SCRIPT_TEXTS.length} scenes. Total runtime: ~${Math.round(totalTime/60)} mins.`;
+};
+
+/* --- UI RENDERER --- */
+function renderUIBlock(text, idx){
+  const d = document.createElement('div');
+  d.className = 'block';
+  d.innerHTML = 
+    `<div class="label">SCENE ${idx+1} // GENERATED</div>
+     <div class="text">${text}</div>
+     <div class="actions">
+       <button class="copy-btn" onclick="copyToClip(${idx})">COPY TEXT</button>
+     </div>`;
+  out.appendChild(d);
+}
+
+function copyToClip(i) {
+    navigator.clipboard.writeText(SCRIPT_TEXTS[i]);
+    alert("Copied to clipboard");
+}
+
+function trim(str, n) {
+    return (str.length > n) ? str.substr(0, n-1) + '...' : str;
+}
+
+/* --- 4. EXPORT HANDLERS --- */
+
+// A. EXPORT JSON (The Payload)
+btnJson.onclick = () => {
+    const payload = JSON.stringify(ALL_NODES, null, 2);
+    navigator.clipboard.writeText(payload);
+    jsonInput.value = payload;
+    alert("JSON Payload Copied! Save this text file to reload later.");
+};
+
+// B. EXPORT SCRIPT PDF
+btnPdfScript.onclick = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    doc.setFont("courier", "bold");
+    doc.setFontSize(16);
+    doc.text("MEDIA FORGE // STUDIO SCRIPT", 20, 20);
+    
+    doc.setFontSize(10);
+    doc.setFont("courier", "normal");
+    
+    let y = 30;
+    
+    SCRIPT_TEXTS.forEach((txt, i) => {
+        if(y > 250) { doc.addPage(); y = 20; }
+        
+        doc.text(`--- SCENE ${i+1} ---`, 20, y);
+        y += 7;
+        
+        const lines = doc.splitTextToSize(txt, 170);
+        doc.text(lines, 20, y);
+        y += (lines.length * 5) + 10;
+    });
+    
+    doc.save("Studio_Script_Output.pdf");
+};
+
+// C. REGENERATE USER PDF (Source Reconstruction)
+btnPdfSource.onclick = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 20;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("RECONSTRUCTED SOURCE DOCUMENT", 20, y);
+    y += 15;
+
+    doc.setFont("times", "normal");
+    doc.setFontSize(11);
+
+    ALL_NODES.forEach((n, i) => {
+        if(y > 270) { doc.addPage(); y = 20; }
+
+        // Header
+        doc.setFont("helvetica", "bold");
+        doc.text(`[NODE ${i+1}] ${n.title}`, 20, y);
+        y += 7;
+
+        // Body
+        doc.setFont("times", "normal");
+        const lines = doc.splitTextToSize(n.body, 170);
+        doc.text(lines, 20, y);
+        y += (lines.length * 5) + 10;
+        
+        // Separator
+        doc.setDrawColor(200);
+        doc.line(20, y-5, 190, y-5);
+        y += 5;
     });
 
-    async function parsePDF(file) {
-        const reader = new FileReader();
-        reader.onload = async function() {
-            try {
-                log("Binary read complete. Loading PDF.js...");
-                const pdf = await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-                log(`PDF Loaded. Pages: ${pdf.numPages}`);
-                
-                let fullText = "";
-                for(let i=1; i<=pdf.numPages; i++) {
-                    setStatus('loading', `READING PAGE ${i}/${pdf.numPages}...`);
-                    const page = await pdf.getPage(i);
-                    const txt = await page.getTextContent();
-                    fullText += txt.items.map(s => s.str).join(" ") + "\n";
-                }
-                
-                log("Text extraction complete. Parsing Nodes...");
-                extractNodes(fullText);
-
-            } catch(err) {
-                setStatus('error', 'PDF READ FAILED');
-                log("CRITICAL ERROR: " + err.message);
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    function extractNodes(text) {
-        const nodes = [];
-        
-        // 🔧 FUZZY PARSER V3.1
-        // Finds "NODE" followed by digits, allows for missing brackets
-        // Captures everything until the next "NODE" or End of File
-        // Regex: /\[?NODE\s*\d+\]?/gi
-        
-        // Strategy: Split by the word NODE followed by numbers
-        const parts = text.split(/NODE\s*\d+/i);
-
-        parts.forEach((part, idx) => {
-            if(idx === 0) return; // Intro text
-            
-            let chunk = part.trim();
-            // Remove leftover brackets or "]" at start
-            chunk = chunk.replace(/^[\]\)\s]+/, "");
-
-            // Heuristic: The Title is the first sentence or chunk before a newline
-            // If PDF.js ate newlines, we look for capitalization changes or length
-            let titleEnd = chunk.indexOf('\n');
-            if(titleEnd === -1 || titleEnd > 60) titleEnd = 50; 
-
-            let title = chunk.substring(0, titleEnd).trim().toUpperCase();
-            let body = chunk.substring(titleEnd).trim();
-
-            // Clean artifacts
-            body = body.replace(/\/g, "");
-            title = title.replace(/\/g, "");
-
-            if(body.length > 20) {
-                nodes.push({ title, summary: body });
-                log(`Found Node: ${title.substring(0, 15)}...`);
-            }
-        });
-
-        if(nodes.length > 0) {
-            PARSED_DATA = nodes;
-            setStatus('ready', `READY: ${nodes.length} NODES EXTRACTED`);
-            log("Success: Data structure valid.");
-        } else {
-            setStatus('error', 'NO DATA FOUND');
-            log("Parser Error: Regex found no matches. Is the PDF empty?");
-            // Fallback: Treat whole text as one node
-            if(text.length > 100) {
-                PARSED_DATA = [{title: "FULL DOCUMENT", summary: text}];
-                setStatus('ready', 'FALLBACK: RAW TEXT MODE');
-                log("Switched to Raw Text mode.");
-            }
-        }
-    }
-
-    async function parseJSON(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const json = JSON.parse(e.target.result);
-                if(Array.isArray(json)) {
-                    PARSED_DATA = json;
-                    setStatus('ready', `JSON IMPORT: ${json.length} ITEMS`);
-                } else {
-                    throw new Error("JSON is not an array");
-                }
-            } catch(err) {
-                setStatus('error', 'INVALID JSON');
-                log(err.message);
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    function generateScript() {
-        if(!PARSED_DATA) return;
-        
-        const out = document.getElementById('scriptOutput');
-        out.innerHTML = "";
-        out.classList.add('show');
-
-        // SCROLL TO OUTPUT
-        setTimeout(() => out.scrollIntoView({behavior: "smooth"}), 100);
-
-        addBlock("HOST", "System Online. Let's analyze the data path.");
-
-        PARSED_DATA.forEach((node, i) => {
-            // Clean up body text for script
-            let cleanBody = node.summary.replace(/\s+/g, ' ').trim();
-            if(cleanBody.length > 350) cleanBody = cleanBody.substring(0, 350) + "...";
-
-            addBlock("AI_ASSISTANT", `Processing Node ${i+1}: ${node.title}`);
-            addBlock("HOST", "What's the core concept here?");
-            addBlock("AI_ASSISTANT", cleanBody);
-            
-            if(i < PARSED_DATA.length - 1) {
-                addBlock("HOST", "Connect this to the next node.");
-            }
-        });
-
-        addBlock("HOST", "Analysis complete. Save to archives.");
-    }
-
-    function addBlock(role, text) {
-        const div = document.createElement('div');
-        div.className = `line-block ${role}`;
-        div.innerHTML = `<div class="role">${role}</div><div class="text">${text}</div>`;
-        document.getElementById('scriptOutput').appendChild(div);
-    }
+    doc.save("Reconstructed_Source.pdf");
+};
 
 </script>
 </body>
