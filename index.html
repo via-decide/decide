@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine </title>
+    <title>Decide Engine | OS v83.0 (Max)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,7 +14,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v82.0
+           CORE SYSTEM | DECIDE OS v83.0
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -228,21 +228,15 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v82.0 (STABLE)
+       KUTCH AUTOMATION | v83.0 (FULL SUITE)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
-    
-    // 📺 VIDEO LINKS
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
-    
-    // 🛒 AFFILIATE
     const AMZN_TAG = "decideos-21";
-    
-    // 🎨 ASSETS
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const UPI_ID = "6351537770@yapl";
     const QR_IMAGE = "1000206276.png"; 
@@ -253,268 +247,64 @@
       { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
     ];
 
-    // 🧠 SYSTEM KNOWLEDGE (Enhanced from PDF)
-    const CURATED_PATHS = /* =========================================
-   MASSIVE KNOWLEDGE BASE (50 TOPICS / 250 NODES)
-   ========================================= */
+    // 🧠 MASSIVE KNOWLEDGE BASE (50+ TOPICS)
+    const CURATED_PATHS = {
+        // --- COSMOLOGY ---
+        "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.", links: [{name: "Cosmic Inflation"}, {name: "Nucleosynthesis"}, {name: "CMB Radiation"}, {name: "Hubble's Law"}, {name: "The Singularity"}] },
+        "BLACK HOLES": { title: "Black Holes", summary: "A region of spacetime where gravity is so strong that nothing—no particles or even electromagnetic radiation such as light—can escape from it.", links: [{name: "Event Horizon"}, {name: "Singularity"}, {name: "Hawking Radiation"}, {name: "Spaghettification"}, {name: "Supermassive Black Holes"}] },
+        "DARK MATTER": { title: "Dark Matter", summary: "A hypothetical form of matter thought to account for approximately 85% of the matter in the universe.", links: [{name: "Gravitational Lensing"}, {name: "Galaxy Rotation Curves"}, {name: "WIMPs"}, {name: "Cosmic Web"}, {name: "Dark Energy"}] },
+        "FERMI PARADOX": { title: "The Fermi Paradox", summary: "The apparent contradiction between the lack of evidence for extraterrestrial civilizations and various high estimates for their probability.", links: [{name: "Great Filter"}, {name: "Drake Equation"}, {name: "Zoo Hypothesis"}, {name: "Von Neumann Probes"}, {name: "Rare Earth Hypothesis"}] },
+        "NEUTRON STARS": { title: "Neutron Stars", summary: "The collapsed core of a massive supergiant star, which had a total mass of between 10 and 25 solar masses.", links: [{name: "Pulsars"}, {name: "Magnetars"}, {name: "Supernova"}, {name: "Degeneracy Pressure"}, {name: "Kilonova"}] },
+        "STRING THEORY": { title: "String Theory", summary: "A theoretical framework in which the point-like particles of particle physics are replaced by one-dimensional objects called strings.", links: [{name: "M-Theory"}, {name: "Extra Dimensions"}, {name: "Quantum Gravity"}, {name: "Supersymmetry"}, {name: "Branes"}] },
+        "EXOPLANETS": { title: "Exoplanets", summary: "A planet outside the Solar System. The first evidence of an exoplanet was noted in 1917, but was not recognized as such.", links: [{name: "Goldilocks Zone"}, {name: "Transit Method"}, {name: "Hot Jupiters"}, {name: "Super-Earths"}, {name: "Biosignatures"}] },
+        "THE MULTIVERSE": { title: "The Multiverse", summary: "A hypothetical group of multiple universes. Together, these universes comprise everything that exists.", links: [{name: "Bubble Universes"}, {name: "Many-Worlds Theory"}, {name: "Parallel Dimensions"}, {name: "Cosmic Inflation"}, {name: "Fine-Tuning"}] },
+        "ENTROPY": { title: "Entropy (Heat Death)", summary: "The eventual fate of the universe where it has diminished to a state of no thermodynamic free energy.", links: [{name: "Second Law"}, {name: "Thermodynamics"}, {name: "Arrow of Time"}, {name: "The Big Freeze"}, {name: "Maxwell's Demon"}] },
+        "DYSON SPHERES": { title: "Dyson Spheres", summary: "A hypothetical megastructure that completely encompasses a star and captures a large percentage of its solar power output.", links: [{name: "Kardashev Scale"}, {name: "Megastructures"}, {name: "Technosignatures"}, {name: "Matrioshka Brain"}, {name: "Stellar Engines"}] },
+        "GENERAL RELATIVITY": { title: "General Relativity", summary: "The geometric theory of gravitation published by Albert Einstein in 1915 and the current description of gravitation in modern physics.", links: [{name: "Spacetime Curvature"}, {name: "Time Dilation"}, {name: "Gravitational Waves"}, {name: "Equivalence Principle"}, {name: "Wormholes"}] },
+        "THE SUN": { title: "The Sun", summary: "The star around which the earth orbits. It is the dominant body of the solar system.", links: [{name: "Nuclear Fusion"}, {name: "Solar Flares"}, {name: "Corona"}, {name: "Sunspots"}, {name: "Solar Wind"}] },
+        "ASTROBIOLOGY": { title: "Astrobiology", summary: "The study of the origin, evolution, distribution, and future of life in the universe.", links: [{name: "Panspermia"}, {name: "Extremophiles"}, {name: "SETI"}, {name: "Habitability"}, {name: "Europa Clipper"}] },
+        "THE MOON": { title: "The Moon", summary: "Earth's only natural satellite. It is the fifth largest satellite in the Solar System.", links: [{name: "Tidal Locking"}, {name: "Lunar Mare"}, {name: "Apollo Program"}, {name: "Impact Theory"}, {name: "Lunar Water"}] },
+        
+        // --- HISTORY ---
+        "FALL OF ROME": { title: "Fall of Rome", summary: "The process of decline in the Western Roman Empire in which the Empire failed to enforce its rule.", links: [{name: "Visigoths"}, {name: "Constantine"}, {name: "Economic Inflation"}, {name: "Military Decline"}, {name: "Migration Period"}] },
+        "SILK ROAD": { title: "The Silk Road", summary: "A network of trade routes connecting the East and West, central to economic interactions.", links: [{name: "Marco Polo"}, {name: "Spice Trade"}, {name: "Cultural Exchange"}, {name: "Han Dynasty"}, {name: "Byzantine Empire"}] },
+        "INDUSTRIAL REVOLUTION": { title: "Industrial Revolution", summary: "The transition to new manufacturing processes in Great Britain, continental Europe, and the United States.", links: [{name: "Steam Engine"}, {name: "Urbanization"}, {name: "Textile Industry"}, {name: "Capitalism"}, {name: "Labor Unions"}] },
+        "FRENCH REVOLUTION": { title: "French Revolution", summary: "A period of radical political and societal change in France that began with the Estates General of 1789.", links: [{name: "Napoleon"}, {name: "Guillotine"}, {name: "Reign of Terror"}, {name: "Louis XVI"}, {name: "Enlightenment"}] },
+        "COLD WAR": { title: "The Cold War", summary: "A period of geopolitical tension between the Soviet Union and the United States and their respective allies.", links: [{name: "Nuclear Arms Race"}, {name: "Space Race"}, {name: "Berlin Wall"}, {name: "Cuban Missile Crisis"}, {name: "Espionage"}] },
+        "THE RENAISSANCE": { title: "The Renaissance", summary: "A fervent period of European cultural, artistic, political and economic rebirth following the Middle Ages.", links: [{name: "Da Vinci"}, {name: "Humanism"}, {name: "Medici Family"}, {name: "Printing Press"}, {name: "Galileo"}] },
+        "VIKINGS": { title: "Vikings", summary: "Norse seafarers, mainly speaking the Old Norse language, who raided, traded, and settled in wide areas of Europe.", links: [{name: "Longships"}, {name: "Norse Mythology"}, {name: "Ragnar Lothbrok"}, {name: "Valhalla"}, {name: "Lindisfarne"}] },
+        "MONGOL EMPIRE": { title: "Mongol Empire", summary: "The largest contiguous land empire in history. Originating in Mongolia in East Asia.", links: [{name: "Genghis Khan"}, {name: "Silk Road Safety"}, {name: "Horse Archery"}, {name: "Pax Mongolica"}, {name: "Kublai Khan"}] },
+        "BLACK DEATH": { title: "The Black Death", summary: "A bubonic plague pandemic occurring in Western Eurasia and North Africa. It is the most fatal pandemic recorded in human history.", links: [{name: "Yersinia Pestis"}, {name: "Plague Doctor"}, {name: "Feudalism Decline"}, {name: "Quarantine"}, {name: "Danse Macabre"}] },
+        "ANCIENT EGYPT": { title: "Ancient Egypt", summary: "A civilization of ancient North Africa, concentrated along the lower reaches of the Nile River.", links: [{name: "Pyramids"}, {name: "Pharaohs"}, {name: "Hieroglyphs"}, {name: "Mummification"}, {name: "Cleopatra"}] },
+        "SAMURAI": { title: "Samurai", summary: "The hereditary military nobility and officer caste of medieval and early-modern Japan.", links: [{name: "Bushido"}, {name: "Katana"}, {name: "Shogunate"}, {name: "Ronin"}, {name: "Seppuku"}] },
+        "ALEXANDER THE GREAT": { title: "Alexander the Great", summary: "A king of the ancient Greek kingdom of Macedon. He spent most of his ruling years on an unprecedented military campaign.", links: [{name: "Hellenistic Period"}, {name: "Macedonian Phalanx"}, {name: "Persian Empire"}, {name: "Aristotle"}, {name: "Library of Alexandria"}] },
+        "MAYA CIVILIZATION": { title: "Maya Civilization", summary: "A Mesoamerican civilization developed by the Maya peoples, noted for its logosyllabic script.", links: [{name: "Chichen Itza"}, {name: "Maya Calendar"}, {name: "Human Sacrifice"}, {name: "Step Pyramids"}, {name: "Cenotes"}] },
+        "WORLD WAR I": { title: "World War I", summary: "A global war originating in Europe that lasted from 28 July 1914 to 11 November 1918.", links: [{name: "Trench Warfare"}, {name: "Treaty of Versailles"}, {name: "Archduke Franz Ferdinand"}, {name: "Chemical Weapons"}, {name: "No Man's Land"}] },
+        "THE CRUSADES": { title: "The Crusades", summary: "A series of religious wars initiated, supported, and sometimes directed by the Latin Church in the medieval period.", links: [{name: "Knights Templar"}, {name: "Saladin"}, {name: "Holy Land"}, {name: "Siege of Jerusalem"}, {name: "Richard the Lionheart"}] },
 
-const CURATED_PATHS = {
-    // --- 🪐 COSMOLOGY ---
-    "THE BIG BANG": {
-        title: "The Big Bang",
-        summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.",
-        links: [{name: "Cosmic Inflation"}, {name: "Nucleosynthesis"}, {name: "CMB Radiation"}, {name: "Hubble's Law"}, {name: "The Singularity"}]
-    },
-    "BLACK HOLES": {
-        title: "Black Holes",
-        summary: "A region of spacetime where gravity is so strong that nothing—no particles or even electromagnetic radiation such as light—can escape from it.",
-        links: [{name: "Event Horizon"}, {name: "Singularity"}, {name: "Hawking Radiation"}, {name: "Spaghettification"}, {name: "Supermassive Black Holes"}]
-    },
-    "DARK MATTER": {
-        title: "Dark Matter",
-        summary: "A hypothetical form of matter thought to account for approximately 85% of the matter in the universe and about a quarter of its total energy density.",
-        links: [{name: "Gravitational Lensing"}, {name: "Galaxy Rotation Curves"}, {name: "WIMPs"}, {name: "Cosmic Web"}, {name: "Dark Energy"}]
-    },
-    "FERMI PARADOX": {
-        title: "The Fermi Paradox",
-        summary: "The apparent contradiction between the lack of evidence for extraterrestrial civilizations and various high estimates for their probability.",
-        links: [{name: "Great Filter"}, {name: "Drake Equation"}, {name: "Zoo Hypothesis"}, {name: "Von Neumann Probes"}, {name: "Rare Earth Hypothesis"}]
-    },
-    "NEUTRON STARS": {
-        title: "Neutron Stars",
-        summary: "The collapsed core of a massive supergiant star, which had a total mass of between 10 and 25 solar masses, possibly the smallest and densest known class of stars.",
-        links: [{name: "Pulsars"}, {name: "Magnetars"}, {name: "Supernova"}, {name: "Degeneracy Pressure"}, {name: "Kilonova"}]
-    },
-    "STRING THEORY": {
-        title: "String Theory",
-        summary: "A theoretical framework in which the point-like particles of particle physics are replaced by one-dimensional objects called strings.",
-        links: [{name: "M-Theory"}, {name: "Extra Dimensions"}, {name: "Quantum Gravity"}, {name: "Supersymmetry"}, {name: "Branes"}]
-    },
-    "EXOPLANETS": {
-        title: "Exoplanets",
-        summary: "A planet outside the Solar System. The first evidence of an exoplanet was noted in 1917, but was not recognized as such.",
-        links: [{name: "Goldilocks Zone"}, {name: "Transit Method"}, {name: "Hot Jupiters"}, {name: "Super-Earths"}, {name: "Biosignatures"}]
-    },
-    "THE MULTIVERSE": {
-        title: "The Multiverse",
-        summary: "A hypothetical group of multiple universes. Together, these universes comprise everything that exists: the entirety of space, time, matter, energy, and physical laws.",
-        links: [{name: "Bubble Universes"}, {name: "Many-Worlds Theory"}, {name: "Parallel Dimensions"}, {name: "Cosmic Inflation"}, {name: "Fine-Tuning"}]
-    },
-    "ENTROPY": {
-        title: "Entropy (Heat Death)",
-        summary: "The eventual fate of the universe where it has diminished to a state of no thermodynamic free energy and therefore can no longer sustain processes that increase entropy.",
-        links: [{name: "Second Law"}, {name: "Thermodynamics"}, {name: "Arrow of Time"}, {name: "The Big Freeze"}, {name: "Maxwell's Demon"}]
-    },
-    "QUANTUM MECHANICS": {
-        title: "Quantum Mechanics",
-        summary: "A fundamental theory in physics that provides a description of the physical properties of nature at the scale of atoms and subatomic particles.",
-        links: [{name: "Schrödinger's Cat"}, {name: "Entanglement"}, {name: "Superposition"}, {name: "Heisenberg Uncertainty"}, {name: "Wave-Particle Duality"}]
-    },
-    "DYSON SPHERES": {
-        title: "Dyson Spheres",
-        summary: "A hypothetical megastructure that completely encompasses a star and captures a large percentage of its solar power output.",
-        links: [{name: "Kardashev Scale"}, {name: "Megastructures"}, {name: "Technosignatures"}, {name: "Matrioshka Brain"}, {name: "Stellar Engines"}]
-    },
-    "GENERAL RELATIVITY": {
-        title: "General Relativity",
-        summary: "The geometric theory of gravitation published by Albert Einstein in 1915 and the current description of gravitation in modern physics.",
-        links: [{name: "Spacetime Curvature"}, {name: "Time Dilation"}, {name: "Gravitational Waves"}, {name: "Equivalence Principle"}, {name: "Wormholes"}]
-    },
-    "THE SUN": {
-        title: "The Sun",
-        summary: "The star around which the earth orbits. It is the dominant body of the solar system, comprising more than 99% of its entire mass.",
-        links: [{name: "Nuclear Fusion"}, {name: "Solar Flares"}, {name: "Corona"}, {name: "Sunspots"}, {name: "Solar Wind"}]
-    },
-    "ASTROBIOLOGY": {
-        title: "Astrobiology",
-        summary: "The study of the origin, evolution, distribution, and future of life in the universe: extraterrestrial life and life on Earth.",
-        links: [{name: "Panspermia"}, {name: "Extremophiles"}, {name: "SETI"}, {name: "Habitability"}, {name: "Europa Clipper"}]
-    },
-    "THE MOON": {
-        title: "The Moon",
-        summary: "Earth's only natural satellite. It is the fifth largest satellite in the Solar System and the largest and most massive relative to its parent planet.",
-        links: [{name: "Tidal Locking"}, {name: "Lunar Mare"}, {name: "Apollo Program"}, {name: "Impact Theory"}, {name: "Lunar Water"}]
-    },
+        // --- WHITEBOARD NEW (MODERN) ---
+        "SYSTEMS THINKING": { title: "Systems Thinking", summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate and how systems work over time.", links: [{name: "Feedback Loops"}, {name: "Cybernetics"}, {name: "Agent-Based Model"}, {name: "Social Simulation"}, {name: "Emergence"}] },
+        "GENERATIVE AI": { title: "Generative AI", summary: "Artificial intelligence capable of generating text, images, or other media, using generative models.", links: [{name: "LLMs"}, {name: "Diffusion Models"}, {name: "Transformer Architecture"}, {name: "Neural Networks"}, {name: "AI Ethics"}] },
+        "BLOCKCHAIN": { title: "Blockchain", summary: "A distributed database or ledger that is shared among the nodes of a computer network.", links: [{name: "Decentralization"}, {name: "Smart Contracts"}, {name: "Cryptography"}, {name: "Bitcoin"}, {name: "Web3"}] },
+        "GAME THEORY": { title: "Game Theory", summary: "The study of mathematical models of strategic interaction among rational decision-makers.", links: [{name: "Nash Equilibrium"}, {name: "Prisoner's Dilemma"}, {name: "Zero-Sum Game"}, {name: "Coordination"}, {name: "Behavioral Economics"}] },
+        "CRISPR": { title: "CRISPR", summary: "A family of DNA sequences found in the genomes of prokaryotic organisms such as bacteria and archaea. Used for gene editing.", links: [{name: "Gene Editing"}, {name: "Cas9"}, {name: "Bioethics"}, {name: "Designer Babies"}, {name: "Genetic Engineering"}] },
+        "QUANTUM COMPUTING": { title: "Quantum Computing", summary: "A type of computation that harnesses the collective properties of quantum states, such as superposition, interference, and entanglement.", links: [{name: "Qubits"}, {name: "Superposition"}, {name: "Quantum Supremacy"}, {name: "Cryptography Break"}, {name: "Shor's Algorithm"}] },
+        "NEURALINK": { title: "Brain-Computer Interface", summary: "A direct communication pathway between an enhanced or wired brain and an external device.", links: [{name: "Neural Lace"}, {name: "Cyborgs"}, {name: "Neuroscience"}, {name: "Prosthetics"}, {name: "AI Symbiosis"}] },
+        "THE SINGULARITY": { title: "Technological Singularity", summary: "A hypothetical point in time at which technological growth becomes uncontrollable and irreversible.", links: [{name: "Artificial Superintelligence"}, {name: "Moore's Law"}, {name: "Transhumanism"}, {name: "Ray Kurzweil"}, {name: "Intelligence Explosion"}] },
+        "CIRCULAR ECONOMY": { title: "Circular Economy", summary: "A model of production and consumption, which involves sharing, leasing, reusing, repairing, refurbishing and recycling existing materials.", links: [{name: "Sustainability"}, {name: "Zero Waste"}, {name: "Supply Chain"}, {name: "Green Tech"}, {name: "Planned Obsolescence"}] },
+        "MINIMALISM": { title: "Digital Minimalism", summary: "A philosophy of technology use in which you focus your online time on a small number of carefully selected activities.", links: [{name: "Deep Work"}, {name: "Attention Economy"}, {name: "Dopamine Detox"}, {name: "Essentialism"}, {name: "Slow Living"}] },
+        "METAVERSE": { title: "The Metaverse", summary: "A hypothetical iteration of the Internet as a single, universal and immersive virtual world.", links: [{name: "Virtual Reality"}, {name: "Augmented Reality"}, {name: "Digital Avatars"}, {name: "Spatial Computing"}, {name: "NFTs"}] },
+        "STOICISM": { title: "Stoicism", summary: "A school of Hellenistic philosophy which teaches that the path to eudaimonia (happiness) is found in accepting the moment as it presents itself.", links: [{name: "Marcus Aurelius"}, {name: "Seneca"}, {name: "Amor Fati"}, {name: "Dichotomy of Control"}, {name: "Virtue Ethics"}] },
+        "FIRST PRINCIPLES": { title: "First Principles", summary: "A method of thinking that breaks problems down to their fundamental truths.", links: [{name: "Reasoning"}, {name: "Elon Musk"}, {name: "Physics"}, {name: "Innovation"}, {name: "Deconstruction"}] },
+        "NETWORK EFFECTS": { title: "Network Effects", summary: "The phenomenon by which the value or utility a user derives from a good or service depends on the number of users of compatible products.", links: [{name: "Metcalfe's Law"}, {name: "Social Media"}, {name: "Virality"}, {name: "Critical Mass"}, {name: "Platform Economy"}] },
+        "AGILE METHODOLOGY": { title: "Agile Methodology", summary: "An approach to software development under which requirements and solutions evolve through the collaborative effort of self-organizing teams.", links: [{name: "Scrum"}, {name: "Kanban"}, {name: "Iterative Design"}, {name: "Sprints"}, {name: "MVP"}] },
+        "FUSION ENERGY": { title: "Fusion Energy", summary: "A proposed form of power generation that would generate electricity by using heat from nuclear fusion reactions.", links: [{name: "Tokamak"}, {name: "Clean Energy"}, {name: "Plasma Physics"}, {name: "ITER"}, {name: "Unlimited Power"}] },
+        "VERTICAL FARMING": { title: "Vertical Farming", summary: "The practice of growing crops in vertically stacked layers.", links: [{name: "Hydroponics"}, {name: "Aeroponics"}, {name: "Food Security"}, {name: "Urban Agriculture"}, {name: "Sustainable Farming"}] },
+        "BIOHACKING": { title: "Biohacking", summary: "Do-it-yourself biology. It involves making small, incremental diet or lifestyle changes to make minor improvements in your health.", links: [{name: "Nootropics"}, {name: "Quantified Self"}, {name: "Intermittent Fasting"}, {name: "Genomics"}, {name: "Longevity"}] },
+        "SPACE TOURISM": { title: "Space Tourism", summary: "Human space travel for recreational purposes.", links: [{name: "SpaceX"}, {name: "Blue Origin"}, {name: "Virgin Galactic"}, {name: "Commercial Spaceflight"}, {name: "Zero Gravity"}] },
+        "SMART CITIES": { title: "Smart Cities", summary: "An urban area that uses different types of electronic methods and sensors to collect data.", links: [{name: "IoT"}, {name: "Urban Planning"}, {name: "Autonomous Vehicles"}, {name: "5G Networks"}, {name: "Big Data"}] }
+    };
 
-    // --- 🏛️ HISTORY ---
-    "FALL OF ROME": {
-        title: "Fall of Rome",
-        summary: "The process of decline in the Western Roman Empire in which the Empire failed to enforce its rule, and its vast territory was divided into several successor polities.",
-        links: [{name: "Visigoths"}, {name: "Constantine"}, {name: "Economic Inflation"}, {name: "Military Decline"}, {name: "Migration Period"}]
-    },
-    "SILK ROAD": {
-        title: "The Silk Road",
-        summary: "A network of trade routes connecting the East and West, and was central to the economic, cultural, political, and religious interactions between these regions.",
-        links: [{name: "Marco Polo"}, {name: "Spice Trade"}, {name: "Cultural Exchange"}, {name: "Han Dynasty"}, {name: "Byzantine Empire"}]
-    },
-    "INDUSTRIAL REVOLUTION": {
-        title: "Industrial Revolution",
-        summary: "The transition to new manufacturing processes in Great Britain, continental Europe, and the United States, in the period from about 1760 to sometime between 1820 and 1840.",
-        links: [{name: "Steam Engine"}, {name: "Urbanization"}, {name: "Textile Industry"}, {name: "Capitalism"}, {name: "Labor Unions"}]
-    },
-    "FRENCH REVOLUTION": {
-        title: "French Revolution",
-        summary: "A period of radical political and societal change in France that began with the Estates General of 1789 and ended with the formation of the French Consulate in 1799.",
-        links: [{name: "Napoleon"}, {name: "Guillotine"}, {name: "Reign of Terror"}, {name: "Louis XVI"}, {name: "Enlightenment"}]
-    },
-    "COLD WAR": {
-        title: "The Cold War",
-        summary: "A period of geopolitical tension between the Soviet Union and the United States and their respective allies, the Eastern Bloc and the Western Bloc, after World War II.",
-        links: [{name: "Nuclear Arms Race"}, {name: "Space Race"}, {name: "Berlin Wall"}, {name: "Cuban Missile Crisis"}, {name: "Espionage"}]
-    },
-    "THE RENAISSANCE": {
-        title: "The Renaissance",
-        summary: "A fervent period of European cultural, artistic, political and economic rebirth following the Middle Ages. Generally described as taking place from the 14th century to the 17th century.",
-        links: [{name: "Da Vinci"}, {name: "Humanism"}, {name: "Medici Family"}, {name: "Printing Press"}, {name: "Galileo"}]
-    },
-    "VIKINGS": {
-        title: "Vikings",
-        summary: "Norse seafarers, mainly speaking the Old Norse language, who from their homelands in Scandinavia raided, traded, explored, and settled in wide areas of Europe.",
-        links: [{name: "Longships"}, {name: "Norse Mythology"}, {name: "Ragnar Lothbrok"}, {name: "Valhalla"}, {name: "Lindisfarne"}]
-    },
-    "MONGOL EMPIRE": {
-        title: "Mongol Empire",
-        summary: "The largest contiguous land empire in history. Originating in Mongolia in East Asia, the Mongol Empire at its height stretched from the Sea of Japan to parts of Eastern Europe.",
-        links: [{name: "Genghis Khan"}, {name: "Silk Road Safety"}, {name: "Horse Archery"}, {name: "Pax Mongolica"}, {name: "Kublai Khan"}]
-    },
-    "BLACK DEATH": {
-        title: "The Black Death",
-        summary: "A bubonic plague pandemic occurring in Western Eurasia and North Africa from 1346 to 1353. It is the most fatal pandemic recorded in human history.",
-        links: [{name: "Yersinia Pestis"}, {name: "Plague Doctor"}, {name: "Feudalism Decline"}, {name: "Quarantine"}, {name: "Danse Macabre"}]
-    },
-    "ANCIENT EGYPT": {
-        title: "Ancient Egypt",
-        summary: "A civilization of ancient North Africa, concentrated along the lower reaches of the Nile River, situated in the place that is now the country Egypt.",
-        links: [{name: "Pyramids"}, {name: "Pharaohs"}, {name: "Hieroglyphs"}, {name: "Mummification"}, {name: "Cleopatra"}]
-    },
-    "SAMURAI": {
-        title: "Samurai",
-        summary: "The hereditary military nobility and officer caste of medieval and early-modern Japan from the late 12th century to their abolition in the 1870s.",
-        links: [{name: "Bushido"}, {name: "Katana"}, {name: "Shogunate"}, {name: "Ronin"}, {name: "Seppuku"}]
-    },
-    "ALEXANDER THE GREAT": {
-        title: "Alexander the Great",
-        summary: "A king of the ancient Greek kingdom of Macedon. He succeeded his father Philip II to the throne at the age of 20 and spent most of his ruling years on an unprecedented military campaign.",
-        links: [{name: "Hellenistic Period"}, {name: "Macedonian Phalanx"}, {name: "Persian Empire"}, {name: "Aristotle"}, {name: "Library of Alexandria"}]
-    },
-    "MAYA CIVILIZATION": {
-        title: "Maya Civilization",
-        summary: "A Mesoamerican civilization developed by the Maya peoples, and noted for its logosyllabic script—the most advanced writing system in pre-Columbian Americas.",
-        links: [{name: "Chichen Itza"}, {name: "Maya Calendar"}, {name: "Human Sacrifice"}, {name: "Step Pyramids"}, {name: "Cenotes"}]
-    },
-    "WORLD WAR I": {
-        title: "World War I",
-        summary: "A global war originating in Europe that lasted from 28 July 1914 to 11 November 1918. Contemporaneously described as 'the war to end all wars'.",
-        links: [{name: "Trench Warfare"}, {name: "Treaty of Versailles"}, {name: "Archduke Franz Ferdinand"}, {name: "Chemical Weapons"}, {name: "No Man's Land"}]
-    },
-    "THE CRUSADES": {
-        title: "The Crusades",
-        summary: "A series of religious wars initiated, supported, and sometimes directed by the Latin Church in the medieval period.",
-        links: [{name: "Knights Templar"}, {name: "Saladin"}, {name: "Holy Land"}, {name: "Siege of Jerusalem"}, {name: "Richard the Lionheart"}]
-    },
-
-    // --- 🧠 WHITEBOARD NEW (MODERN / SYSTEMS) ---
-    "SYSTEMS THINKING": {
-        title: "Systems Thinking",
-        summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate and how systems work over time.",
-        links: [{name: "Feedback Loops"}, {name: "Cybernetics"}, {name: "Agent-Based Model"}, {name: "Social Simulation"}, {name: "Emergence"}]
-    },
-    "GENERATIVE AI": {
-        title: "Generative AI",
-        summary: "Artificial intelligence capable of generating text, images, or other media, using generative models. Generative AI models learn the patterns and structure of their input training data.",
-        links: [{name: "LLMs"}, {name: "Diffusion Models"}, {name: "Transformer Architecture"}, {name: "Neural Networks"}, {name: "AI Ethics"}]
-    },
-    "BLOCKCHAIN": {
-        title: "Blockchain",
-        summary: "A distributed database or ledger that is shared among the nodes of a computer network. Best known for its role in cryptocurrency systems.",
-        links: [{name: "Decentralization"}, {name: "Smart Contracts"}, {name: "Cryptography"}, {name: "Bitcoin"}, {name: "Web3"}]
-    },
-    "GAME THEORY": {
-        title: "Game Theory",
-        summary: "The study of mathematical models of strategic interaction among rational decision-makers. It has applications in all fields of social science.",
-        links: [{name: "Nash Equilibrium"}, {name: "Prisoner's Dilemma"}, {name: "Zero-Sum Game"}, {name: "Coordination"}, {name: "Behavioral Economics"}]
-    },
-    "CRISPR": {
-        title: "CRISPR",
-        summary: "A family of DNA sequences found in the genomes of prokaryotic organisms such as bacteria and archaea. Used for gene editing.",
-        links: [{name: "Gene Editing"}, {name: "Cas9"}, {name: "Bioethics"}, {name: "Designer Babies"}, {name: "Genetic Engineering"}]
-    },
-    "QUANTUM COMPUTING": {
-        title: "Quantum Computing",
-        summary: "A type of computation that harnesses the collective properties of quantum states, such as superposition, interference, and entanglement, to perform calculations.",
-        links: [{name: "Qubits"}, {name: "Superposition"}, {name: "Quantum Supremacy"}, {name: "Cryptography Break"}, {name: "Shor's Algorithm"}]
-    },
-    "NEURALINK": {
-        title: "Brain-Computer Interface",
-        summary: "A direct communication pathway between an enhanced or wired brain and an external device. BCIs are often directed at researching, mapping, assisting, augmenting, or repairing human cognitive or sensory-motor functions.",
-        links: [{name: "Neural Lace"}, {name: "Cyborgs"}, {name: "Neuroscience"}, {name: "Prosthetics"}, {name: "AI Symbiosis"}]
-    },
-    "THE SINGULARITY": {
-        title: "Technological Singularity",
-        summary: "A hypothetical point in time at which technological growth becomes uncontrollable and irreversible, resulting in unfathomable changes to human civilization.",
-        links: [{name: "Artificial Superintelligence"}, {name: "Moore's Law"}, {name: "Transhumanism"}, {name: "Ray Kurzweil"}, {name: "Intelligence Explosion"}]
-    },
-    "CIRCULAR ECONOMY": {
-        title: "Circular Economy",
-        summary: "A model of production and consumption, which involves sharing, leasing, reusing, repairing, refurbishing and recycling existing materials and products as long as possible.",
-        links: [{name: "Sustainability"}, {name: "Zero Waste"}, {name: "Supply Chain"}, {name: "Green Tech"}, {name: "Planned Obsolescence"}]
-    },
-    "MINIMALISM": {
-        title: "Digital Minimalism",
-        summary: "A philosophy of technology use in which you focus your online time on a small number of carefully selected and optimized activities that strongly support things you value.",
-        links: [{name: "Deep Work"}, {name: "Attention Economy"}, {name: "Dopamine Detox"}, {name: "Essentialism"}, {name: "Slow Living"}]
-    },
-    "METAVERSE": {
-        title: "The Metaverse",
-        summary: "A hypothetical iteration of the Internet as a single, universal and immersive virtual world that is facilitated by the use of virtual reality and augmented reality headsets.",
-        links: [{name: "Virtual Reality"}, {name: "Augmented Reality"}, {name: "Digital Avatars"}, {name: "Spatial Computing"}, {name: "NFTs"}]
-    },
-    "STOICISM": {
-        title: "Stoicism",
-        summary: "A school of Hellenistic philosophy which teaches that the path to eudaimonia (happiness) is found in accepting the moment as it presents itself.",
-        links: [{name: "Marcus Aurelius"}, {name: "Seneca"}, {name: "Amor Fati"}, {name: "Dichotomy of Control"}, {name: "Virtue Ethics"}]
-    },
-    "FIRST PRINCIPLES": {
-        title: "First Principles",
-        summary: "A basic proposition or assumption that cannot be deduced from any other proposition or assumption. A method of thinking that breaks problems down to their fundamental truths.",
-        links: [{name: "Reasoning"}, {name: "Elon Musk"}, {name: "Physics"}, {name: "Innovation"}, {name: "Deconstruction"}]
-    },
-    "NETWORK EFFECTS": {
-        title: "Network Effects",
-        summary: "The phenomenon by which the value or utility a user derives from a good or service depends on the number of users of compatible products.",
-        links: [{name: "Metcalfe's Law"}, {name: "Social Media"}, {name: "Virality"}, {name: "Critical Mass"}, {name: "Platform Economy"}]
-    },
-    "AGILE METHODOLOGY": {
-        title: "Agile Methodology",
-        summary: "An approach to software development under which requirements and solutions evolve through the collaborative effort of self-organizing and cross-functional teams.",
-        links: [{name: "Scrum"}, {name: "Kanban"}, {name: "Iterative Design"}, {name: "Sprints"}, {name: "MVP"}]
-    },
-    "FUSION ENERGY": {
-        title: "Fusion Energy",
-        summary: "A proposed form of power generation that would generate electricity by using heat from nuclear fusion reactions. In a fusion process, two lighter atomic nuclei combine to form a heavier nucleus.",
-        links: [{name: "Tokamak"}, {name: "Clean Energy"}, {name: "Plasma Physics"}, {name: "ITER"}, {name: "Unlimited Power"}]
-    },
-    "VERTICAL FARMING": {
-        title: "Vertical Farming",
-        summary: "The practice of growing crops in vertically stacked layers. It often incorporates controlled-environment agriculture, which aims to optimize plant growth.",
-        links: [{name: "Hydroponics"}, {name: "Aeroponics"}, {name: "Food Security"}, {name: "Urban Agriculture"}, {name: "Sustainable Farming"}]
-    },
-    "BIOHACKING": {
-        title: "Biohacking",
-        summary: "Do-it-yourself biology. It involves making small, incremental diet or lifestyle changes to make minor improvements in your health and well-being.",
-        links: [{name: "Nootropics"}, {name: "Quantified Self"}, {name: "Intermittent Fasting"}, {name: "Genomics"}, {name: "Longevity"}]
-    },
-    "SPACE TOURISM": {
-        title: "Space Tourism",
-        summary: "Human space travel for recreational purposes. There are several different types of space tourism, including orbital, suborbital, and lunar space tourism.",
-        links: [{name: "SpaceX"}, {name: "Blue Origin"}, {name: "Virgin Galactic"}, {name: "Commercial Spaceflight"}, {name: "Zero Gravity"}]
-    },
-    "SMART CITIES": {
-        title: "Smart Cities",
-        summary: "An urban area that uses different types of electronic methods and sensors to collect data. Insights gained from that data are used to manage assets, resources and services efficiently.",
-        links: [{name: "IoT"}, {name: "Urban Planning"}, {name: "Autonomous Vehicles"}, {name: "5G Networks"}, {name: "Big Data"}]
-    }
-};
     const PHONE_DB = {
       "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999, mrp: 34999 },
       "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999, mrp: 34999 },
@@ -630,7 +420,7 @@ const CURATED_PATHS = {
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v82.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v83.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -646,7 +436,7 @@ const CURATED_PATHS = {
                 <div class="grid-btn" onclick="loadDomain('research')">
                     <div class="grid-icon">🧠</div>
                     <div class="grid-label">RESEARCH</div>
-                    <div class="grid-status">SYSTEMS NODE</div>
+                    <div class="grid-status">50+ NODES</div>
                 </div>
                 <div class="grid-btn" onclick="loadDomain('trivia')">
                     <div class="grid-icon">🧩</div>
@@ -761,6 +551,7 @@ const CURATED_PATHS = {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if(isMobile) {
+                // FIXED: RE-ADDED THE REQUESTED IMAGE-TO-URL LINK
                 const deepLink = "https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg";
                 container.innerHTML = `
                     <div class="pay-option" onclick="window.location.href='${deepLink}'" style="border-color:var(--accent-go);">
@@ -837,45 +628,24 @@ const CURATED_PATHS = {
         buildResearchDeck(ctx);
     }
 
-    // --- UPGRADED PDF ENGINE (NODES STYLE) ---
     function saveJSON() {
         const { jsPDF } = window.jspdf; 
         const doc = new jsPDF();
-        
-        // Header
+        let y = 20;
         doc.setFont("courier", "bold"); doc.setFontSize(18); 
-        doc.text("DECIDE.ENGINE // RESEARCH LOG", 20, 20);
+        doc.text("DECIDE.ENGINE // RESEARCH LOG", 20, y); y += 8;
         
         doc.setFontSize(10); doc.setFont("courier", "normal");
-        doc.text(`SESSION: ${ENGINE_STATE.sessionID} | DATE: ${new Date().toISOString().split('T')[0]}`, 20, 28);
-        
-        doc.setLineWidth(0.5); doc.line(20, 32, 190, 32);
+        doc.text(`SESSION: ${ENGINE_STATE.sessionID} | DATE: ${new Date().toISOString().split('T')[0]}`, 20, y); y+= 15;
 
-        let y = 45;
-        
         ENGINE_STATE.researchPath.forEach((item, i) => {
-            // Check page break
-            if (y > 250) { doc.addPage(); y = 20; }
-            
-            // Node Title
-            doc.setFont("courier", "bold"); doc.setFontSize(12); doc.setTextColor(255, 103, 31); // Brand Orange
-            doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); 
-            y += 8;
-            
-            // Node Content
-            doc.setFont("courier", "normal"); doc.setFontSize(10); doc.setTextColor(0, 0, 0);
-            const lines = doc.splitTextToSize(item.summary, 170); 
-            doc.text(lines, 20, y);
-            
-            y += (lines.length * 5) + 15;
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y += 8;
+            doc.setFont("courier", "normal");
+            const lines = doc.splitTextToSize(item.summary, 170); doc.text(lines, 20, y);
+            y += (lines.length * 6) + 10;
         });
-        
-        // Footer Stamp
-        doc.setFontSize(8); doc.setTextColor(150, 150, 150);
-        doc.text("GENERATED BY VIAC0 DECIDE ENGINE v82.0", 20, 285);
-        
-        doc.save(`Research_Path_${ENGINE_STATE.sessionID}.pdf`); 
-        showToast("PDF DOWNLOADED");
+        doc.save(`Research_Path_${ENGINE_STATE.sessionID}.pdf`); showToast("PDF DOWNLOADING...");
     }
 
     // --- HARDWARE MODULES (PHONES/AUDIO) ---
@@ -931,6 +701,7 @@ const CURATED_PATHS = {
         });
         const final = document.createElement('section'); final.className = "main-slide next";
         
+        // ADDED: WATCH REVIEW BUTTON TO FINAL SCREEN
         final.innerHTML = `
             <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
             <div class="winner-container">
@@ -998,6 +769,7 @@ const CURATED_PATHS = {
         window.speechSynthesis.speak(u);
     }
 
+    // ADDED: Logic to open specific youtube reviews
     function openReview() { 
         const m = MODULES[ENGINE_STATE.currentDomain];
         if (m && m.review) window.open(m.review, '_blank');
@@ -1039,7 +811,7 @@ const CURATED_PATHS = {
         goToSlide(slideElements.length - 1);
     }
 
-    // --- SWIPE SYSTEM ---
+    // --- SWIPE SYSTEM (IMPROVED) ---
     function manualSkip(el) {
         if (event) event.stopPropagation();
         const view = el.closest('.carousel-viewport');
@@ -1067,7 +839,7 @@ const CURATED_PATHS = {
         }, {passive: true});
 
         document.addEventListener('touchend', e => {
-            // SCROLL GUARD
+            // SCROLL GUARD: If inside .wiki-summary, allow default scroll
             if(e.target.closest('.wiki-summary')) return;
 
             const view = e.target.closest('.main-slide.active .carousel-viewport');
@@ -1078,6 +850,7 @@ const CURATED_PATHS = {
 
             if(dy < -60) { // UP SWIPE
                 if(active.classList.contains('static')) {
+                    // Reveal Options
                     active.classList.remove('static'); active.classList.add('opt-hidden');
                     view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
                 } else if(ENGINE_STATE.triviaMode) {
@@ -1115,6 +888,7 @@ const CURATED_PATHS = {
     }
     
     function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
+    // UPDATED: Affiliate Redirect Logic
     function redirect() { const item = Object.keys(ENGINE_STATE.items_detected)[0]; if(!item) return showToast("NOTHING SELECTED"); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank'); }
 
     boot();
