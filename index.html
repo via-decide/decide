@@ -1,49 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    
     <meta charset="UTF-8">
-    <title>Decide Engine | Compare Phones, Earbuds & Research Topics</title>
-    <meta name="description" content="Free AI-powered decision engine. Instantly compare Poco F7 vs Samsung S24 FE, Sony vs Technics earbuds, or research complex topics like Dyson Spheres without the fluff.">
-    <meta name="keywords" content="smartphone comparison, tech decider, earbuds vs, Poco F7 review, research tool, analysis paralysis tool">
-    <meta name="author" content="Kutch Automation">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Decide Engine | OS v82.0 (Stable)</title>
     
-    <meta property="og:title" content="Stop Overthinking. Start Deciding.">
-    <meta property="og:description" content="The swipe-based OS for choosing your next phone, gadget, or research topic.">
-    <meta property="og:url" content="https://viadecide.com">
-    <meta property="og:type" content="website">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>| decide.engine v80.0 |</title>
-
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v80.0 (REVENUE ENGINE)
+           CORE SYSTEM | DECIDE OS v82.0
            ========================================= */
         :root {
             --brand-orange: #ff671f;
             --brand-gold: #ffb700;
             --brand-dark: #050505;
             --glass-surface: rgba(20, 20, 20, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --accent-go: #00e676; 
             --accent-skip: #ff3333;
             --font-tech: 'Courier New', monospace;
             --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            --ease-elastic: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         html, body {
@@ -56,27 +41,31 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 🌌 CINEMATIC BACKGROUND */
+        /* 🌌 BACKGROUND */
         .aurora-bg {
             position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
             background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000000 70%);
             z-index: -1;
-            animation: drift 20s infinite alternate ease-in-out;
+            animation: drift 25s infinite alternate ease-in-out;
             opacity: 0.8;
             pointer-events: none;
+            will-change: transform;
         }
-        @keyframes drift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-20px, -20px) scale(1.05); } }
+        @keyframes drift { 
+            0% { transform: translate3d(0,0,0) scale(1); } 
+            100% { transform: translate3d(-20px, -20px, 0) scale(1.05); } 
+        }
 
         #master-container { height: 100vh; width: 100vw; position: relative; overflow: hidden; }
 
+        /* SLIDE SYSTEM */
         .main-slide {
             height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
             display: flex; flex-direction: column;
-            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            will-change: transform;
+            transition: transform 0.5s var(--ease-elastic), opacity 0.4s ease;
+            will-change: transform, opacity;
             background: transparent;
         }
-
         .main-slide.prev { transform: translateY(-100%) scale(0.95); opacity: 0; pointer-events: none; }
         .main-slide.active { transform: translateY(0) scale(1); opacity: 1; z-index: 10; pointer-events: auto; }
         .main-slide.next { transform: translateY(100%) scale(0.95); opacity: 0; z-index: 20; pointer-events: none; }
@@ -102,22 +91,19 @@
         .status-dot { width: 6px; height: 6px; background: var(--accent-go); border-radius: 50%; box-shadow: 0 0 5px var(--accent-go); transition: background 0.3s; }
         .status-dot.offline { background: var(--accent-skip); box-shadow: 0 0 5px var(--accent-skip); }
 
-        /* GLOBAL EXIT BUTTON */
+        /* UI ELEMENTS */
         .exit-btn {
             padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
             background: rgba(0,0,0,0.6); color: #fff; font-family: var(--font-tech);
             font-size: 0.7rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px);
             text-transform: uppercase; transition: all 0.2s;
         }
-        .exit-btn:active { background: #fff; color: #000; transform: scale(0.95); }
 
-        /* 🎛️ GRID LOBBY */
         .lobby-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 24px; 
             margin-top: 20px; overflow-y: auto; padding-bottom: 120px; box-sizing: border-box;
             height: 100%; align-content: start; padding-top: 80px;
         }
-
         .lobby-container {
              display: flex; flex-direction: column; gap: 15px; padding: 24px; height: 100%; 
              overflow-y: auto; justify-content: flex-start; padding-top: 80px; box-sizing: border-box;
@@ -130,25 +116,14 @@
             aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer;
             backdrop-filter: blur(10px);
         }
-        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-        
+        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
         .grid-icon { font-size: 1.8rem; margin-bottom: 5px; }
         .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
         .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-
+        
         .btn-fuel { border-color: var(--brand-gold); background: rgba(255, 183, 0, 0.05); }
-        .btn-fuel .grid-label { color: var(--brand-gold); }
-        .btn-fuel .grid-status { color: #fff; }
-        .btn-fuel:active { background: rgba(255, 183, 0, 0.15); box-shadow: 0 0 20px rgba(255, 183, 0, 0.2); }
-
         .full-width-btn { grid-column: span 2; aspect-ratio: auto; padding: 18px; flex-direction: row; gap: 15px; }
 
-        .footer-seal {
-            margin-top: 20px; margin-bottom: 20px; text-align: center;
-            font-family: var(--font-tech); font-size: 0.6rem; color: #444; pointer-events: none;
-        }
-
-        /* 🃏 CARDS & UI */
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; margin-top: 70px; perspective: 1000px; }
 
         .sub-slide {
@@ -163,11 +138,17 @@
             transform: translateY(20px) scale(0.95);
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
-
         .sub-slide.opt-active, .sub-slide.static { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); z-index: 30; }
 
         h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .wiki-summary { font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; font-weight: 400; max-height: 300px; overflow-y: auto; mask-image: linear-gradient(to bottom, black 85%, transparent 100%); }
+        
+        .wiki-summary { 
+            font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
+            font-weight: 400; max-height: 300px; overflow-y: auto; 
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            touch-action: pan-y; 
+        }
+        
         .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
 
@@ -176,55 +157,28 @@
         .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
         .btn-yt { background: #cc0000; border: none; }
-        .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-share:active { background: #fff; color: #000; }
+        .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; }
         
         .search-wrapper { position: relative; margin-bottom: 20px; }
         #search-input { width: 100%; padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; font-family: var(--font-ui); font-size: 1.1rem; box-sizing: border-box; }
-        
-        .nav-hint, .skip-btn-clickable { font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
-        .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; }
-        .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
 
-        /* 💳 PAYMENT MODAL */
         .modal-backdrop {
             position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
             z-index: 5000; display: flex; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .modal-backdrop.open { opacity: 1; pointer-events: auto; }
-        .payment-card {
-            background: #111; border: 1px solid var(--brand-gold); width: 90%; max-width: 400px;
-            padding: 30px; border-radius: 24px; text-align: center; position: relative;
-            box-shadow: 0 0 50px rgba(255, 183, 0, 0.1);
-        }
-        .pay-option {
-            background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0;
-            border-radius: 12px; cursor: pointer; border: 1px solid #333;
-            display: flex; align-items: center; justify-content: space-between;
-            font-weight: 600; color: #fff; transition: 0.2s;
-        }
-        .pay-option:active { transform: scale(0.98); background: rgba(255,255,255,0.15); }
-        .pay-qr-container { background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 15px; margin-top: 15px; }
-        .pay-qr { width: 100%; max-width: 200px; display: block; margin: 0 auto; }
-        .close-modal { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #666; font-size: 1.5rem; cursor: pointer; padding: 10px; }
-
-        /* TOPICS & UTILS */
-        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
-        .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
-        .topic-card:active { background: rgba(255,255,255,0.1); transform: scale(0.98); }
-        .topic-title { font-weight: bold; color: #fff; font-size: 0.85rem; margin-bottom: 4px; font-family: var(--font-tech); }
-        .topic-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .payment-card { background: #111; border: 1px solid var(--brand-gold); width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; text-align: center; position: relative; }
+        .pay-option { background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0; border-radius: 12px; cursor: pointer; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: #fff; }
+        
+        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; font-weight: bold; }
+        .toast-msg.visible { opacity: 1; }
 
         .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; mix-blend-mode: screen; }
         .winner-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; padding-bottom: 120px; background: linear-gradient(to top, #000 95%, transparent); }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
         .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 200; background: #000; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-        
-        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; font-weight: bold; }
-        .toast-msg.visible { opacity: 1; }
 
-        /* 📸 HIDDEN SHARE CARD (For Generation) */
         #share-card-canvas {
             position: fixed; top: -200vh; left: 0; width: 360px; padding: 40px 30px;
             background: linear-gradient(145deg, #111, #050505);
@@ -234,43 +188,19 @@
             box-sizing: border-box; z-index: 9000;
         }
         
-        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
+        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
+        .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; }
+        .topic-title { font-weight: bold; color: #fff; font-size: 0.85rem; margin-bottom: 4px; font-family: var(--font-tech); }
+        .topic-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .deal-tag {
-            color: var(--accent-go);
-            font-size: 0.8rem;
-            font-weight: bold;
-            background: rgba(0, 230, 118, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 10px;
-            font-family: var(--font-tech);
-        }
+        .deal-tag { color: var(--accent-go); font-size: 0.8rem; font-weight: bold; background: rgba(0, 230, 118, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-family: var(--font-tech); }
+        .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
+        .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
+        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
+
     </style>
 </head>
 <body>
-<div id="seo-payload" style="position:absolute; left:-9999px; top:-9999px; height:1px; overflow:hidden;">
-    <h1>Decide Engine: The AI Comparison Tool for Tech & Research</h1>
-    <p>Stop analysis paralysis. Compare Smartphones, Wireless Earbuds, and Research Topics instantly.</p>
-    
-    <h2>Best Smartphones 2026 Comparison</h2>
-    <ul>
-        <li><strong>Poco F7:</strong> Best for performance and heavy gaming. Price: ₹29,999.</li>
-        <li><strong>iQOO Neo 10R:</strong> Value king for gamers. 144Hz display.</li>
-        <li><strong>Nothing 3a Pro:</strong> Clean UI, unique design, service king.</li>
-        <li><strong>Samsung S24 FE:</strong> Premium camera experience with 7 years of updates.</li>
-    </ul>
-
-    <h2>Best Wireless Earbuds (TWS) 2026</h2>
-    <ul>
-        <li><strong>Technics AZ100:</strong> Audiophile sound quality with Multipoint.</li>
-        <li><strong>Sony WF-1000XM6:</strong> Industry leading Active Noise Cancellation (ANC).</li>
-        <li><strong>SteelSeries Arctis:</strong> Zero latency earbuds for gaming.</li>
-    </ul>
-
-    <h2>Research Topics Explained</h2>
-    <p>Deep dive into: Decision Fatigue, Dyson Spheres, The Dark Forest Theory, Roko's Basilisk, and Feedback Loops.</p>
-</div>
 
 <div class="aurora-bg"></div>
 <div id="master-container"></div>
@@ -286,131 +216,95 @@
 
 <div id="payment-modal" class="modal-backdrop">
     <div class="payment-card">
-        <button class="close-modal" onclick="togglePayment(false)">&times;</button>
+        <button class="close-modal" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#666; font-size:1.5rem;" onclick="togglePayment(false)">&times;</button>
         <h2 style="color:var(--brand-gold); margin-top:0;">FUEL THE SYSTEM ⚡</h2>
         <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">Keep the servers running.</p>
-        
         <div id="upi-container"></div>
-
         <div class="pay-option" onclick="window.open('https://buymeacoffee.com/dharamdaxini', '_blank')">
-            <span>🌍 International Cards</span>
-            <span>↗</span>
+            <span>🌍 International Cards</span><span>↗</span>
         </div>
     </div>
 </div>
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v80.0 (REVENUE ENGINE)
+       KUTCH AUTOMATION | v82.0 (STABLE)
        ========================================= */
+    
+    // --- CONFIG & CONSTANTS ---
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
+    
+    // 📺 VIDEO LINKS
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
     const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
-    const AMZN_TAG = "decideos-21";
-    const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     
-    // 🇮🇳 UPI CONFIG
+    // 🛒 AFFILIATE
+    const AMZN_TAG = "decideos-21";
+    
+    // 🎨 ASSETS
+    const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
     const UPI_ID = "6351537770@yapl";
     const QR_IMAGE = "1000206276.png"; 
 
-    // 🎙️ VOICE FEED DATA
+    // 🎙️ VOICE DATA
     const VOICE_FEED = [
-      {
-        id: "voice_focus_ai",
-        title: "Voice Focus AI – Call Clarity Explained",
-        mode: "explain",
-        blocks: [
-          { role: "SYSTEM", text: "Voice Focus AI is a call-clarity technology used in Technics AZ100 earbuds." },
-          { role: "EXPLAIN", text: "It uses a six-microphone array combined with an AI-equipped chip to isolate human voice from background chaos." },
-          { role: "DETAIL", text: "The system improves both outgoing voice clarity and incoming audio, unlike traditional one-way noise reduction." },
-          { role: "EDGE", text: "At maximum suppression levels, aggressive processing can sometimes produce a robotic vocal tone." }
-        ]
-      },
-      {
-        id: "earbuds_buy_wait_2026",
-        title: "Wireless Earbuds – Buy vs Wait (Feb 2026)",
-        mode: "decision",
-        blocks: [
-          { role: "BUY", text: "Buy today: Technics AZ100 for work and audiophiles, AirPods Pro 3 for iPhone users, Bose QC Ultra for pure ANC." },
-          { role: "WAIT", text: "Wait for Sony WF-1000XM6 launching around Feb 12 and Samsung Galaxy Buds 4 Pro expected Feb 25." }
-        ]
-      },
-      {
-        id: "beast_mode_boat",
-        title: "Beast Mode – boAt Airdopes 141",
-        mode: "tech_breakdown",
-        blocks: [
-          { role: "DEFINE", text: "Beast Mode is boAt’s low-latency gaming mode designed to reduce Bluetooth audio lag." },
-          { role: "METRIC", text: "Latency drops to 80 milliseconds, improving sync in games like BGMI and COD Mobile." },
-          { role: "CONTEXT", text: "While better than standard Bluetooth, 80ms is slower than premium competitors operating at 40ms or below." }
-        ]
-      }
+      { id: "voice_focus_ai", title: "Voice Focus AI – Call Clarity Explained", mode: "explain", blocks: [{ text: "Voice Focus AI uses a six-microphone array to isolate human voice." }, { text: "It improves both outgoing clarity and incoming audio." }] },
+      { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
     ];
 
-    // 🏆 FULL CURATED PATHS (Research)
+    // 🧠 SYSTEM KNOWLEDGE (Enhanced from PDF)
     const CURATED_PATHS = {
-        "DECISION FATIGUE": { title: "Decision Fatigue", summary: "The deteriorating quality of decisions made by an individual after a long session of decision making. It is now understood as one of the causes of irrational trade-offs in decision making.", links: [{name: "Ego Depletion"}, {name: "Self-Control"}, {name: "Cognitive Load"}, {name: "Working Memory"}, {name: "Choice Overload"}] },
-        "WHY METRICS FAIL": { title: "Why Metrics Fail", summary: "When a measure becomes a target, it ceases to be a good measure. This principle highlights how systems can be gamed when performance is tied to specific metrics.", links: [{name: "Goodhart's Law"}, {name: "Campbell's Law"}, {name: "Performance Measurement"}, {name: "Surrogation"}, {name: "Gaming the System"}] },
-        "FEEDBACK LOOPS": { title: "Feedback Loops", summary: "A process in which the outputs of a system are circled back and used as inputs. Positive feedback amplifies change, while negative feedback reduces it.", links: [{name: "Cybernetics"}, {name: "Control Theory"}, {name: "Systems Theory"}, {name: "Homeostasis"}, {name: "Runaway Effect"}] },
-        "OPTIMIZATION FAILURE": { title: "Optimization Failure", summary: "The pursuit of the 'best' solution can often lead to fragility. Over-optimization removes redundancy, making systems vulnerable to unexpected shocks.", links: [{name: "Local Optimum"}, {name: "Global Optimum"}, {name: "Fragility"}, {name: "Robustness"}, {name: "Pareto Efficiency"}] },
-        "ATTENTION ECONOMY": { title: "Attention Economy", summary: "An approach to the management of information that treats human attention as a scarce commodity. Economics applies to attention just as it applies to money.", links: [{name: "Information Overload"}, {name: "Cognitive Surplus"}, {name: "Persuasive Technology"}, {name: "Surveillance Capitalism"}, {name: "Deep Work"}] },
-        "COGNITIVE BIASES": { title: "Cognitive Biases", summary: "Systematic patterns of deviation from norm or rationality in judgment. Individuals create their own 'subjective reality' from their perception of the input.", links: [{name: "Heuristics"}, {name: "Bounded Rationality"}, {name: "Confirmation Bias"}, {name: "Survivorship Bias"}, {name: "Dunning-Kruger Effect"}] },
-        "COMPLEX SYSTEMS": { title: "Complex Systems", summary: "Systems composed of many components which may interact with each other. In many cases, it is useful to represent such a system as a network where the nodes represent the components and links their interactions.", links: [{name: "Emergence"}, {name: "Chaos Theory"}, {name: "Nonlinear System"}, {name: "Butterfly Effect"}, {name: "Network Theory"}] },
-        "WHY PLANS FAIL": { title: "Why Plans Fail", summary: "The tendency to underestimate the time, costs, and risks of future actions and at the same time overestimate the benefits of the same actions.", links: [{name: "Planning Fallacy"}, {name: "Optimism Bias"}, {name: "Hofstadter's Law"}, {name: "Risk Management"}, {name: "Black Swan Theory"}] },
-        "SCALE AND GROWTH": { title: "Scale and Growth", summary: "Growth whose rate becomes ever more rapid in proportion to the growing total number or size. Often seen in bacteria, pandemics, and compounding interest.", links: [{name: "Exponential Growth"}, {name: "Compound Interest"}, {name: "Economies of Scale"}, {name: "Network Effects"}, {name: "Metcalfe's Law"}] },
-        "SIGNAL VS NOISE": { title: "Signal vs Noise", summary: "The ratio of useful information (signal) to false or irrelevant data (noise). In the information age, filtering noise is the primary challenge.", links: [{name: "Signal-to-Noise Ratio"}, {name: "Information Theory"}, {name: "Statistical Inference"}, {name: "Filter Failure"}, {name: "Pattern Recognition"}] }
+        "SYSTEMS THINKING": { 
+            title: "Systems Thinking", 
+            summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate and how systems work over time and within the context of larger systems.", 
+            links: [
+                {name: "Feedback Loops", desc: "A process in which the outputs of a system are circled back and used as inputs."},
+                {name: "Cybernetics", desc: "The transdisciplinary study of circular causal processes such as feedback and recursion."},
+                {name: "Agent-Based Model", desc: "Computational model for simulating the actions and interactions of autonomous agents."},
+                {name: "Social Simulation", desc: "Scientific discipline concerned with simulation of social phenomena using multi-agent models."}
+            ]
+        },
+        "DECISION FATIGUE": { title: "Decision Fatigue", summary: "The deteriorating quality of decisions made by an individual after a long session of decision making.", links: [{name: "Ego Depletion"}, {name: "Choice Overload"}] },
+        "WHY METRICS FAIL": { title: "Why Metrics Fail", summary: "When a measure becomes a target, it ceases to be a good measure (Goodhart's Law).", links: [{name: "Goodhart's Law"}, {name: "Gaming the System"}] }
     };
 
-    // 🧠 DATABASES (Product)
-    // Updated with MRP for Deal Logic
     const PHONE_DB = {
-      "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999, mrp: 34999, review: PHONE_REVIEW_URL },
-      "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999, mrp: 34999, review: PHONE_REVIEW_URL },
-      "Nothing 3a Pro": { attr: { cam: 8, gam: 7, bat: 8, ui: 10, dis: 9, srv: 9, thm: 8, dur: 8 }, tags: ["clean_ui", "no_charger"], price: 27999, mrp: 29999, review: PHONE_REVIEW_URL },
-      "Xiaomi 14 Civi": { attr: { cam: 10, gam: 6, bat: 6, ui: 6, dis: 10, srv: 6, thm: 6, dur: 7 }, tags: ["camera_king", "compact"], price: 32999, mrp: 39999, review: PHONE_REVIEW_URL },
-      "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999, mrp: 32999, review: PHONE_REVIEW_URL },
-      "Samsung A55": { attr: { cam: 8, gam: 4, bat: 7, ui: 9, dis: 9, srv: 10, thm: 7, dur: 10 }, tags: ["trust", "updates", "bloatware"], price: 33999, mrp: 38999, review: PHONE_REVIEW_URL },
-      "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999, mrp: 35999, review: PHONE_REVIEW_URL },
-      "Samsung Galaxy F07": { attr: { cam: 6, gam: 3, bat: 9, ui: 7, dis: 6, srv: 10, thm: 9, dur: 8 }, tags: ["budget", "trust", "val"], price: 7499, mrp: 8999, review: PHONE_REVIEW_URL },
-      "Realme Note 60": { attr: { cam: 5, gam: 4, bat: 8, ui: 6, dis: 6, srv: 7, thm: 7, dur: 6 }, tags: ["budget", "value", "val"], price: 7999, mrp: 9999, review: PHONE_REVIEW_URL },
-      "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999, mrp: 34999, review: PHONE_REVIEW_URL }
+      "Poco F7": { attr: { cam: 6, gam: 10, bat: 9, ui: 4, dis: 9, srv: 6, thm: 10, dur: 7 }, tags: ["heavy", "performance"], price: 29999, mrp: 34999 },
+      "iQOO Neo 10R": { attr: { cam: 7, gam: 10, bat: 8, ui: 5, dis: 9, srv: 7, thm: 9, dur: 7 }, tags: ["performance", "value"], price: 30999, mrp: 34999 },
+      "Nothing 3a Pro": { attr: { cam: 8, gam: 7, bat: 8, ui: 10, dis: 9, srv: 9, thm: 8, dur: 8 }, tags: ["clean_ui", "no_charger"], price: 27999, mrp: 29999 },
+      "Samsung S24 FE": { attr: { cam: 10, gam: 7, bat: 5, ui: 10, dis: 10, srv: 9, thm: 7, dur: 9 }, tags: ["premium", "clean_ui", "camera_king", "7yr_updates"], price: 29999, mrp: 34999 },
+      "Vivo V60e": { attr: { cam: 10, gam: 5, bat: 7, ui: 7, dis: 8, srv: 7, thm: 7, dur: 7 }, tags: ["camera_king", "aura_light"], price: 28999, mrp: 32999 },
+      "Realme GT 7T": { attr: { cam: 6, gam: 9, bat: 10, ui: 5, dis: 8, srv: 7, thm: 8, dur: 7 }, tags: ["battery_king", "120w"], price: 31999, mrp: 35999 }
     };
 
     const AUDIO_DB = {
-      "Technics AZ100": { attr: { anc: 9.5, snd: 10.0, mic: 9, lat: 8, bat: 7, fit: 10, bld: 9, app: 9 }, price: 22990, review: AUDIO_REVIEW_URL },
-      "Sony WF-1000XM6": { attr: { anc: 10.0, snd: 9.5, mic: 8, lat: 6, bat: 8, fit: 8, bld: 9, app: 10 }, price: 24990, review: AUDIO_REVIEW_URL },
-      "SteelSeries Arctis": { attr: { anc: 7.0, snd: 8.0, mic: 8, lat: 10, bat: 9, fit: 8, bld: 7, app: 7 }, price: 17999, review: AUDIO_REVIEW_URL },
-      "OnePlus Nord Buds 3": { attr: { anc: 8.5, snd: 8.0, mic: 8, lat: 7, bat: 8, fit: 9, bld: 8, app: 8 }, price: 3299, review: AUDIO_REVIEW_URL },
-      "Tribit FlyBuds 3": { attr: { anc: 5.0, snd: 6, mic: 6, lat: 6, bat: 10, fit: 7, bld: 7, app: 5 }, price: 3999, review: AUDIO_REVIEW_URL }
+      "Technics AZ100": { attr: { anc: 9.5, snd: 10.0, mic: 9, lat: 8 }, price: 22990 },
+      "Sony WF-1000XM6": { attr: { anc: 10.0, snd: 9.5, mic: 8, lat: 6 }, price: 24990 },
+      "SteelSeries Arctis": { attr: { anc: 7.0, snd: 8.0, mic: 8, lat: 10 }, price: 17999 },
+      "OnePlus Nord Buds 3": { attr: { anc: 8.5, snd: 8.0, mic: 8, lat: 7 }, price: 3299 }
     };
 
     const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy", "FAST CHARGE": "slow_charge" };
 
     const MODULES = {
         smartphones: { 
-            label: "SMARTPHONES", 
-            database: PHONE_DB, 
-            review: PHONE_REVIEW_URL,
+            label: "SMARTPHONES", database: PHONE_DB, review: PHONE_REVIEW_URL,
             init: () => renderEcosystemGate(), 
             categories: [
                 { label: "CAMERA-FIRST", type: "cam", items: [{"name": "Vivo V60e"}, {"name": "Xiaomi 14 Civi"}] }, 
                 { label: "PRO GAMER", type: "gam", items: [{"name": "Poco F7"}, {"name": "iQOO Neo 10R"}] }, 
                 { label: "CLEAN UI", type: "ui", items: [{"name": "Nothing 3a Pro"}, {"name": "Samsung A55"}] },
-                { label: "BATTERY KING", type: "bat", items: [{"name": "Realme GT 7T"}] },
-                { label: "BUDGET BUY", type: "val", items: [{"name": "Samsung Galaxy F07"}, {"name": "Realme Note 60"}] }
+                { label: "BATTERY KING", type: "bat", items: [{"name": "Realme GT 7T"}] }
             ] 
         },
         earbuds: { 
-            label: "EARBUDS", 
-            database: AUDIO_DB, 
-            review: AUDIO_REVIEW_URL,
+            label: "EARBUDS", database: AUDIO_DB, review: AUDIO_REVIEW_URL,
             init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, 
             categories: [
                 { label: "AUDIOPHILE", type: "snd", items: [{"name": "Technics AZ100"}] }, 
                 { label: "SILENCE (ANC)", type: "anc", items: [{"name": "Sony WF-1000XM6"}] },
-                { label: "LOW LATENCY", type: "lat", items: [{"name": "SteelSeries Arctis"}] },
-                { label: "WORK & MIC", type: "mic", items: [{"name": "Technics AZ100"}] }
+                { label: "LOW LATENCY", type: "lat", items: [{"name": "SteelSeries Arctis"}] }
             ] 
         },
         trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
@@ -420,6 +314,7 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
+    // --- ENGINES ---
     const TRIVIA_ENGINE = {
         api: "https://opentdb.com/api.php?amount=5&type=multiple",
         async fetch(category = "") {
@@ -427,7 +322,6 @@
                 const url = this.api + (category ? `&category=${category}` : "");
                 const res = await fetch(url);
                 const data = await res.json();
-                if(data.response_code !== 0) return [];
                 return data.results || [];
             } catch(e) { return []; }
         }
@@ -447,7 +341,7 @@
         async getContext(title) {
             if(CURATED_PATHS[title.toUpperCase()]) {
                 const c = CURATED_PATHS[title.toUpperCase()];
-                return { title: c.title, summary: c.summary, links: c.links };
+                return { title: c.title, summary: c.summary, links: c.links.map(l => ({name: l.name})) };
             }
             try {
                 const url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=20&format=json`;
@@ -461,56 +355,27 @@
         }
     };
 
-    let ENGINE_STATE = { currentDomain: null, items_detected: {}, active_filters: [], session_weights: {}, researchPath: [], triviaMode: false };
+    // --- STATE ---
+    let ENGINE_STATE = { currentDomain: null, items_detected: {}, active_filters: [], session_weights: {}, researchPath: [], triviaMode: false, sessionID: "" };
     let slideElements = [];
     let currentIdx = 0;
 
-    async function boot() { 
-        // Connectivity Check
+    // --- BOOT ---
+    function boot() { 
+        ENGINE_STATE.sessionID = "SID-" + Math.random().toString(36).substr(2, 4).toUpperCase();
         updateStatus(navigator.onLine);
         window.addEventListener('online', () => updateStatus(true));
         window.addEventListener('offline', () => updateStatus(false));
-
-        const params = new URLSearchParams(window.location.search);
-        const syllabus = params.get('syllabus');
-        if (syllabus) {
-            ENGINE_STATE.currentDomain = 'research';
-            renderSearchSlide(); 
-            document.getElementById('search-input').value = syllabus;
-            executeSearch(); 
-        } else { renderLobby(); }
+        renderLobby();
         initSwipeSystem(); 
     }
 
     function updateStatus(isOnline) {
         const dot = document.querySelector('.status-dot');
-        if(dot) {
-            if(isOnline) dot.classList.remove('offline');
-            else dot.classList.add('offline');
-        }
+        if(dot) isOnline ? dot.classList.remove('offline') : dot.classList.add('offline');
     }
 
-    // 🔥 BACKEND LOGGER
-    function sendFeedback(type, payload) {
-        if(!BACKEND_URL) return;
-        
-        const payloadStr = typeof payload === 'string' ? payload : JSON.stringify(payload);
-        const data = new URLSearchParams();
-        data.append("type", type);
-        data.append("timestamp", new Date().toISOString());
-        data.append("context", payloadStr); 
-        data.append("payload", payloadStr); 
-        data.append("data", payloadStr);    
-
-        fetch(BACKEND_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: data.toString()
-        }).catch(e => console.log("Feedback Sync Skipped"));
-    }
-
-    // 🎨 RENDER LOBBY (GRID SYSTEM)
+    // --- RENDERERS ---
     function renderLobby() {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -519,7 +384,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v80.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v82.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -535,7 +400,7 @@
                 <div class="grid-btn" onclick="loadDomain('research')">
                     <div class="grid-icon">🧠</div>
                     <div class="grid-label">RESEARCH</div>
-                    <div class="grid-status">20 NODES</div>
+                    <div class="grid-status">SYSTEMS NODE</div>
                 </div>
                 <div class="grid-btn" onclick="loadDomain('trivia')">
                     <div class="grid-icon">🧩</div>
@@ -566,21 +431,21 @@
                     <div class="grid-icon">▶</div>
                     <div class="grid-label">ENGINE REVIEW ↗</div>
                 </div>
-                <div class="footer-seal">Systems by VIACO | Gandhidham, IN</div>
+                <div style="grid-column:span 2; text-align:center; opacity:0.3; font-size:0.6rem; font-family:var(--font-tech); margin-top:20px;">
+                    SESSION: ${ENGINE_STATE.sessionID}
+                </div>
             </div>
         `;
         container.appendChild(section);
         slideElements = [section];
         currentIdx = 0;
-        updateStatus(navigator.onLine);
         
-        // Ensure exit button is handled dynamically
         let exitBtn = document.getElementById('global-exit');
         if(exitBtn) exitBtn.remove();
     }
 
     function loadDomain(key) {
-        stopAudio(); // Safety Audio Cut
+        stopAudio();
         ENGINE_STATE.currentDomain = key;
         ENGINE_STATE.triviaMode = false;
         
@@ -588,37 +453,25 @@
         while(container.children.length > 1) container.removeChild(container.lastChild);
         slideElements = [slideElements[0]];
         
-        let exitBtn = document.createElement('button');
-        exitBtn.id = 'global-exit';
-        exitBtn.className = 'exit-btn';
-        exitBtn.innerText = 'EXIT';
-        exitBtn.onclick = () => { stopAudio(); renderLobby(); };
-        exitBtn.style.position = 'fixed';
-        exitBtn.style.top = '20px';
-        exitBtn.style.right = '20px';
-        exitBtn.style.zIndex = '5000';
-        document.body.appendChild(exitBtn);
-
+        addGlobalExit();
         MODULES[key].init();
     }
 
-    // 🎙️ VOICE LOBBY
-    function openVoiceLobby() {
-        stopAudio();
-        const container = document.getElementById('master-container');
-        while(container.children.length > 1) container.removeChild(container.lastChild);
-        
+    function addGlobalExit() {
+        if(document.getElementById('global-exit')) return;
         let exitBtn = document.createElement('button');
         exitBtn.id = 'global-exit';
         exitBtn.className = 'exit-btn';
         exitBtn.innerText = 'EXIT';
         exitBtn.onclick = () => { stopAudio(); renderLobby(); };
-        exitBtn.style.position = 'fixed';
-        exitBtn.style.top = '20px';
-        exitBtn.style.right = '20px';
-        exitBtn.style.zIndex = '5000';
+        exitBtn.style.position = 'fixed'; exitBtn.style.top = '20px'; exitBtn.style.right = '20px'; exitBtn.style.zIndex = '5000';
         document.body.appendChild(exitBtn);
+    }
 
+    // --- VOICE MODULE ---
+    function openVoiceLobby() {
+        stopAudio();
+        addGlobalExit();
         const section = document.createElement('section');
         section.className = "main-slide next";
         section.innerHTML = `
@@ -634,7 +487,7 @@
               `).join("")}
               </div>
             </div>`;
-        container.appendChild(section);
+        document.getElementById('master-container').appendChild(section);
         slideElements.push(section);
         goToSlide(1);
     }
@@ -643,27 +496,16 @@
         stopAudio();
         const feed = VOICE_FEED.find(v => v.id === id);
         if (!feed) return;
-
         let text = feed.blocks.map(b => b.text).join(". ");
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.95;
-        utterance.pitch = 1.0;
-        utterance.lang = "en-US"; // Fallback
-        
-        // Try to select a better voice
-        const voices = window.speechSynthesis.getVoices();
-        const preferred = voices.find(v => v.name.includes("Google US English") || v.name.includes("Samantha"));
-        if(preferred) utterance.voice = preferred;
-
         window.speechSynthesis.speak(utterance);
         showToast("VOICE PLAYING");
     }
 
-    function stopAudio() {
-        window.speechSynthesis.cancel();
-    }
+    function stopAudio() { window.speechSynthesis.cancel(); }
 
-    // 💸 PAYMENT LOGIC
+    // --- PAYMENT ---
     function togglePayment(show) {
         const modal = document.getElementById('payment-modal');
         const container = document.getElementById('upi-container');
@@ -673,18 +515,17 @@
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             if(isMobile) {
-                const deepLink = `https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg`;
+                const deepLink = "https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg";
                 container.innerHTML = `
                     <div class="pay-option" onclick="window.location.href='${deepLink}'" style="border-color:var(--accent-go);">
-                        <span>🇮🇳 Tap to Pay (UPI)</span>
-                        <span>🚀</span>
+                        <span>🇮🇳 Tap to Pay (UPI)</span><span>🚀</span>
                     </div>
-                    <div style="font-size:0.7rem; color:#666; margin-top:5px;">Opens GPay / PhonePe / Paytm</div>
                 `;
             } else {
                 container.innerHTML = `
-                    <div class="pay-qr-container"><img src="${QR_IMAGE}" class="pay-qr" alt="Scan QR"></div>
-                    <div style="font-size:0.8rem; color:#fff; margin-top:5px;">Scan with any UPI App</div>
+                    <div style="background:#fff; padding:10px; border-radius:12px; margin-bottom:15px; display:inline-block">
+                        <img src="${QR_IMAGE}" style="width:180px; display:block;" alt="Scan QR">
+                    </div>
                     <div style="font-size:0.7rem; color:#666;">${UPI_ID}</div>
                 `;
             }
@@ -693,7 +534,7 @@
         }
     }
 
-    // 🔬 RESEARCH LOGIC
+    // --- RESEARCH ---
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         let topicsHTML = `<div class="topic-grid">`;
@@ -702,14 +543,11 @@
             topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
         }
         topicsHTML += `</div>`;
-        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Stoicism, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button>${topicsHTML}</div>`;
+        section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Systems, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button>${topicsHTML}</div>`;
         document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
-    function triggerCurated(key) {
-        document.getElementById('search-input').value = key;
-        executeSearch();
-    }
+    function triggerCurated(key) { document.getElementById('search-input').value = key; executeSearch(); }
 
     async function executeSearch() {
         const q = document.getElementById('search-input').value;
@@ -724,51 +562,77 @@
 
     function buildResearchDeck(context) {
         let links = context.links || [];
-        if (links.length < 5) {
-            const drifts = ["Quantum Mechanics", "Philosophy", "Future Tech", "History", "Psychology"];
-            while (links.length < 5) links.push({name: drifts[links.length % drifts.length]});
-        }
         links = links.slice(0, 5);
         const section = document.createElement('section'); section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="skip-btn-clickable" onclick="saveJSON()">SAVE PDF 💾</button></div><div class="carousel-viewport"><div class="sub-slide static"><div class="role-label">KNOWLEDGE NODE</div><h1>${context.title}</h1><div class="wiki-summary">${context.summary}</div><div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div></div>${links.map((link, i) => `<div class="sub-slide opt-hidden" data-val="${link.name}" onclick="diveDeeper('${link.name}')"><div class="role-label">RELATED PATH ${i+1}/5</div><h1>${link.name}</h1><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`).join('')}</div>`;
+        
+        section.innerHTML = `
+            <div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="skip-btn-clickable" onclick="saveJSON()">SAVE PDF 💾</button></div>
+            <div class="carousel-viewport">
+                <div class="sub-slide static">
+                    <div class="role-label">KNOWLEDGE NODE</div>
+                    <h1>${context.title}</h1>
+                    <div class="wiki-summary">${context.summary}</div>
+                    <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div>
+                </div>
+                ${links.map((link, i) => `
+                    <div class="sub-slide opt-hidden" data-val="${link.name}">
+                        <div class="role-label">RELATED PATH ${i+1}/5</div>
+                        <h1>${link.name}</h1>
+                        <div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
+                    </div>`).join('')}
+            </div>`;
         document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(slideElements.length - 1);
     }
 
     async function diveDeeper(t) {
         showToast("DIVING...");
         const ctx = await WIKI_ENGINE.getContext(t);
-        if(!ctx || !ctx.title || ctx.title === "Error" || ctx.title === "Not Found") {
-             showToast("DATA CORRUPTED", "error");
-             return;
-        }
         ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
         buildResearchDeck(ctx);
     }
 
-    // 📄 DIRECT PDF GENERATOR
+    // --- UPGRADED PDF ENGINE (NODES STYLE) ---
     function saveJSON() {
         const { jsPDF } = window.jspdf; 
         const doc = new jsPDF();
-        let y = 20;
-        doc.setFont("courier", "bold"); doc.setFontSize(18); doc.setTextColor(0, 0, 0);
-        doc.text("DECIDE.ENGINE // RESEARCH PATH", 20, y); y += 15;
-        doc.setFontSize(12); doc.setFont("courier", "normal");
         
-        sendFeedback('RESEARCH_EXPORT', ENGINE_STATE.researchPath);
+        // Header
+        doc.setFont("courier", "bold"); doc.setFontSize(18); 
+        doc.text("DECIDE.ENGINE // RESEARCH LOG", 20, 20);
+        
+        doc.setFontSize(10); doc.setFont("courier", "normal");
+        doc.text(`SESSION: ${ENGINE_STATE.sessionID} | DATE: ${new Date().toISOString().split('T')[0]}`, 20, 28);
+        
+        doc.setLineWidth(0.5); doc.line(20, 32, 190, 32);
 
+        let y = 45;
+        
         ENGINE_STATE.researchPath.forEach((item, i) => {
-            if (y > 270) { doc.addPage(); y = 20; }
-            doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y += 8;
-            doc.setFont("courier", "normal");
-            const lines = doc.splitTextToSize(item.summary, 170); doc.text(lines, 20, y);
-            y += (lines.length * 6) + 10;
+            // Check page break
+            if (y > 250) { doc.addPage(); y = 20; }
+            
+            // Node Title
+            doc.setFont("courier", "bold"); doc.setFontSize(12); doc.setTextColor(255, 103, 31); // Brand Orange
+            doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); 
+            y += 8;
+            
+            // Node Content
+            doc.setFont("courier", "normal"); doc.setFontSize(10); doc.setTextColor(0, 0, 0);
+            const lines = doc.splitTextToSize(item.summary, 170); 
+            doc.text(lines, 20, y);
+            
+            y += (lines.length * 5) + 15;
         });
-        const date = new Date().toLocaleString();
-        doc.setFontSize(10); doc.text(`GENERATED: ${date} | viadecide.com`, 20, 280);
-        doc.save("Decide_Journey.pdf"); showToast("PDF DOWNLOADING...");
+        
+        // Footer Stamp
+        doc.setFontSize(8); doc.setTextColor(150, 150, 150);
+        doc.text("GENERATED BY VIAC0 DECIDE ENGINE v82.0", 20, 285);
+        
+        doc.save(`Research_Path_${ENGINE_STATE.sessionID}.pdf`); 
+        showToast("PDF DOWNLOADED");
     }
 
-    // 📱 HARDWARE UI FIX & AUTO-VERDICT
+    // --- HARDWARE MODULES (PHONES/AUDIO) ---
     function renderEcosystemGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
         section.innerHTML = `
@@ -821,16 +685,15 @@
         });
         const final = document.createElement('section'); final.className = "main-slide next";
         
-        // 📷 ADDED SHARE BUTTON
         final.innerHTML = `
             <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
             <div class="winner-container">
                 <div id="final-list"></div>
                 <div class="final-actions">
-                    <button class="btn btn-primary" onclick="redirect('amazon')">CHECK LIVE PRICE ↗</button>
-                    <button class="btn btn-yt" onclick="openReview()">▶ REVIEW</button>
+                    <button class="btn btn-primary" onclick="redirect()">CHECK PRICE ↗</button>
+                    <button class="btn btn-yt" onclick="openReview()">▶ WATCH REVIEW</button>
                     <button class="btn btn-share" onclick="generateShareCard()">📷 SHARE CARD</button>
-                    <button class="btn" onclick="location.reload()">RESTART</button>
+                    <button class="btn" style="background:#222; color:#fff;" onclick="window.open('${YOUTUBE_CHANNEL}', '_blank')">📺 MORE VIDEOS</button>
                 </div>
             </div>`;
         container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
@@ -847,34 +710,23 @@
             if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
             if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
             for(let attr in item.attr) { let w = ENGINE_STATE.session_weights[attr] || 0.1; score += item.attr[attr] * w; }
-            
-            // 💸 DEAL HOOK LOGIC
-            if (ENGINE_STATE.active_filters.includes("BUDGET BUY") && item.mrp && item.mrp > item.price) {
-                score += 5; // Artificial boost for deals
-            }
-
             if(ENGINE_STATE.items_detected[name]) score += 10;
             scores.push({name, score, price: item.price, mrp: item.mrp});
         }
         scores.sort((a, b) => b.score - a.score); return scores[0] || {name: "No Match", price: 0};
     }
 
-    // 📸 SHARE CARD ENGINE
     async function generateShareCard() {
         const w = calculateVerdict();
-        // POPULATE HIDDEN CARD
         document.getElementById('share-winner-name').innerText = w.name;
         document.getElementById('share-winner-price').innerText = "₹" + w.price;
-        
         const card = document.getElementById('share-card-canvas');
         showToast("GENERATING CARD...");
         
         try {
-            // MOVE CARD INTO VIEW TEMPORARILY
             card.style.top = "0"; 
             const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
-            card.style.top = "-200vh"; // HIDE AGAIN
-
+            card.style.top = "-200vh";
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], "Decide_Winner.png", { type: "image/png" });
                 if (navigator.share && navigator.canShare({ files: [file] })) {
@@ -889,34 +741,24 @@
 
     function updateFinal() { 
         const list = document.getElementById('final-list'); const winner = calculateVerdict(); 
-        
-        // 💸 DISCOUNT LOGIC
         let priceHtml = `Est. Price: ₹${winner.price}`;
         if(winner.mrp && winner.mrp > winner.price) {
             const off = Math.round(((winner.mrp - winner.price) / winner.mrp) * 100);
             priceHtml = `₹${winner.price} <span class="deal-tag">(${off}% OFF)</span>`;
         }
-
         list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">${priceHtml}</p></div>`; 
-        
         ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true; 
-        setTimeout(() => triggerVerdictSpeech(), 800);
-    }
-
-    // 🟢 MISSING FUNCTIONS RESTORED
-    function openReview() { 
-        const m = MODULES[ENGINE_STATE.currentDomain];
-        if (m && m.review) window.open(m.review, '_blank');
-        else showToast("NO REVIEW LINK");
-    }
-
-    function triggerVerdictSpeech() {
-        const w = calculateVerdict();
-        const u = new SpeechSynthesisUtterance(`The winner is ${w.name}. It costs ${w.price} rupees.`);
+        const u = new SpeechSynthesisUtterance(`The winner is ${winner.name}.`);
         window.speechSynthesis.speak(u);
     }
 
-    // 🎓 TRIVIA LOGIC
+    function openReview() { 
+        const m = MODULES[ENGINE_STATE.currentDomain];
+        if (m && m.review) window.open(m.review, '_blank');
+        else showToast("NO VIDEO AVAILABLE");
+    }
+
+    // --- TRIVIA & EXTERNAL ---
     function renderTriviaGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
         section.innerHTML = `<div class="slide-header"><span class="header-title">TRIVIA</span></div><div class="lobby-container"><h1 style="text-align:center">CATEGORY</h1><div style="display:grid; gap:15px;"><button class="cuisine-btn" onclick="startTrivia(9)">GENERAL</button><button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button><button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button><button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button></div></div>`;
@@ -942,6 +784,7 @@
     }
 
     function renderExternalModule(url) {
+        addGlobalExit();
         const section = document.createElement('section');
         section.className = "main-slide next";
         section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="renderLobby()">EXIT</button>`; 
@@ -950,7 +793,7 @@
         goToSlide(slideElements.length - 1);
     }
 
-    // 🕹️ SYSTEM CORE
+    // --- SWIPE SYSTEM ---
     function manualSkip(el) {
         if (event) event.stopPropagation();
         const view = el.closest('.carousel-viewport');
@@ -972,33 +815,34 @@
     
     let tsY = 0, tsX = 0;
     function initSwipeSystem() {
-        document.addEventListener('touchstart', e => { tsY = e.touches[0].clientY; tsX = e.touches[0].clientX; }, {passive: true});
+        document.addEventListener('touchstart', e => { 
+            tsY = e.touches[0].clientY; 
+            tsX = e.touches[0].clientX; 
+        }, {passive: true});
+
         document.addEventListener('touchend', e => {
-            // FIX: Scope touch to active slide only to prevent ghost swipes
+            // SCROLL GUARD
+            if(e.target.closest('.wiki-summary')) return;
+
             const view = e.target.closest('.main-slide.active .carousel-viewport');
             if(!view || document.querySelector('iframe')) return;
+            
             const dy = e.changedTouches[0].clientY - tsY;
             const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
 
             if(dy < -60) { // UP SWIPE
                 if(active.classList.contains('static')) {
-                    // Wiki Navigation
                     active.classList.remove('static'); active.classList.add('opt-hidden');
                     view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
                 } else if(ENGINE_STATE.triviaMode) {
-                    // Trivia Check
                     if(active.dataset.correct === "true") { 
-                        showToast("CORRECT! RESEARCHING...", "success"); 
-                        // FEATURE: Connect Correct Answer to Wiki Research
-                        diveDeeper(active.dataset.real); 
-                        // 🔥 LOG TRIVIA SUCCESS (FIXED NO CONTEXT)
-                        sendFeedback('TRIVIA_WIN', JSON.stringify({ question: active.parentElement.querySelector('h1').innerText, answer: active.dataset.real }));
+                        showToast("CORRECT!", "success"); 
+                        setTimeout(() => goToSlide(currentIdx + 1), 800);
                     } else { 
                         showToast("WRONG!", "error"); 
-                        setTimeout(() => goToSlide(currentIdx + 1), 1000); 
+                        setTimeout(() => goToSlide(currentIdx + 1), 800); 
                     }
                 } else if(active.dataset.val) {
-                    // Universal Selection (Research or Products)
                     if(ENGINE_STATE.currentDomain === 'smartphones' || ENGINE_STATE.currentDomain === 'earbuds') {
                         ENGINE_STATE.items_detected[active.dataset.val] = true; goToSlide(currentIdx + 1);
                     } else { 
@@ -1007,19 +851,25 @@
                 }
             } else if(dy > 60) { // DOWN SWIPE
                 if(ENGINE_STATE.currentDomain === 'research' && ENGINE_STATE.researchPath.length > 1) {
-                    // Wiki Back
-                    ENGINE_STATE.researchPath.pop(); WIKI_ENGINE.getContext(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1].title).then(c => buildResearchDeck(c));
+                    ENGINE_STATE.researchPath.pop(); 
+                    buildResearchDeck(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1]);
                 } else { 
-                    // Standard Back
                     goToSlide(currentIdx - 1); 
                 }
             }
         });
     }
 
-    function showToast(m, type="normal") { const t = document.getElementById('toast'); t.innerText = m; t.style.borderColor = type === 'error' ? '#f44' : 'rgba(255,255,255,0.1)'; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2000); }
+    function showToast(m, type="normal") { 
+        const t = document.getElementById('toast'); 
+        t.innerText = m; 
+        t.style.borderColor = type === 'error' ? '#f44' : 'rgba(255,255,255,0.1)'; 
+        t.classList.add('visible'); 
+        setTimeout(() => t.classList.remove('visible'), 2000); 
+    }
+    
     function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
-    function redirect(type) { const item = Object.keys(ENGINE_STATE.items_detected)[0]; if(!item) return showToast("NOTHING SELECTED"); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank'); }
+    function redirect() { const item = Object.keys(ENGINE_STATE.items_detected)[0]; if(!item) return showToast("NOTHING SELECTED"); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank'); }
 
     boot();
 </script>
