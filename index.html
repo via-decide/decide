@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v86.0 (Consultant)</title>
+    <title>Decide Engine | OS v86.1 (Report Fix)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v86.0
+           CORE SYSTEM | DECIDE OS v86.1
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -147,7 +147,6 @@
 
         h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* SELECTION & SCROLL FIXES */
         .wiki-summary { 
             font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
             font-weight: 400; max-height: 300px; overflow-y: auto; 
@@ -244,7 +243,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v86.0 (CONSULTANT)
+       KUTCH AUTOMATION | v86.1 (REPORT FIX)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
@@ -263,10 +262,10 @@
       { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
     ];
 
-    // 🧠 50 TOPICS KNOWLEDGE BASE (Condensed for brevity, assume full list is here)
+    // 🧠 50 TOPICS KNOWLEDGE BASE
     const CURATED_PATHS = {
         "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.", links: ["Cosmic Inflation", "Nucleosynthesis", "CMB Radiation", "Hubble's Law", "The Singularity"] },
-        // ... (Full list maintained in backend) ...
+        // ... (Include other topics here)
     };
 
     const PHONE_DB = {
@@ -417,7 +416,7 @@
         if(dot) isOnline ? dot.classList.remove('offline') : dot.classList.add('offline');
     }
 
-    // --- LOGIC ENGINE 2.0 (UPGRADED) ---
+    // --- LOGIC ENGINE 2.1 (FORCE RECALC) ---
     function calculateVerdict() {
         const activeModule = MODULES[ENGINE_STATE.currentDomain];
         if(!activeModule.database) return {name: "Ready", price: "---"};
@@ -486,8 +485,11 @@
         return winner;
     }
 
-    // --- PDF GENERATOR 2.0 (REPORT ENGINE) ---
+    // --- PDF GENERATOR 2.1 (FORCE RECALC & FALLBACKS) ---
     function generateDecisionReport() {
+        // Force calculation to ensure data freshness
+        calculateVerdict();
+        
         const log = ENGINE_STATE.DECISION_LOG;
         if(!log) return showToast("NO DATA");
 
@@ -534,27 +536,31 @@
                  }
             });
 
-            doc.autoTable({
-                startY: ry + 15,
-                head: [['Attribute', 'Winner', 'Runner-Up', 'Advantage']],
-                body: rows,
-                theme: 'grid',
-                headStyles: { fillColor: [20, 20, 20] }
-            });
-            ry = doc.lastAutoTable.finalY + 15;
+            if (doc.autoTable) {
+                doc.autoTable({
+                    startY: ry + 15,
+                    head: [['Attribute', 'Winner', 'Runner-Up', 'Advantage']],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [20, 20, 20] }
+                });
+                ry = doc.lastAutoTable.finalY + 15;
+            }
         }
 
         // 5. Elimination Block
         if(log.eliminated.length > 0) {
             doc.text("4. ELIMINATION LOGIC", 14, ry);
             const eRows = log.eliminated.map(e => [e.name, "REJECTED", e.reason]);
-            doc.autoTable({
-                startY: ry + 5,
-                head: [['Device', 'Status', 'Reason']],
-                body: eRows,
-                theme: 'striped'
-            });
-            ry = doc.lastAutoTable.finalY + 20;
+            if (doc.autoTable) {
+                doc.autoTable({
+                    startY: ry + 5,
+                    head: [['Device', 'Status', 'Reason']],
+                    body: eRows,
+                    theme: 'striped'
+                });
+                ry = doc.lastAutoTable.finalY + 20;
+            }
         }
 
         // 6. Cognitive Closure
@@ -587,7 +593,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v86.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v86.1 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -872,7 +878,6 @@
     function copyJSON() {
         const payload = ENGINE_STATE.researchPath.map((item, i) => ({ id: `NODE_${ENGINE_STATE.sessionID}_${i}`, title: item.title.toUpperCase(), body: item.summary, source: "DECIDE ENGINE RESEARCH" }));
         navigator.clipboard.writeText(JSON.stringify(payload, null, 2)); showToast("JSON COPIED! PASTE IN STUDIO");
-        logToSheet(payload); 
     }
     function saveJSON() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
@@ -946,7 +951,7 @@
         `;
         
         if (ENGINE_STATE.currentDomain === 'smartphones') {
-             productButtons += `<button class="btn btn-doc" onclick="generateDecisionReport()">📄 DECISION REPORT</button>`;
+             productButtons += `<button class="btn btn-doc" style="background:#00e676; color:#000; font-weight:800; grid-column:span 2;" onclick="generateDecisionReport()">📄 DECISION REPORT</button>`;
         }
         
         productButtons += `<button class="btn" style="background:#222; color:#fff;" onclick="window.open('${YOUTUBE_CHANNEL}', '_blank')">📺 MORE VIDEOS</button>`;
