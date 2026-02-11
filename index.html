@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v86.1 (Report Fix)</title>
+    <title>Decide Engine </title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,14 +15,14 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v86.1
+           CORE SYSTEM | VISUAL SHELL (v82.0 PRESERVED)
            ========================================= */
         :root {
             --brand-orange: #ff671f;
             --brand-gold: #ffb700;
             --brand-dark: #050505;
-            --glass-surface: rgba(20, 20, 20, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-surface: rgba(20, 20, 20, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --accent-go: #00e676; 
@@ -40,7 +40,6 @@
             overflow: hidden;
             touch-action: none; user-select: none;
             -webkit-font-smoothing: antialiased;
-            cursor: default;
         }
 
         /* 🌌 BACKGROUND */
@@ -77,7 +76,7 @@
             padding: 0 24px; height: 70px;
             display: flex; align-items: center; justify-content: space-between;
             position: absolute; top: 0; left: 0; right: 0; z-index: 100;
-            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
             pointer-events: none;
         }
         .slide-header > * { pointer-events: auto; }
@@ -118,9 +117,7 @@
             aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer;
             backdrop-filter: blur(10px);
         }
-        .grid-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
-        .grid-btn:active { transform: scale(0.96); }
-        
+        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
         .grid-icon { font-size: 1.8rem; margin-bottom: 5px; }
         .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
         .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
@@ -141,7 +138,6 @@
             opacity: 0; pointer-events: none; 
             transform: translateY(20px) scale(0.95);
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            cursor: pointer;
         }
         .sub-slide.opt-active, .sub-slide.static { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); z-index: 30; }
 
@@ -150,27 +146,21 @@
         .wiki-summary { 
             font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
             font-weight: 400; max-height: 300px; overflow-y: auto; 
-            mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-            touch-action: pan-y; 
-            cursor: text;
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            touch-action: pan-y;
             user-select: text;
         }
-        .wiki-summary::-webkit-scrollbar { width: 6px; }
-        .wiki-summary::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
         
         .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
 
-        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); text-align: center; cursor: pointer; }
-        .cuisine-btn:hover { background: rgba(255,255,255,0.1); }
+        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); text-align: center; }
         .cuisine-btn.selected { background: rgba(255, 103, 31, 0.15); color: var(--brand-orange); border-color: var(--brand-orange); }
-        
         .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
-        .btn:hover { background: rgba(255,255,255,0.15); }
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
         .btn-yt { background: #cc0000; border: none; }
         .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; }
-        .btn-doc { background: #00e676; color: #000; border: none; font-weight: 800; grid-column: span 2;}
+        .btn-doc { background: #00e676; color: #000; border: none; font-weight: 800; grid-column: span 2; }
         
         .search-wrapper { position: relative; margin-bottom: 20px; }
         #search-input { width: 100%; padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; font-family: var(--font-ui); font-size: 1.1rem; box-sizing: border-box; }
@@ -203,14 +193,12 @@
         
         .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
         .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; }
-        .topic-card:hover { background: rgba(255,255,255,0.08); }
         .topic-title { font-weight: bold; color: #fff; font-size: 0.85rem; margin-bottom: 4px; font-family: var(--font-tech); }
         .topic-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         
         .deal-tag { color: var(--accent-go); font-size: 0.8rem; font-weight: bold; background: rgba(0, 230, 118, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-family: var(--font-tech); }
         .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
         .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
-        .skip-btn-clickable:hover { background: rgba(255,255,255,0.15); color: #fff; }
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
 
     </style>
@@ -243,7 +231,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v86.1 (REPORT FIX)
+       KUTCH AUTOMATION | v91.0 (AFFILIATE MATRIX)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
@@ -256,16 +244,14 @@
     const UPI_ID = "6351537770@yapl";
     const QR_IMAGE = "1000206276.png"; 
 
-    // 🎙️ VOICE DATA
     const VOICE_FEED = [
       { id: "voice_focus_ai", title: "Voice Focus AI – Call Clarity Explained", mode: "explain", blocks: [{ text: "Voice Focus AI uses a six-microphone array to isolate human voice." }, { text: "It improves both outgoing clarity and incoming audio." }] },
       { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
     ];
 
-    // 🧠 50 TOPICS KNOWLEDGE BASE
     const CURATED_PATHS = {
         "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.", links: ["Cosmic Inflation", "Nucleosynthesis", "CMB Radiation", "Hubble's Law", "The Singularity"] },
-        // ... (Include other topics here)
+        "SYSTEMS THINKING": { title: "Systems Thinking", summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate and how systems work over time.", links: ["Feedback Loops", "Cybernetics", "Agent-Based Model", "Social Simulation"] }
     };
 
     const PHONE_DB = {
@@ -313,7 +299,7 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
-    // --- ENGINES ---
+    // --- ENGINES (v86.1) ---
     const WIKI_ENGINE = {
         async resolveTitle(query) {
             try {
@@ -343,15 +329,6 @@
                 return rawLinks.map(l => l.title);
             } catch(e) { return []; }
         },
-        async fetchWikidataFacts(title) {
-            try {
-                const searchUrl = `https://www.wikidata.org/w/api.php?origin=*&action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&format=json`;
-                const res = await fetch(searchUrl);
-                const data = await res.json();
-                const id = data.search?.[0]?.id;
-                return id || null; 
-            } catch(e) { return null; }
-        },
         async buildKnowledgeNode(query) {
             if(CURATED_PATHS[query.toUpperCase()]) {
                 const c = CURATED_PATHS[query.toUpperCase()];
@@ -359,16 +336,11 @@
             }
             const title = await this.resolveTitle(query);
             if(!title) return null;
-            const [summary, links, factId] = await Promise.all([
-                this.fetchSummary(title),
-                this.fetchLinks(title),
-                this.fetchWikidataFacts(title)
-            ]);
+            const [summary, links] = await Promise.all([this.fetchSummary(title), this.fetchLinks(title)]);
             return {
                 title: summary?.title || title,
                 summary: summary?.extract || "No extract available.",
                 description: summary?.description || "Research Topic",
-                thumbnail: summary?.thumbnail?.source || null,
                 links: links.slice(0, 5).map(l => ({name: l}))
             };
         }
@@ -396,7 +368,7 @@
         triviaMode: false, 
         sessionID: "", 
         lastTriviaIdx: -1,
-        DECISION_LOG: null // Added for Logic Engine
+        DECISION_LOG: null 
     };
     let slideElements = [];
     let currentIdx = 0;
@@ -416,7 +388,7 @@
         if(dot) isOnline ? dot.classList.remove('offline') : dot.classList.add('offline');
     }
 
-    // --- LOGIC ENGINE 2.1 (FORCE RECALC) ---
+    // --- LOGIC ENGINE 2.1 ---
     function calculateVerdict() {
         const activeModule = MODULES[ENGINE_STATE.currentDomain];
         if(!activeModule.database) return {name: "Ready", price: "---"};
@@ -426,17 +398,13 @@
         let eliminated = [];
         const bannedTags = [];
 
-        // Determine banned tags from filters
-        ENGINE_STATE.active_filters.forEach(f => { 
-            if(DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]); 
-        });
+        ENGINE_STATE.active_filters.forEach(f => { if(DEAL_BREAKERS[f.toUpperCase()]) bannedTags.push(DEAL_BREAKERS[f.toUpperCase()]); });
 
         for (let name in DB) {
             let item = DB[name]; 
             let rejected = false;
             let rejectReason = "";
 
-            // 1. Elimination Logic
             if(item.tags) {
                 for(let t of item.tags) {
                     if (bannedTags.includes(t)) {
@@ -452,7 +420,6 @@
                 continue;
             }
 
-            // 2. Scoring Logic
             let score = 0;
             if(ENGINE_STATE.ecosystem === 'specs' && (item.tags?.includes('performance') || item.tags?.includes('value'))) score += 3;
             if(ENGINE_STATE.ecosystem === 'peace' && (item.tags?.includes('trust'))) score += 3;
@@ -466,68 +433,52 @@
         }
         
         candidates.sort((a, b) => b.score - a.score); 
-        
         const winner = candidates[0] || {name: "No Match", price: 0};
         const runnerUp = candidates[1] || null;
 
-        // 3. Save Decision Context (Snapshot)
         if (ENGINE_STATE.currentDomain === 'smartphones') {
-             ENGINE_STATE.DECISION_LOG = {
-                 winner: winner,
-                 runner_up: runnerUp,
-                 eliminated: eliminated,
-                 weights: ENGINE_STATE.session_weights,
-                 priorities: ENGINE_STATE.active_filters,
-                 timestamp: new Date().toISOString()
-             };
+             ENGINE_STATE.DECISION_LOG = { winner, runner_up: runnerUp, eliminated, weights: ENGINE_STATE.session_weights, priorities: ENGINE_STATE.active_filters, timestamp: new Date().toISOString() };
         }
 
         return winner;
     }
 
-    // --- PDF GENERATOR 2.1 (FORCE RECALC & FALLBACKS) ---
+    // --- PDF GENERATOR ---
     function generateDecisionReport() {
-        // Force calculation to ensure data freshness
-        calculateVerdict();
-        
+        calculateVerdict(); // Force refresh
         const log = ENGINE_STATE.DECISION_LOG;
         if(!log) return showToast("NO DATA");
 
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // 1. Header
+        // Header
         doc.setFontSize(22); doc.setTextColor(255, 103, 31);
         doc.text("DECISION LOGIC REPORT", 14, 22);
-        
         doc.setFontSize(10); doc.setTextColor(100);
         doc.text(`SESSION: ${ENGINE_STATE.sessionID}  |  DATE: ${log.timestamp.split('T')[0]}`, 14, 30);
         doc.line(14, 34, 196, 34);
 
-        // 2. Snapshot
+        // Snapshot
         doc.setFontSize(14); doc.setTextColor(0);
         doc.text("1. DECISION SNAPSHOT", 14, 45);
         doc.setFontSize(11);
-        doc.text(`Budget Band: Mid-Range (Est.)`, 14, 53);
-        doc.text(`Priorities: ${log.priorities.join(", ") || "General Balance"}`, 14, 60);
+        doc.text(`Priorities: ${log.priorities.join(", ") || "General Balance"}`, 14, 53);
 
-        // 3. Ranking Explanation
+        // Ranking
         doc.setFontSize(14);
         doc.text("2. RANKING EXPLANATION", 14, 75);
         doc.setFontSize(11);
-        doc.text(`The ${log.winner.name} secured the top rank due to:`, 14, 83);
-        const reasons = generateReasoning(log.winner, log.priorities);
+        doc.text(`The ${log.winner.name} secured the top rank.`, 14, 83);
+        
         let ry = 90;
-        reasons.forEach(r => { doc.text(`• ${r}`, 18, ry); ry+=7; });
 
-        // 4. Comparative Block (Autotable)
+        // Comparative Block
         if(log.runner_up) {
             doc.text("3. COMPARATIVE JUSTIFICATION", 14, ry + 10);
             const rows = [];
             const wSpecs = log.winner.specs || {};
             const rSpecs = log.runner_up.specs || {};
-            
-            // Compare key stats
             ['cam', 'bat', 'gam', 'ui'].forEach(k => {
                  if(wSpecs[k] && rSpecs[k]) {
                      const diff = wSpecs[k] - rSpecs[k];
@@ -548,43 +499,11 @@
             }
         }
 
-        // 5. Elimination Block
-        if(log.eliminated.length > 0) {
-            doc.text("4. ELIMINATION LOGIC", 14, ry);
-            const eRows = log.eliminated.map(e => [e.name, "REJECTED", e.reason]);
-            if (doc.autoTable) {
-                doc.autoTable({
-                    startY: ry + 5,
-                    head: [['Device', 'Status', 'Reason']],
-                    body: eRows,
-                    theme: 'striped'
-                });
-                ry = doc.lastAutoTable.finalY + 20;
-            }
-        }
-
-        // 6. Cognitive Closure
-        doc.setFontSize(12); doc.setTextColor(0);
-        doc.text("FINAL DECISION", 14, ry);
-        doc.setFontSize(10); doc.setTextColor(100);
-        doc.text(`Champion: ${log.winner.name}`, 14, ry + 8);
-        if(log.runner_up) doc.text(`Runner-Up: ${log.runner_up.name}`, 14, ry + 14);
-        doc.text("This decision reflects your interaction pattern, not a generic recommendation.", 14, ry + 22);
-
         doc.save(`Decision_Report_${ENGINE_STATE.sessionID}.pdf`);
         showToast("REPORT DOWNLOADED");
     }
 
-    function generateReasoning(winner, priorities) {
-        const reasons = [];
-        if (priorities.includes('BATTERY KING')) reasons.push("Critical alignment with High Capacity Battery requirement.");
-        if (priorities.includes('CLEAN UI')) reasons.push("Superior Software Experience score relative to peers.");
-        if (winner.score > 80) reasons.push("High overall performance index across all weighted categories.");
-        if (reasons.length === 0) reasons.push("Best balanced specifications in the current price tier.");
-        return reasons;
-    }
-
-    // --- RENDERERS ---
+    // --- RENDERERS (v82.0 UI + v91.0 Updates) ---
     function renderLobby() {
         const container = document.getElementById('master-container');
         container.innerHTML = "";
@@ -593,7 +512,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v86.1 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v91.0 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -609,7 +528,7 @@
                 <div class="grid-btn" onclick="loadDomain('research')">
                     <div class="grid-icon">🧠</div>
                     <div class="grid-label">RESEARCH</div>
-                    <div class="grid-status">COGNITION</div>
+                    <div class="grid-status">SYSTEMS NODE</div>
                 </div>
                 <div class="grid-btn" onclick="loadDomain('trivia')">
                     <div class="grid-icon">🧩</div>
@@ -631,10 +550,10 @@
                     <div class="grid-label">VOICE FEED</div>
                     <div class="grid-status">AI READY</div>
                 </div>
-                <div class="grid-btn btn-fuel" onclick="togglePayment(true)">
-                    <div class="grid-icon">⚡</div>
-                    <div class="grid-label">SYSTEM FUEL</div>
-                    <div class="grid-status">SUPPORT DEV</div>
+                <div class="grid-btn btn-fuel" onclick="openAffiliate('Systems Thinking and Decision Making Books')">
+                    <div class="grid-icon">📚</div>
+                    <div class="grid-label">FIND THE BOOK</div>
+                    <div class="grid-status">RECOMMENDED READS</div>
                 </div>
                 <div class="grid-btn full-width-btn" onclick="loadDomain('review')">
                     <div class="grid-icon">▶</div>
@@ -676,13 +595,13 @@
         document.body.appendChild(exitBtn);
     }
 
-    // --- RESEARCH ---
+    // --- RESEARCH (v86 API + v91 SHOP) ---
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         let topicsHTML = `<div class="topic-grid">`;
         for(let key in CURATED_PATHS) {
             const t = CURATED_PATHS[key];
-            if(t.summary) topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
+            topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
         }
         topicsHTML += `</div>`;
         section.innerHTML = `<div class="slide-header"><span class="header-title">RESEARCH</span></div><div class="lobby-container"><h1>TOPIC?</h1><div class="search-wrapper"><input type="text" id="search-input" placeholder="e.g. Systems, AI..."></div><button class="btn btn-primary" onclick="executeSearch()">SEARCH &rarr;</button>${topicsHTML}</div>`;
@@ -705,17 +624,13 @@
         const links = context.links || [];
         const section = document.createElement('section'); section.className = "main-slide next";
         
-        let navHtml = '';
-        if (ENGINE_STATE.triviaMode) {
-            navHtml = `<button class="skip-btn-clickable" style="border-color:var(--accent-go); color:var(--accent-go);" onclick="nextQuestion()">NEXT Q ⏩</button>`;
-        } else {
-            navHtml = `<div style="display:flex; gap:10px;"><button class="skip-btn-clickable" onclick="copyJSON()">COPY JSON</button><button class="skip-btn-clickable" onclick="saveJSON()">PDF</button></div>`;
-        }
-
         section.innerHTML = `
             <div class="slide-header">
                 <span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span>
-                ${navHtml}
+                <div style="display:flex; gap:10px;">
+                    <button class="skip-btn-clickable" style="color:var(--brand-orange)" onclick="openAffiliate('${context.title}')">SHOP NODE ↗</button>
+                    <button class="skip-btn-clickable" onclick="saveJSON()">PDF 💾</button>
+                </div>
             </div>
             <div class="carousel-viewport">
                 <div class="sub-slide static">
@@ -742,155 +657,7 @@
         buildResearchDeck(node);
     }
 
-    // --- TRIVIA LOGIC ---
-    function renderTriviaGate() {
-        const section = document.createElement('section'); section.className = "main-slide next";
-        section.innerHTML = `<div class="slide-header"><span class="header-title">TRIVIA</span></div><div class="lobby-container"><h1 style="text-align:center">CATEGORY</h1><div style="display:grid; gap:15px;"><button class="cuisine-btn" onclick="startTrivia(9)">GENERAL</button><button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button><button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button><button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button></div></div>`;
-        document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
-    }
-
-    async function startTrivia(cat) {
-        showToast("FETCHING Qs...");
-        ENGINE_STATE.triviaMode = true;
-        const data = await TRIVIA_ENGINE.fetch(cat);
-        if(!data.length) return showToast("ERROR");
-        const container = document.getElementById('master-container');
-        data.forEach((q, i) => {
-            const el = document.createElement('section'); el.className = `main-slide next`;
-            const answers = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
-            let html = `<div class="slide-header"><span class="header-title">Q${i+1}</span></div><div class="carousel-viewport">`;
-            answers.forEach((ans, idx) => {
-                html += `<div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" data-correct="${ans === q.correct_answer}" data-real="${q.correct_answer}"><div class="role-label">${q.difficulty.toUpperCase()}</div><h1 style="font-size:1.4rem;">${decodeHTML(q.question)}</h1><div style="margin-top:20px; font-size:1.2rem; color:var(--brand-orange);">${decodeHTML(ans)}</div><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
-            });
-            html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
-        });
-        goToSlide(slideElements.length - data.length);
-    }
-    
-    function nextQuestion() {
-        if(ENGINE_STATE.lastTriviaIdx > -1 && ENGINE_STATE.lastTriviaIdx < slideElements.length - 2) {
-             goToSlide(ENGINE_STATE.lastTriviaIdx + 1);
-        } else {
-             showToast("GAME OVER");
-             setTimeout(() => renderLobby(), 1000);
-        }
-    }
-
-    // --- SWIPE SYSTEM ---
-    let tsY = 0, tsX = 0;
-    let lastWheelTime = 0;
-
-    function initSwipeSystem() {
-        document.addEventListener('touchstart', e => { tsY = e.touches[0].clientY; tsX = e.touches[0].clientX; }, {passive: true});
-        document.addEventListener('touchend', e => {
-            if(e.target.closest('.wiki-summary')) return;
-            handleInput(e.changedTouches[0].clientY, e.target);
-        });
-        document.addEventListener('mousedown', e => { tsY = e.clientY; tsX = e.clientX; });
-        document.addEventListener('mouseup', e => {
-            if (window.getSelection().toString().length > 0) return;
-            if (Math.abs(e.clientY - tsY) > 30) handleInput(e.clientY, e.target);
-        });
-        document.addEventListener('wheel', e => {
-            if(Date.now() - lastWheelTime < 500) return;
-            const summary = e.target.closest('.wiki-summary');
-            if (summary) {
-                const atTop = summary.scrollTop <= 0;
-                const atBottom = Math.abs(summary.scrollHeight - summary.clientHeight - summary.scrollTop) <= 1;
-                if (e.deltaY < 0 && !atTop) return; 
-                if (e.deltaY > 0 && !atBottom) return;
-            }
-            lastWheelTime = Date.now();
-            if (e.deltaY > 0) triggerAction('next', e.target);
-            else triggerAction('prev', e.target);
-        }, {passive: false});
-    }
-
-    function handleInput(endY, target) {
-        if(target.closest('.wiki-summary')) return;
-        const dy = endY - tsY;
-        if (dy < -60) triggerAction('next', target);
-        if (dy > 60) triggerAction('prev', target);
-    }
-
-    function triggerAction(direction, target) {
-        const view = document.querySelector('.main-slide.active .carousel-viewport');
-        if(!view || document.querySelector('iframe')) return;
-
-        const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
-
-        if(direction === 'next') {
-            if(active.classList.contains('static')) {
-                active.classList.remove('static'); active.classList.add('opt-hidden');
-                view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
-            } else if(ENGINE_STATE.triviaMode) {
-                if(active.dataset.correct === "true") { 
-                    showToast("CORRECT! OPENING NODE...", "success"); 
-                    ENGINE_STATE.lastTriviaIdx = currentIdx; // Save spot
-                    setTimeout(() => diveDeeper(active.dataset.real), 500); // Integrate Research
-                } else { 
-                    showToast("WRONG!", "error"); 
-                    setTimeout(() => goToSlide(currentIdx + 1), 800); 
-                }
-            } else if(active.dataset.val) {
-                if(ENGINE_STATE.currentDomain === 'smartphones' || ENGINE_STATE.currentDomain === 'earbuds') {
-                    ENGINE_STATE.items_detected[active.dataset.val] = true; goToSlide(currentIdx + 1);
-                } else { 
-                    diveDeeper(active.dataset.val); 
-                }
-            }
-        } else {
-            if(ENGINE_STATE.currentDomain === 'research' && ENGINE_STATE.researchPath.length > 1) {
-                ENGINE_STATE.researchPath.pop(); 
-                buildResearchDeck(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1]);
-            } else { 
-                goToSlide(currentIdx - 1); 
-            }
-        }
-    }
-    
-    function manualSkip(el) {
-        if (event) event.stopPropagation();
-        const view = el.closest('.carousel-viewport');
-        const active = view.querySelector('.sub-slide.opt-active');
-        if (!active) return;
-        const siblings = Array.from(view.querySelectorAll('.sub-slide:not(.static)'));
-        const next = siblings[(siblings.indexOf(active) + 1) % siblings.length];
-        active.classList.replace('opt-active', 'opt-hidden');
-        next.classList.replace('opt-hidden', 'opt-active');
-    }
-
-    function goToSlide(idx) {
-        if(idx < 0 || idx >= slideElements.length) return;
-        slideElements[currentIdx].classList.replace('active', idx > currentIdx ? 'prev' : 'next');
-        currentIdx = idx;
-        slideElements[currentIdx].className = "main-slide active";
-        if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
-    }
-
-    function showToast(m, type="normal") { 
-        const t = document.getElementById('toast'); t.innerText = m; 
-        t.style.borderColor = type === 'error' ? '#f44' : 'rgba(255,255,255,0.1)'; 
-        t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2000); 
-    }
-    
-    function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
-    function copyJSON() {
-        const payload = ENGINE_STATE.researchPath.map((item, i) => ({ id: `NODE_${ENGINE_STATE.sessionID}_${i}`, title: item.title.toUpperCase(), body: item.summary, source: "DECIDE ENGINE RESEARCH" }));
-        navigator.clipboard.writeText(JSON.stringify(payload, null, 2)); showToast("JSON COPIED! PASTE IN STUDIO");
-    }
-    function saveJSON() {
-        const { jsPDF } = window.jspdf; const doc = new jsPDF();
-        let y = 20; doc.setFont("courier", "bold"); doc.setFontSize(18); doc.text("DECIDE.ENGINE", 20, y); y+=8; doc.setFontSize(10); doc.setFont("courier", "normal"); doc.text(`SESSION: ${ENGINE_STATE.sessionID}`, 20, y); y+=15;
-        ENGINE_STATE.researchPath.forEach((item, i) => { if (y > 270) { doc.addPage(); y = 20; } doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y+=8; doc.setFont("courier", "normal"); const lines = doc.splitTextToSize(item.summary, 170); doc.text(lines, 20, y); y += (lines.length * 6) + 10; });
-        doc.save(`Research_Path_${ENGINE_STATE.sessionID}.pdf`); showToast("PDF DOWNLOADED");
-    }
-    function togglePayment(show) { const modal = document.getElementById('payment-modal'); if(show) modal.classList.add('open'); else modal.classList.remove('open'); }
-    function openVoiceLobby() { const s = document.createElement('section'); s.className = "main-slide next"; s.innerHTML = `<div class="slide-header"><span class="header-title">VOICE</span></div><div class="lobby-container"><h1>VOICE FEEDS</h1><div class="topic-grid">${VOICE_FEED.map(v => `<div class="topic-card" onclick="playVoiceFeed('${v.id}')"><div class="topic-title">${v.title}</div><div class="topic-desc">MODE: ${v.mode}</div></div>`).join("")}</div></div>`; document.getElementById('master-container').appendChild(s); slideElements.push(s); goToSlide(1); }
-    function playVoiceFeed(id) { window.speechSynthesis.cancel(); const f = VOICE_FEED.find(v => v.id === id); if(!f) return; const u = new SpeechSynthesisUtterance(f.blocks.map(b=>b.text).join(". ")); u.rate = 0.95; window.speechSynthesis.speak(u); showToast("PLAYING"); }
-    function stopAudio() { window.speechSynthesis.cancel(); }
-    
-    // --- FINAL RENDERERS FOR PRODUCT ---
+    // --- HARDWARE MODULES (v90.0) ---
     function renderEcosystemGate() {
         const section = document.createElement('section'); section.className = "main-slide next";
         section.innerHTML = `
@@ -943,31 +710,214 @@
         });
         const final = document.createElement('section'); final.className = "main-slide next";
         
-        // ADDED: NEW PDF REPORT BUTTON FOR PRODUCTS
-        let productButtons = `
-            <button class="btn btn-primary" onclick="redirect()">CHECK PRICE ↗</button>
-            <button class="btn btn-yt" onclick="openReview()">▶ WATCH REVIEW</button>
-            <button class="btn btn-share" onclick="generateShareCard()">📷 SHARE CARD</button>
-        `;
-        
+        let extraBtns = '';
         if (ENGINE_STATE.currentDomain === 'smartphones') {
-             productButtons += `<button class="btn btn-doc" style="background:#00e676; color:#000; font-weight:800; grid-column:span 2;" onclick="generateDecisionReport()">📄 DECISION REPORT</button>`;
+             extraBtns = `<button class="btn btn-doc" onclick="generateDecisionReport()">📄 DECISION REPORT</button>`;
         }
-        
-        productButtons += `<button class="btn" style="background:#222; color:#fff;" onclick="window.open('${YOUTUBE_CHANNEL}', '_blank')">📺 MORE VIDEOS</button>`;
 
         final.innerHTML = `
             <video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}" type="video/mp4"></video>
             <div class="winner-container">
                 <div id="final-list"></div>
                 <div class="final-actions">
-                    ${productButtons}
+                    <button class="btn btn-primary" onclick="redirect()">CHECK PRICE ↗</button>
+                    <button class="btn btn-yt" onclick="openReview()">▶ WATCH REVIEW</button>
+                    ${extraBtns}
+                    <button class="btn btn-share" onclick="generateShareCard()">📷 SHARE CARD</button>
                 </div>
             </div>`;
         container.appendChild(final); slideElements.push(final); goToSlide(currentIdx + 1);
     }
+
+    function calculateWinnerDisplay() {
+        const winner = calculateVerdict(); 
+        ENGINE_STATE.items_detected = {}; ENGINE_STATE.items_detected[winner.name] = true;
+        return winner;
+    }
+
+    function updateFinal() { 
+        const list = document.getElementById('final-list'); 
+        const winner = calculateWinnerDisplay(); 
+        
+        let priceHtml = `Est. Price: ₹${winner.price}`;
+        if(winner.mrp && winner.mrp > winner.price) {
+            const off = Math.round(((winner.mrp - winner.price) / winner.mrp) * 100);
+            priceHtml = `₹${winner.price} <span class="deal-tag">(${off}% OFF)</span>`;
+        }
+        list.innerHTML = `<div style="text-align:left;"><span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE CHAMPION</span><div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div><p style="color:#eee; font-size:1.1rem; margin-top:5px;">${priceHtml}</p></div>`; 
+        
+        const u = new SpeechSynthesisUtterance(`The winner is ${winner.name}.`);
+        window.speechSynthesis.speak(u);
+    }
+
+    async function generateShareCard() {
+        const w = calculateVerdict();
+        document.getElementById('share-winner-name').innerText = w.name;
+        document.getElementById('share-winner-price').innerText = "₹" + w.price;
+        const card = document.getElementById('share-card-canvas');
+        showToast("GENERATING CARD...");
+        try {
+            card.style.top = "0"; 
+            const canvas = await html2canvas(card, { backgroundColor: null, scale: 2 });
+            card.style.top = "-200vh";
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "Decide_Winner.png", { type: "image/png" });
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'My Winner', text: `Decide Engine picked ${w.name}`, files: [file] });
+                } else {
+                    const link = document.createElement('a'); link.download = 'Decide_Winner.png';
+                    link.href = canvas.toDataURL(); link.click(); showToast("DOWNLOADED");
+                }
+            });
+        } catch(e) { card.style.top = "-200vh"; showToast("ERROR"); }
+    }
+
+    // --- TRIVIA & EXTERNAL (v91 SHOP) ---
+    function renderTriviaGate() {
+        const section = document.createElement('section'); section.className = "main-slide next";
+        section.innerHTML = `<div class="slide-header"><span class="header-title">TRIVIA</span></div><div class="lobby-container"><h1 style="text-align:center">CATEGORY</h1><div style="display:grid; gap:15px;"><button class="cuisine-btn" onclick="startTrivia(9)">GENERAL</button><button class="cuisine-btn" onclick="startTrivia(18)">COMPUTERS</button><button class="cuisine-btn" onclick="startTrivia(17)">SCIENCE</button><button class="cuisine-btn" onclick="startTrivia(23)">HISTORY</button></div></div>`;
+        document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
+    }
+
+    async function startTrivia(cat) {
+        showToast("FETCHING Qs...");
+        ENGINE_STATE.triviaMode = true;
+        const data = await TRIVIA_ENGINE.fetch(cat);
+        if(!data.length) return showToast("ERROR");
+        
+        const catMap = { 9: "General Knowledge Books", 18: "Computer Science Books", 17: "Science Books", 23: "History Books" };
+        const query = catMap[cat] || "Trivia Books";
+
+        const container = document.getElementById('master-container');
+        data.forEach((q, i) => {
+            const el = document.createElement('section'); el.className = `main-slide next`;
+            const answers = [...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5);
+            let html = `
+                <div class="slide-header">
+                    <span class="header-title">Q${i+1}</span>
+                    <button class="skip-btn-clickable" style="color:var(--brand-orange)" onclick="openAffiliate('${query}')">SHOP THEME ↗</button>
+                </div>
+                <div class="carousel-viewport">`;
+            answers.forEach((ans, idx) => {
+                html += `<div class="sub-slide ${idx===0?'opt-active':'opt-hidden'}" data-correct="${ans === q.correct_answer}" data-real="${q.correct_answer}"><div class="role-label">${q.difficulty.toUpperCase()}</div><h1 style="font-size:1.4rem;">${decodeHTML(q.question)}</h1><div style="margin-top:20px; font-size:1.2rem; color:var(--brand-orange);">${decodeHTML(ans)}</div><div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div></div>`;
+            });
+            html += `</div>`; el.innerHTML = html; container.appendChild(el); slideElements.push(el);
+        });
+        goToSlide(slideElements.length - data.length);
+    }
+
+    function renderExternalModule(url) {
+        addGlobalExit();
+        const section = document.createElement('section');
+        section.className = "main-slide next";
+        section.innerHTML = `<iframe src="${url}"></iframe><button class="close-iframe" onclick="renderLobby()">EXIT</button>`; 
+        document.getElementById('master-container').appendChild(section);
+        slideElements.push(section);
+        goToSlide(slideElements.length - 1);
+    }
+
+    // --- SWIPE SYSTEM ---
+    let tsY = 0, tsX = 0;
+    function initSwipeSystem() {
+        document.addEventListener('touchstart', e => { 
+            tsY = e.touches[0].clientY; 
+            tsX = e.touches[0].clientX; 
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            if(e.target.closest('.wiki-summary')) return;
+
+            const view = e.target.closest('.main-slide.active .carousel-viewport');
+            if(!view || document.querySelector('iframe')) return;
+            
+            const dy = e.changedTouches[0].clientY - tsY;
+            const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
+
+            if(dy < -60) { // UP SWIPE
+                if(active.classList.contains('static')) {
+                    active.classList.remove('static'); active.classList.add('opt-hidden');
+                    view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
+                } else if(ENGINE_STATE.triviaMode) {
+                    if(active.dataset.correct === "true") { 
+                        showToast("CORRECT!", "success"); 
+                        setTimeout(() => diveDeeper(active.dataset.real), 800); 
+                    } else { 
+                        showToast("WRONG!", "error"); 
+                        setTimeout(() => goToSlide(currentIdx + 1), 800); 
+                    }
+                } else if(active.dataset.val) {
+                    if(ENGINE_STATE.currentDomain === 'smartphones' || ENGINE_STATE.currentDomain === 'earbuds') {
+                        ENGINE_STATE.items_detected[active.dataset.val] = true; goToSlide(currentIdx + 1);
+                    } else { 
+                        diveDeeper(active.dataset.val); 
+                    }
+                }
+            } else if(dy > 60) { // DOWN SWIPE
+                if(ENGINE_STATE.currentDomain === 'research' && ENGINE_STATE.researchPath.length > 1) {
+                    ENGINE_STATE.researchPath.pop(); 
+                    buildResearchDeck(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1]);
+                } else { 
+                    goToSlide(currentIdx - 1); 
+                }
+            }
+        });
+    }
+
+    function manualSkip(el) {
+        if (event) event.stopPropagation();
+        const view = el.closest('.carousel-viewport');
+        const active = view.querySelector('.sub-slide.opt-active');
+        if (!active) return;
+        const siblings = Array.from(view.querySelectorAll('.sub-slide:not(.static)'));
+        const next = siblings[(siblings.indexOf(active) + 1) % siblings.length];
+        active.classList.replace('opt-active', 'opt-hidden');
+        next.classList.replace('opt-hidden', 'opt-active');
+    }
+
+    function goToSlide(idx) {
+        if(idx < 0 || idx >= slideElements.length) return;
+        slideElements[currentIdx].classList.replace('active', idx > currentIdx ? 'prev' : 'next');
+        currentIdx = idx;
+        slideElements[currentIdx].className = "main-slide active";
+        if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
+    }
+
+    // --- UTILS ---
+    function showToast(m, type="normal") { 
+        const t = document.getElementById('toast'); 
+        t.innerText = m; 
+        t.style.borderColor = type === 'error' ? '#f44' : 'rgba(255,255,255,0.1)'; 
+        t.classList.add('visible'); 
+        setTimeout(() => t.classList.remove('visible'), 2000); 
+    }
     
+    function decodeHTML(html) { const txt = document.createElement("textarea"); txt.innerHTML = html; return txt.value; }
     function redirect() { const item = Object.keys(ENGINE_STATE.items_detected)[0]; if(!item) return showToast("NOTHING SELECTED"); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(item)}&tag=${AMZN_TAG}`, '_blank'); }
+    function openReview() { const m = MODULES[ENGINE_STATE.currentDomain]; if (m && m.review) window.open(m.review, '_blank'); else showToast("NO VIDEO AVAILABLE"); }
+    function saveJSON() { const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20; doc.setFont("courier", "bold"); doc.setFontSize(18); doc.text("DECIDE.ENGINE", 20, y); y+=8; doc.setFontSize(10); doc.setFont("courier", "normal"); doc.text(`SESSION: ${ENGINE_STATE.sessionID}`, 20, y); y+=15; ENGINE_STATE.researchPath.forEach((item, i) => { if (y > 270) { doc.addPage(); y = 20; } doc.setFont("courier", "bold"); doc.text(`[NODE ${String(i+1).padStart(2, '0')}] ${item.title.toUpperCase()}`, 20, y); y+=8; doc.setFont("courier", "normal"); const lines = doc.splitTextToSize(item.summary, 170); doc.text(lines, 20, y); y += (lines.length * 6) + 10; }); doc.save(`Research_Path_${ENGINE_STATE.sessionID}.pdf`); showToast("PDF DOWNLOADED"); }
+    
+    function openAffiliate(query) { window.open(`https://www.amazon.in/s?k=${encodeURIComponent(query)}&tag=${AMZN_TAG}`, '_blank'); }
+    
+    function togglePayment(show) {
+        const modal = document.getElementById('payment-modal');
+        const container = document.getElementById('upi-container');
+        if(show) {
+            modal.classList.add('open');
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if(isMobile) {
+                const deepLink = "https://image2url.com/r2/default/images/1770560615015-576f561b-6ef1-4be2-b483-9ceb59f23ce8.jpg";
+                container.innerHTML = `<div class="pay-option" onclick="window.location.href='${deepLink}'" style="border-color:var(--accent-go);"><span>🇮🇳 Tap to Pay (UPI)</span><span>🚀</span></div>`;
+            } else {
+                container.innerHTML = `<div style="background:#fff; padding:10px; border-radius:12px; margin-bottom:15px; display:inline-block"><img src="${QR_IMAGE}" style="width:180px; display:block;" alt="Scan QR"></div><div style="font-size:0.7rem; color:#666;">${UPI_ID}</div>`;
+            }
+        } else {
+            modal.classList.remove('open');
+        }
+    }
+    
+    function openVoiceLobby() { stopAudio(); addGlobalExit(); const section = document.createElement('section'); section.className = "main-slide next"; section.innerHTML = `<div class="slide-header"><span class="header-title">VOICE MODULE</span></div><div class="lobby-container"><h1>VOICE FEEDS</h1><div class="topic-grid">${VOICE_FEED.map(v => `<div class="topic-card" onclick="playVoiceFeed('${v.id}')"><div class="topic-title">${v.title}</div><div class="topic-desc">MODE: ${v.mode.toUpperCase()}</div></div>`).join("")}</div></div>`; document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1); }
+    function playVoiceFeed(id) { stopAudio(); const feed = VOICE_FEED.find(v => v.id === id); if (!feed) return; let text = feed.blocks.map(b => b.text).join(". "); const utterance = new SpeechSynthesisUtterance(text); utterance.rate = 0.95; window.speechSynthesis.speak(utterance); showToast("VOICE PLAYING"); }
+    function stopAudio() { window.speechSynthesis.cancel(); }
 
     boot();
 </script>
