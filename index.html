@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Decide Engine | ONDC Neutral Discovery</title>
-    
-    <meta name="description" content="The Neutral Decision Engine for the ONDC Era. Compare products and research topics with transparent, unbundled logic.">
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -33,171 +29,42 @@
             --ease-elastic: cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        html, body {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background-color: var(--brand-dark);
-            color: var(--text-main);
-            font-family: var(--font-ui);
-            overflow: hidden;
-            touch-action: none; user-select: none;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .aurora-bg {
-            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000000 70%);
-            z-index: -1;
-            animation: drift 25s infinite alternate ease-in-out;
-            opacity: 0.8;
-            pointer-events: none;
-            will-change: transform;
-        }
-        @keyframes drift { 
-            0% { transform: translate3d(0,0,0) scale(1); } 
-            100% { transform: translate3d(-20px, -20px, 0) scale(1.05); } 
-        }
-
+        html, body { margin: 0; padding: 0; height: 100%; width: 100%; background-color: var(--brand-dark); color: var(--text-main); font-family: var(--font-ui); overflow: hidden; touch-action: none; user-select: none; -webkit-font-smoothing: antialiased; }
+        .aurora-bg { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000000 70%); z-index: -1; animation: drift 25s infinite alternate ease-in-out; opacity: 0.8; pointer-events: none; will-change: transform; }
+        @keyframes drift { 0% { transform: translate3d(0,0,0) scale(1); } 100% { transform: translate3d(-20px, -20px, 0) scale(1.05); } }
         #master-container { height: 100vh; width: 100vw; position: relative; overflow: hidden; }
-
-        .main-slide {
-            height: 100vh; width: 100vw; position: absolute; top: 0; left: 0;
-            display: flex; flex-direction: column;
-            transition: transform 0.5s var(--ease-elastic), opacity 0.4s ease;
-            will-change: transform, opacity;
-            background: transparent;
-        }
+        .main-slide { height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; display: flex; flex-direction: column; transition: transform 0.5s var(--ease-elastic), opacity 0.4s ease; will-change: transform, opacity; background: transparent; }
         .main-slide.prev { transform: translateY(-100%) scale(0.95); opacity: 0; pointer-events: none; }
         .main-slide.active { transform: translateY(0) scale(1); opacity: 1; z-index: 10; pointer-events: auto; }
         .main-slide.next { transform: translateY(100%) scale(0.95); opacity: 0; z-index: 20; pointer-events: none; }
-
-        .slide-header {
-            padding: 0 24px; height: 70px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: absolute; top: 0; left: 0; right: 0; z-index: 100;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-            pointer-events: none;
-        }
+        .slide-header { padding: 0 24px; height: 70px; display: flex; align-items: center; justify-content: space-between; position: absolute; top: 0; left: 0; right: 0; z-index: 100; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); pointer-events: none; }
         .slide-header > * { pointer-events: auto; }
-
-        .header-title {
-            font-family: var(--font-tech); font-size: 0.7rem; color: var(--brand-orange);
-            letter-spacing: 2px; font-weight: 700; text-transform: uppercase;
-            background: rgba(255, 103, 31, 0.1); padding: 6px 12px; border-radius: 4px;
-            border: 1px solid rgba(255, 103, 31, 0.2);
-            display: flex; align-items: center; gap: 8px;
-        }
-        
+        .header-title { font-family: var(--font-tech); font-size: 0.7rem; color: var(--brand-orange); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; background: rgba(255, 103, 31, 0.1); padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255, 103, 31, 0.2); display: flex; align-items: center; gap: 8px; }
         .status-dot { width: 6px; height: 6px; background: var(--accent-go); border-radius: 50%; box-shadow: 0 0 5px var(--accent-go); transition: background 0.3s; }
         .status-dot.offline { background: var(--accent-skip); box-shadow: 0 0 5px var(--accent-skip); }
-
-        .exit-btn {
-            padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
-            background: rgba(0,0,0,0.6); color: #fff; font-family: var(--font-tech);
-            font-size: 0.7rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px);
-            text-transform: uppercase; transition: all 0.2s;
-        }
-
-        .lobby-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 24px; 
-            margin-top: 20px; overflow-y: auto; padding-bottom: 120px; box-sizing: border-box;
-            height: 100%; align-content: start; padding-top: 80px;
-        }
-        .lobby-container {
-             display: flex; flex-direction: column; gap: 15px; padding: 24px; height: 100%; 
-             overflow-y: auto; justify-content: flex-start; padding-top: 80px; box-sizing: border-box;
-        }
-
-        .grid-btn {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 20px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 8px;
-            aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer;
-            backdrop-filter: blur(10px);
-        }
-        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
-        .grid-icon { font-size: 1.8rem; margin-bottom: 5px; }
-        .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
-        .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        
-        .btn-fuel { border-color: var(--brand-gold); background: rgba(255, 183, 0, 0.05); }
-        .full-width-btn { grid-column: span 2; aspect-ratio: auto; padding: 18px; flex-direction: row; gap: 15px; }
-
+        .exit-btn { padding: 8px 16px; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; background: rgba(0,0,0,0.6); color: #fff; font-family: var(--font-tech); font-size: 0.7rem; font-weight: bold; cursor: pointer; backdrop-filter: blur(10px); text-transform: uppercase; }
+        .lobby-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 24px; margin-top: 20px; overflow-y: auto; padding-bottom: 120px; box-sizing: border-box; height: 100%; align-content: start; padding-top: 80px; }
+        .lobby-container { display: flex; flex-direction: column; gap: 15px; padding: 24px; height: 100%; overflow-y: auto; justify-content: flex-start; padding-top: 80px; box-sizing: border-box; }
+        .grid-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer; backdrop-filter: blur(10px); }
+        .grid-icon { font-size: 1.8rem; }
+        .grid-label { font-weight: 700; font-size: 0.85rem; color: #fff; }
+        .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); opacity: 0.8; }
         .carousel-viewport { position: relative; flex-grow: 1; width: 100%; height: 100%; margin-top: 70px; perspective: 1000px; }
-
-        .sub-slide {
-            position: absolute; inset: 20px; bottom: 100px; 
-            padding: 30px; display: flex; flex-direction: column; justify-content: center;
-            background: var(--glass-surface);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            opacity: 0; pointer-events: none; 
-            transform: translateY(20px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-        }
+        .sub-slide { position: absolute; inset: 20px; bottom: 100px; padding: 30px; display: flex; flex-direction: column; justify-content: center; background: var(--glass-surface); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; opacity: 0; pointer-events: none; transform: translateY(20px) scale(0.95); transition: all 0.4s var(--ease-elastic); }
         .sub-slide.opt-active, .sub-slide.static { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); z-index: 30; }
-
-        h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .wiki-summary { 
-            font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
-            font-weight: 400; max-height: 300px; overflow-y: auto; 
-            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-            touch-action: pan-y;
-            user-select: text;
-        }
-        
-        .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
-
-        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); text-align: center; }
+        .sub-slide.opt-hidden { opacity: 0; pointer-events: none; transform: translateY(-20px) scale(0.95); }
+        .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; border-radius: 12px; transition: all 0.3s; }
         .cuisine-btn.selected { background: rgba(255, 103, 31, 0.15); color: var(--brand-orange); border-color: var(--brand-orange); }
-        .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
+        .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; }
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
-        .btn-yt { background: #cc0000; border: none; }
-        .btn-share { background: #6b21a8; color: #fff; border: none; grid-column: span 2; }
-        .btn-doc { background: #00e676; color: #000; border: none; font-weight: 800; grid-column: span 2; }
-        
-        .search-wrapper { position: relative; margin-bottom: 20px; }
-        #search-input { width: 100%; padding: 20px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: #fff; font-family: var(--font-ui); font-size: 1.1rem; box-sizing: border-box; }
-
-        .modal-backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            z-index: 5000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        .modal-backdrop.open { opacity: 1; pointer-events: auto; }
-        .payment-card { background: #111; border: 1px solid var(--brand-gold); width: 90%; max-width: 400px; padding: 30px; border-radius: 24px; text-align: center; position: relative; }
-        .pay-option { background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0; border-radius: 12px; cursor: pointer; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: #fff; }
-        
-        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; border: 1px solid #333; opacity: 0; z-index: 6000; pointer-events: none; transition: opacity 0.3s; font-family: var(--font-tech); font-size: 0.8rem; font-weight: bold; }
+        .toast-msg { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #222; color: var(--accent-go); padding: 12px 24px; border-radius: 30px; opacity: 0; transition: opacity 0.3s; font-family: var(--font-tech); z-index: 9999; }
         .toast-msg.visible { opacity: 1; }
-
-        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; mix-blend-mode: screen; }
+        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.4; }
         .winner-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; padding-bottom: 120px; background: linear-gradient(to top, #000 95%, transparent); }
-        iframe { width: 100%; height: 100%; border: none; background: #000; }
-        .close-iframe { position: fixed; top: 20px; right: 20px; z-index: 200; background: #000; border: 1px solid #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
-
-        #share-card-canvas {
-            position: fixed; top: -200vh; left: 0; width: 360px; padding: 40px 30px;
-            background: linear-gradient(145deg, #111, #050505);
-            border: 2px solid var(--brand-orange); border-radius: 24px;
-            text-align: center; color: #fff; font-family: var(--font-ui);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-sizing: border-box; z-index: 9000;
-        }
-        
-        .topic-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; padding-bottom: 20px; }
-        .topic-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; cursor: pointer; }
-        .topic-title { font-weight: bold; color: #fff; font-size: 0.85rem; margin-bottom: 4px; font-family: var(--font-tech); }
-        .topic-desc { font-size: 0.75rem; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        
-        .deal-tag { color: var(--accent-go); font-size: 0.8rem; font-weight: bold; background: rgba(0, 230, 118, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-family: var(--font-tech); }
-        .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
-        .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
-        .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
-
+        .deal-tag { color: var(--accent-go); font-size: 0.8rem; background: rgba(0, 230, 118, 0.1); padding: 2px 6px; border-radius: 4px; }
+        .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .nav-hint { margin-top: 25px; display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
+        .skip-btn-clickable { cursor: pointer; padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -206,293 +73,69 @@
 <div id="master-container"></div>
 <div id="toast" class="toast-msg"></div>
 
-<div id="share-card-canvas">
-    <div style="font-family:var(--font-tech); color:var(--brand-orange); font-size:0.8rem; letter-spacing:2px; margin-bottom:20px;">DECIDE ENGINE</div>
-    <div style="font-size:0.7rem; color:#888; text-transform:uppercase;">THE WINNER IS</div>
-    <h1 id="share-winner-name" style="font-size:2.5rem; margin:15px 0; line-height:1; color:#fff; word-wrap:break-word;">WINNER</h1>
-    <div id="share-winner-price" style="font-size:1.5rem; color:var(--accent-go); font-weight:bold;">₹0</div>
-    <div style="margin-top:30px; font-size:0.7rem; color:#666; border-top:1px solid #333; padding-top:15px; width:100%;">viadecide.com</div>
-</div>
-
-<div id="payment-modal" class="modal-backdrop">
-    <div class="payment-card">
-        <button class="close-modal" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#666; font-size:1.5rem;" onclick="togglePayment(false)">&times;</button>
-        <h2 style="color:var(--brand-gold); margin-top:0;">FUEL THE SYSTEM ⚡</h2>
-        <p style="color:#888; font-size:0.9rem; margin-bottom:20px;">Keep the servers running.</p>
-        <div id="upi-container"></div>
-        <div class="pay-option" onclick="window.open('https://buymeacoffee.com/dharamdaxini', '_blank')">
-            <span>🌍 International Cards</span><span>↗</span>
-        </div>
-    </div>
-</div>
-
 <script>
-    /* =========================================
-       DECIDE OS | v92.0 (PRODUCTION)
-       ========================================= */
-    
-    // --- CONFIG & CONSTANTS ---
-    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzT3MWODY9r0UlyBscZtr5BdF_upkjrpcng7xl07WsAixLTwKxIKWEoXEwhDoGTOIDk/exec"; 
-    const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
-    const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
-    const YOUTUBE_CHANNEL = "https://www.youtube.com/@decide.engine"; 
+    // --- CONFIG ---
+    const BACKEND_URL = "REPLACE_WITH_YOUR_APPS_SCRIPT_URL"; 
     const AMZN_TAG = "decideos-21";
     const WINNER_VIDEO = "https://static.videezy.com/system/resources/previews/000/012/628/original/Abstract_Blue_Background.mp4";
-    const UPI_ID = "6351537770@yapl";
-    const QR_IMAGE = "1000206276.png"; 
 
-    // --- STATE ---
     let PHONE_DB = {};
     let AUDIO_DB = {};
     let ENGINE_STATE = { 
-        currentDomain: null, 
-        items_detected: {}, 
-        active_filters: [], 
-        session_weights: {}, 
-        researchPath: [], 
-        triviaMode: false, 
-        sessionID: "", 
-        lastTriviaIdx: -1,
-        DECISION_LOG: null 
+        currentDomain: null, items_detected: {}, active_filters: [], 
+        session_weights: {}, researchPath: [], triviaMode: false, sessionID: "" 
     };
     let slideElements = [];
     let currentIdx = 0;
 
-    const VOICE_FEED = [
-      { id: "voice_focus_ai", title: "Voice Focus AI – Call Clarity Explained", mode: "explain", blocks: [{ text: "Voice Focus AI uses a six-microphone array to isolate human voice." }, { text: "It improves both outgoing clarity and incoming audio." }] },
-      { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
-    ];
-
-    const CURATED_PATHS = {
-        "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe.", links: ["Cosmic Inflation", "Nucleosynthesis"] },
-        "SYSTEMS THINKING": { title: "Systems Thinking", summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate.", links: ["Feedback Loops", "Cybernetics"] }
-    };
+    const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy" };
 
     const MODULES = {
-        smartphones: { label: "SMARTPHONES", database: PHONE_DB, review: PHONE_REVIEW_URL, init: () => renderEcosystemGate(), 
-            categories: [
-                { label: "CAMERA-FIRST", type: "cam", items: [] }, 
-                { label: "PRO GAMER", type: "gam", items: [] }, 
-                { label: "CLEAN UI", type: "ui", items: [] },
-                { label: "BATTERY KING", type: "bat", items: [] }
-            ] 
-        },
-        earbuds: { label: "EARBUDS", database: AUDIO_DB, review: AUDIO_REVIEW_URL, init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, 
-            categories: [
-                { label: "AUDIOPHILE", type: "snd", items: [] }, 
-                { label: "SILENCE (ANC)", type: "anc", items: [] },
-                { label: "LOW LATENCY", type: "lat", items: [] }
-            ] 
-        },
-        trivia: { label: "TRIVIA", init: () => renderTriviaGate() },
-        research: { label: "RESEARCH", init: () => renderSearchSlide() },
-        food: { label: "DINING", init: () => renderExternalModule("https://via-decide.github.io/food.decider/") },
-        custom: { label: "CUSTOM REQ", init: () => renderExternalModule('https://via-decide.github.io/food.decide-custom/') },
-        review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
+        smartphones: { label: "SMARTPHONES", database: null, init: () => renderEcosystemGate(), categories: [
+            { label: "CAMERA-FIRST", type: "cam", items: [] }, { label: "PRO GAMER", type: "gam", items: [] }, 
+            { label: "CLEAN UI", type: "ui", items: [] }, { label: "BATTERY KING", type: "bat", items: [] }
+        ]},
+        earbuds: { label: "EARBUDS", database: null, init: () => { ENGINE_STATE.active_filters=[]; renderSubLobby('earbuds'); }, categories: [
+            { label: "AUDIOPHILE", type: "snd", items: [] }, { label: "SILENCE (ANC)", type: "anc", items: [] }
+        ]}
     };
 
-    const DEAL_BREAKERS = { "CLEAN UI": "bloatware", "LIGHTWEIGHT": "heavy", "FAST CHARGE": "slow_charge" };
-
-    // --- ENGINES ---
-    const WIKI_ENGINE = {
-        async resolveTitle(query) {
-            try {
-                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                return data[1]?.[0] || null;
-            } catch(e) { return null; }
-        },
-        async fetchSummary(title) {
-            try {
-                const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-                const res = await fetch(url);
-                if(!res.ok) return null;
-                return await res.json();
-            } catch(e) { return null; }
-        },
-        async fetchLinks(title) {
-            try {
-                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&prop=links&titles=${encodeURIComponent(title)}&pllimit=20&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                const pages = data.query.pages;
-                const pageId = Object.keys(pages)[0];
-                if (pageId === "-1") return [];
-                const rawLinks = pages[pageId].links || [];
-                return rawLinks.map(l => l.title);
-            } catch(e) { return []; }
-        },
-        async buildKnowledgeNode(query) {
-            if(CURATED_PATHS[query.toUpperCase()]) {
-                const c = CURATED_PATHS[query.toUpperCase()];
-                return { title: c.title, summary: c.summary, description: "Curated Knowledge Node", links: c.links.map(l => ({name: l})) };
-            }
-            const title = await this.resolveTitle(query);
-            if(!title) return null;
-            const [summary, links] = await Promise.all([this.fetchSummary(title), this.fetchLinks(title)]);
-            return {
-                title: summary?.title || title,
-                summary: summary?.extract || "No extract available.",
-                description: summary?.description || "Research Topic",
-                links: links.slice(0, 5).map(l => ({name: l}))
-            };
-        }
-    };
-
-    const TRIVIA_ENGINE = {
-        api: "https://opentdb.com/api.php?amount=5&type=multiple",
-        async fetch(category = "") {
-            try {
-                const url = this.api + (category ? `&category=${category}` : "");
-                const res = await fetch(url);
-                const data = await res.json();
-                return data.results || [];
-            } catch(e) { return []; }
-        }
-    };
-
-    // --- PATCH 1: ONDC NETWORK SEARCH ---
-    async function executeSearch() {
-        const q = document.getElementById('search-input').value;
-        if(!q) return showToast("ENTER TOPIC OR PRODUCT");
-
-        showToast("SEARCHING NETWORK...");
-        
-        // Log the search attempt for your Analytics
-        fetch(BACKEND_URL, {
-            method: 'POST',
-            body: JSON.stringify({ event: "SEARCH_QUERY", query: q, session_id: ENGINE_STATE.sessionID })
-        });
-
-        // Try ONDC Search Proxy first, fallback to Research/Wiki
-        try {
-            const response = await fetch(`${BACKEND_URL}?type=search&q=${encodeURIComponent(q)}`);
-            const ondcData = await response.json();
-            
-            if (ondcData && ondcData.items) {
-                showToast("PRODUCTS FOUND!");
-                // Logic to push products would go here in v93
-            } else {
-                const node = await WIKI_ENGINE.buildKnowledgeNode(q);
-                if(!node) return showToast("NOT FOUND");
-                ENGINE_STATE.researchPath = [node];
-                buildResearchDeck(node);
-            }
-        } catch(e) {
-            showToast("OFFLINE SEARCH");
-        }
-    }
-
-    // --- PATCH 2: TUTORIAL OVERLAY ---
-    function showTutorial() {
-        if (localStorage.getItem('tutorial_done')) return;
-        
-        const overlay = document.createElement('div');
-        overlay.style = "position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:#fff;";
-        overlay.innerHTML = `
-            <div style="font-size:3rem; margin-bottom:20px;">☝️</div>
-            <h2>SWIPE UP TO SELECT</h2>
-            <p style="color:#888;">Swipe Down to go back</p>
-            <button class="btn btn-primary" style="width:auto; margin-top:30px; padding:12px 30px;" onclick="this.parentElement.remove(); localStorage.setItem('tutorial_done', true);">GOT IT</button>
-        `;
-        document.body.appendChild(overlay);
-    }
-
-    // --- PATCH 3: NEUTRAL LOGIC SUMMARY ---
-    function updateFinal() { 
-        const list = document.getElementById('final-list'); 
-        const winner = calculateWinnerDisplay(); 
-        
-        const log = ENGINE_STATE.DECISION_LOG;
-        const reason = (log && log.priorities && log.priorities.length > 0) 
-            ? `Optimized for ${log.priorities.join(" + ")}` 
-            : "Balanced Performance Score";
-
-        list.innerHTML = `
-            <div style="text-align:left;">
-                <span style="color:var(--accent-go); font-size:0.8rem; font-weight:bold; letter-spacing:2px;">THE NEUTRAL CHAMPION</span>
-                <div style="font-size:2.8rem; font-weight:900; margin:5px 0; color:#fff; line-height:1.1;">${winner.name}</div>
-                <p style="color:var(--brand-orange); font-size:0.7rem; font-family:var(--font-tech); text-transform:uppercase;">${reason}</p>
-                <p style="color:#eee; font-size:1.1rem; margin-top:5px;">₹${winner.price}</p>
-            </div>`; 
-        
-        // Log to Google Sheet
-        fetch(BACKEND_URL, {
-            method: 'POST',
-            body: JSON.stringify({ event: "WINNER_FOUND", item: winner.name, session_id: ENGINE_STATE.sessionID })
-        });
-
-        const u = new SpeechSynthesisUtterance(`The winner is ${winner.name}.`);
-        window.speechSynthesis.speak(u);
-    }
-
-    // --- CLOUD DB SYNC ---
+    // --- CORE LOGIC ---
     async function syncDatabase() {
         showToast("SYNCING DB...");
         try {
-            const response = await fetch(`${BACKEND_URL}?type=local`);
-            const data = await response.json();
-            
+            const res = await fetch(`${BACKEND_URL}?type=local`);
+            const data = await res.json();
             PHONE_DB = {}; AUDIO_DB = {};
-
             data.forEach(item => {
                 const entry = {
-                    attr: { cam: Number(item.cam)||0, gam: Number(item.gam)||0, bat: Number(item.bat)||0, ui: Number(item.ui)||0, dis: Number(item.dis)||0, srv: Number(item.srv)||0, thm: Number(item.thm)||0, dur: Number(item.dur)||0 },
-                    tags: item.tags ? item.tags.split(',').map(t => t.trim()) : [],
-                    price: Number(item.price)||0, mrp: Number(item.mrp)||0
+                    attr: { cam:item.cam||0, gam:item.gam||0, bat:item.bat||0, ui:item.ui||0, dis:item.dis||0 },
+                    price: item.price, mrp: item.mrp, tags: item.tags ? item.tags.split(',') : []
                 };
-                if (item.category === 'smartphones') PHONE_DB[item.Name] = entry;
-                if (item.category === 'earbuds') AUDIO_DB[item.Name] = entry;
+                if(item.category === 'smartphones') PHONE_DB[item.Name] = entry;
+                else AUDIO_DB[item.Name] = entry;
             });
-
             MODULES.smartphones.database = PHONE_DB;
             MODULES.earbuds.database = AUDIO_DB;
             showToast("DB LIVE ✅");
-        } catch (e) { showToast("LOCAL MODE"); }
+        } catch(e) { showToast("SYNC ERROR"); }
     }
 
-    // --- LOGIC ENGINE ---
     function calculateVerdict() {
-        const activeModule = MODULES[ENGINE_STATE.currentDomain];
-        if(!activeModule || !activeModule.database) return {name: "Ready", price: "---"};
-        
-        let DB = activeModule.database; 
+        const db = MODULES[ENGINE_STATE.currentDomain].database;
         let candidates = [];
-        const bannedTags = ENGINE_STATE.active_filters.map(f => DEAL_BREAKERS[f.toUpperCase()]).filter(Boolean);
-
-        for (let name in DB) {
-            let item = DB[name]; 
-            if(item.tags?.some(t => bannedTags.includes(t))) continue;
-
+        for (let name in db) {
+            let item = db[name];
             let score = 0;
-            if(ENGINE_STATE.ecosystem === 'specs') score += 2;
-            for(let attr in item.attr) { 
-                let w = ENGINE_STATE.session_weights[attr] || 0.1; 
-                score += item.attr[attr] * w; 
-            }
+            for(let a in item.attr) score += item.attr[a] * (ENGINE_STATE.session_weights[a] || 0.1);
             if(ENGINE_STATE.items_detected[name]) score += 10;
-            candidates.push({name, score, price: item.price, mrp: item.mrp, specs: item.attr});
+            candidates.push({name, score, price: item.price});
         }
-        
-        candidates.sort((a, b) => b.score - a.score); 
-        const winner = candidates[0] || {name: "No Match", price: 0};
-        
-        ENGINE_STATE.DECISION_LOG = { winner, priorities: ENGINE_STATE.active_filters, timestamp: new Date().toISOString() };
-        return winner;
+        candidates.sort((a,b) => b.score - a.score);
+        return candidates[0] || {name: "No Match", price: 0};
     }
 
-    // --- BOOT ---
-    function boot() { 
-        ENGINE_STATE.sessionID = "SID-" + Math.random().toString(36).substr(2, 4).toUpperCase();
-        updateStatus(navigator.onLine);
-        syncDatabase();
-        showTutorial();
-        renderLobby();
-        initSwipeSystem(); 
-    }
-
-    // --- UI HELPERS ---
+    // --- UI RENDERERS ---
     function renderLobby() {
         const container = document.getElementById('master-container');
         container.innerHTML = `<section class="main-slide active">
@@ -500,11 +143,9 @@
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')"><div class="grid-icon">📱</div><div class="grid-label">PHONES</div><div class="grid-status">NEUTRAL</div></div>
                 <div class="grid-btn" onclick="loadDomain('earbuds')"><div class="grid-icon">🎧</div><div class="grid-label">AUDIO</div><div class="grid-status">LIVE DB</div></div>
-                <div class="grid-btn" onclick="loadDomain('research')"><div class="grid-icon">🧠</div><div class="grid-label">RESEARCH</div><div class="grid-status">ONDC+</div></div>
-                <div class="grid-btn" onclick="loadDomain('trivia')"><div class="grid-icon">🧩</div><div class="grid-label">TRIVIA</div><div class="grid-status">LOGIC</div></div>
-                <div class="grid-btn full-width-btn" onclick="loadDomain('review')"><div class="grid-icon">▶</div><div class="grid-label">ENGINE REVIEW ↗</div></div>
             </div></section>`;
         slideElements = [container.firstChild];
+        currentIdx = 0;
     }
 
     function loadDomain(key) {
@@ -516,35 +157,94 @@
         MODULES[key].init();
     }
 
-    function addGlobalExit() {
-        if(document.getElementById('global-exit')) return;
-        let exitBtn = document.createElement('button');
-        exitBtn.id = 'global-exit'; exitBtn.className = 'exit-btn'; exitBtn.innerText = 'EXIT';
-        exitBtn.onclick = () => renderLobby();
-        exitBtn.style.position = 'fixed'; exitBtn.style.top = '20px'; exitBtn.style.right = '20px'; exitBtn.style.zIndex = '5000';
-        document.body.appendChild(exitBtn);
+    function renderEcosystemGate() {
+        const section = document.createElement('section'); section.className = "main-slide next";
+        section.innerHTML = `<div class="slide-header"><span class="header-title">PHILOSOPHY</span></div>
+            <div class="lobby-container"><h1>WHAT MATTERS?</h1>
+            <button class="cuisine-btn" onclick="ENGINE_STATE.ecosystem='specs'; renderSubLobby('smartphones')">🚀 PURE SPECS</button>
+            <button class="cuisine-btn" style="margin-top:10px" onclick="ENGINE_STATE.ecosystem='peace'; renderSubLobby('smartphones')">🛡️ PEACE OF MIND</button>
+            </div>`;
+        document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(1);
     }
 
+    function renderSubLobby(domain) {
+        const section = document.createElement('section'); section.className = "main-slide next";
+        let html = `<div class="slide-header"><span class="header-title">FILTER</span></div><div class="lobby-container"><h1>PRIORITIES</h1>`;
+        MODULES[domain].categories.forEach((cat, i) => {
+            html += `<button class="cuisine-btn" id="f-${i}" onclick="toggleFilter('${cat.label}', 'f-${i}')">${cat.label}</button>`;
+        });
+        html += `<button class="btn btn-primary" style="margin-top:20px" onclick="startHunt()">HUNT &rarr;</button></div>`;
+        section.innerHTML = html; document.getElementById('master-container').appendChild(section); slideElements.push(section); goToSlide(slideElements.length-1);
+    }
+
+    function toggleFilter(label, id) {
+        const btn = document.getElementById(id);
+        if(ENGINE_STATE.active_filters.includes(label)) { ENGINE_STATE.active_filters = ENGINE_STATE.active_filters.filter(x=>x!==label); btn.classList.remove('selected'); }
+        else { ENGINE_STATE.active_filters.push(label); btn.classList.add('selected'); }
+    }
+
+    function startHunt() {
+        ENGINE_STATE.session_weights = { cam:0.5, gam:0.5, bat:0.5, ui:0.5, dis:0.5 };
+        buildDeck();
+    }
+
+    function buildDeck() {
+        const container = document.getElementById('master-container');
+        const db = MODULES[ENGINE_STATE.currentDomain].database;
+        Object.keys(db).slice(0, 5).forEach(name => {
+            const el = document.createElement('section'); el.className = "main-slide next";
+            el.innerHTML = `<div class="slide-header"><span class="header-title">PROPOSAL</span></div>
+                <div class="carousel-viewport"><div class="sub-slide opt-active" data-val="${name}">
+                <div class="role-label">NEUTRAL OPTION</div><h1>${name}</h1>
+                <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
+                </div></div>`;
+            container.appendChild(el); slideElements.push(el);
+        });
+        const final = document.createElement('section'); final.className = "main-slide next";
+        final.innerHTML = `<video class="video-bg" autoplay loop muted playsinline><source src="${WINNER_VIDEO}"></video>
+            <div class="winner-container"><div id="final-list"></div><button class="btn btn-primary" onclick="window.open('https://amazon.in')">CHECK PRICE ↗</button></div>`;
+        container.appendChild(final); slideElements.push(final); goToSlide(currentIdx+1);
+    }
+
+    function updateFinal() {
+        const winner = calculateVerdict();
+        document.getElementById('final-list').innerHTML = `<div><span style="color:var(--accent-go)">THE NEUTRAL CHAMPION</span><h1 style="font-size:2.8rem">${winner.name}</h1><p>₹${winner.price}</p></div>`;
+    }
+
+    // --- UTILS ---
     function goToSlide(idx) {
-        if(idx < 0 || idx >= slideElements.length) return;
         slideElements[currentIdx].classList.replace('active', idx > currentIdx ? 'prev' : 'next');
-        currentIdx = idx;
-        slideElements[currentIdx].className = "main-slide active";
+        currentIdx = idx; slideElements[currentIdx].className = "main-slide active";
         if(slideElements[currentIdx].querySelector('#final-list')) updateFinal();
     }
 
-    function showToast(m) { 
-        const t = document.getElementById('toast'); t.innerText = m; t.classList.add('visible'); 
-        setTimeout(() => t.classList.remove('visible'), 2000); 
+    function addGlobalExit() {
+        if(document.getElementById('global-exit')) return;
+        const b = document.createElement('button'); b.id='global-exit'; b.className='exit-btn'; b.innerText='EXIT';
+        b.onclick=()=>renderLobby(); b.style.position='fixed'; b.style.top='20px'; b.style.right='20px'; b.style.zIndex='5000';
+        document.body.appendChild(b);
     }
 
-    function updateStatus(isOnline) {
-        const dot = document.querySelector('.status-dot');
-        if(dot) isOnline ? dot.classList.remove('offline') : dot.classList.add('offline');
+    function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2000); }
+    function updateStatus(is) { const d = document.querySelector('.status-dot'); if(d) is ? d.classList.remove('offline') : d.classList.add('offline'); }
+
+    let tsY = 0;
+    function initSwipeSystem() {
+        document.addEventListener('touchstart', e => tsY = e.touches[0].clientY);
+        document.addEventListener('touchend', e => {
+            const dy = e.changedTouches[0].clientY - tsY;
+            const view = e.target.closest('.main-slide.active .carousel-viewport');
+            if(!view) return;
+            const active = view.querySelector('.sub-slide.opt-active');
+            if(dy < -60 && active.dataset.val) { ENGINE_STATE.items_detected[active.dataset.val] = true; goToSlide(currentIdx + 1); }
+            else if(dy > 60) goToSlide(currentIdx - 1);
+        });
     }
 
-    // Reuse other original functions: renderSubLobby, toggleFilter, buildDeck, initSwipeSystem, etc.
-    // [Keeping structure consistent with your base v82]
+    function boot() { 
+        ENGINE_STATE.sessionID = "SID-" + Math.random().toString(36).substr(2,4).toUpperCase();
+        syncDatabase(); renderLobby(); initSwipeSystem(); 
+    }
 
     boot();
 </script>
