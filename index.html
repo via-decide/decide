@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v85.1 (Desktop Ready)</title>
+    <title>Decide Engine | OS v85.2 (Stable)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,14 +14,14 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v85.1
+           CORE SYSTEM | DECIDE OS v85.2
            ========================================= */
         :root {
             --brand-orange: #ff671f;
             --brand-gold: #ffb700;
             --brand-dark: #050505;
-            --glass-surface: rgba(20, 20, 20, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-surface: rgba(20, 20, 20, 0.85); /* Slightly darker for readability */
+            --glass-border: rgba(255, 255, 255, 0.15);
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
             --accent-go: #00e676; 
@@ -37,9 +36,10 @@
             background-color: var(--brand-dark);
             color: var(--text-main);
             font-family: var(--font-ui);
-            overflow: hidden; /* App-like feel maintained, Wheel enabled via JS */
+            overflow: hidden;
+            touch-action: none; user-select: none;
             -webkit-font-smoothing: antialiased;
-            cursor: default; /* Desktop cursor */
+            cursor: default;
         }
 
         /* 🌌 BACKGROUND */
@@ -76,7 +76,7 @@
             padding: 0 24px; height: 70px;
             display: flex; align-items: center; justify-content: space-between;
             position: absolute; top: 0; left: 0; right: 0; z-index: 100;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
             pointer-events: none;
         }
         .slide-header > * { pointer-events: auto; }
@@ -117,9 +117,9 @@
             aspect-ratio: 1.15; transition: all 0.2s; cursor: pointer;
             backdrop-filter: blur(10px);
         }
-        .grid-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.08); }
-        /* Add hover effect for desktop */
-        .grid-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.3); }
+        .grid-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+        .grid-btn:active { transform: scale(0.96); }
+        
         .grid-icon { font-size: 1.8rem; margin-bottom: 5px; }
         .grid-label { font-family: var(--font-ui); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px; color: #fff; text-align: center; }
         .grid-status { font-family: var(--font-tech); font-size: 0.6rem; color: var(--accent-go); text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
@@ -140,23 +140,24 @@
             opacity: 0; pointer-events: none; 
             transform: translateY(20px) scale(0.95);
             transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            /* Improve clickability on desktop */
             cursor: pointer;
         }
         .sub-slide.opt-active, .sub-slide.static { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); z-index: 30; }
 
         h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        /* SELECTION & SCROLL FIXES */
         .wiki-summary { 
             font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
             font-weight: 400; max-height: 300px; overflow-y: auto; 
-            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
             touch-action: pan-y; 
             cursor: text;
+            user-select: text; /* Allow selection */
+            -webkit-user-select: text;
         }
-        /* Custom Scrollbar for wiki */
         .wiki-summary::-webkit-scrollbar { width: 6px; }
-        .wiki-summary::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        .wiki-summary::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
         
         .role-label { font-family: var(--font-tech); font-size: 0.65rem; color: var(--brand-orange); margin-bottom: 15px; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
         .role-label::before { content: ''; width: 8px; height: 8px; background: var(--brand-orange); border-radius: 50%; box-shadow: 0 0 10px var(--brand-orange); }
@@ -164,6 +165,7 @@
         .cuisine-btn { background: rgba(20,20,20,0.6); border: 1px solid var(--glass-border); color: #888; padding: 20px; font-size: 1rem; font-weight: 600; text-transform: uppercase; border-radius: 12px; transition: all 0.3s; flex-shrink: 0; font-family: var(--font-ui); text-align: center; cursor: pointer; }
         .cuisine-btn:hover { background: rgba(255,255,255,0.1); }
         .cuisine-btn.selected { background: rgba(255, 103, 31, 0.15); color: var(--brand-orange); border-color: var(--brand-orange); }
+        
         .btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: all 0.2s; font-family: var(--font-ui); }
         .btn:hover { background: rgba(255,255,255,0.15); }
         .btn-primary { background: var(--brand-orange); color: #000; border: none; font-weight: 800; }
@@ -241,7 +243,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v85.1 (DESKTOP HYBRID)
+       KUTCH AUTOMATION | v85.2 (STABLE & FLUID)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
@@ -286,7 +288,7 @@
         "COLD WAR": { title: "The Cold War", summary: "A period of geopolitical tension between the Soviet Union and the United States.", links: ["Nuclear Arms Race", "Space Race", "Berlin Wall", "Cuban Missile Crisis", "Espionage"] },
         "THE RENAISSANCE": { title: "The Renaissance", summary: "A fervent period of European cultural, artistic, political and economic rebirth.", links: ["Da Vinci", "Humanism", "Medici Family", "Printing Press", "Galileo"] },
         "VIKINGS": { title: "Vikings", summary: "Norse seafarers who raided, traded, and settled in wide areas of Europe.", links: ["Longships", "Norse Mythology", "Ragnar Lothbrok", "Valhalla", "Lindisfarne"] },
-        "MONGOL EMPIRE": { title: "Mongol Empire", summary: "The largest contiguous land empire in history.", links: ["Genghis Khan", "Silk Road Safety", "Horse Archery", "Pax Mongolica", "Kublai Khan"] },
+        "MONGOL EMPIRE": { title: "Mongol Empire", summary: "The largest contiguous land empire in history. Originating in Mongolia in East Asia.", links: ["Genghis Khan", "Silk Road Safety", "Horse Archery", "Pax Mongolica", "Kublai Khan"] },
         "BLACK DEATH": { title: "The Black Death", summary: "A bubonic plague pandemic occurring in Western Eurasia and North Africa.", links: ["Yersinia Pestis", "Plague Doctor", "Feudalism Decline", "Quarantine", "Danse Macabre"] },
         "ANCIENT EGYPT": { title: "Ancient Egypt", summary: "A civilization of ancient North Africa.", links: ["Pyramids", "Pharaohs", "Hieroglyphs", "Mummification", "Cleopatra"] },
         "SAMURAI": { title: "Samurai", summary: "The hereditary military nobility and officer caste of medieval Japan.", links: ["Bushido", "Katana", "Shogunate", "Ronin", "Seppuku"] },
@@ -457,7 +459,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v85.1 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v85.2 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -881,6 +883,13 @@
         }, {passive: true});
 
         document.addEventListener('touchend', e => {
+            // Scroll Guard for mobile
+            const scrollable = e.target.closest('.wiki-summary');
+            if(scrollable) {
+                 // Simple logic: if inside text, don't swipe nav unless explicitly handled
+                 // For now, let's just allow scrolling and block swipe nav on text
+                 return;
+            }
             handleInput(e.changedTouches[0].clientY, e.target);
         });
 
@@ -891,35 +900,42 @@
         });
 
         document.addEventListener('mouseup', e => {
-            // Only trigger if it was a drag, not a click
-            if(Math.abs(e.clientY - tsY) > 20) {
+            // 1. Text Selection Guard (The Fix)
+            if (window.getSelection().toString().length > 0) return;
+
+            // 2. Drag Distance Check
+            if (Math.abs(e.clientY - tsY) > 30) {
                 handleInput(e.clientY, e.target);
             }
         });
 
         // Mouse Wheel (Desktop Scroll)
         document.addEventListener('wheel', e => {
-            if(Date.now() - lastWheelTime < 800) return; // Cooldown to prevent rapid skipping
+            // Smart Scroll Logic
+            const summary = e.target.closest('.wiki-summary');
+            if (summary) {
+                const atTop = summary.scrollTop <= 0;
+                const atBottom = Math.abs(summary.scrollHeight - summary.clientHeight - summary.scrollTop) <= 1;
+
+                if (e.deltaY < 0 && !atTop) return; // Scroll Up inside text
+                if (e.deltaY > 0 && !atBottom) return; // Scroll Down inside text
+            }
+
+            // Debounce for Slide Navigation
+            if (Date.now() - lastWheelTime < 500) return;
             lastWheelTime = Date.now();
             
-            if(e.target.closest('.wiki-summary')) return; // Allow normal scroll in text areas
-
-            if (e.deltaY > 0) {
-                // Wheel Down -> Next Slide (Simulate Swipe Up)
-                triggerAction('next', e.target);
-            } else {
-                // Wheel Up -> Prev Slide (Simulate Swipe Down)
-                triggerAction('prev', e.target);
-            }
-        });
+            if (e.deltaY > 0) triggerAction('next', e.target);
+            else triggerAction('prev', e.target);
+        }, {passive: false});
     }
 
     function handleInput(endY, target) {
-        if(target.closest('.wiki-summary')) return; // Scroll guard
+        if(target.closest('.wiki-summary')) return; // Extra safety
 
         const dy = endY - tsY;
-        if (dy < -60) triggerAction('next', target); // Swipe Up
-        if (dy > 60) triggerAction('prev', target);  // Swipe Down
+        if (dy < -60) triggerAction('next', target);
+        if (dy > 60) triggerAction('prev', target);
     }
 
     function triggerAction(direction, target) {
@@ -929,7 +945,6 @@
         const active = view.querySelector('.sub-slide.opt-active') || view.querySelector('.sub-slide.static');
 
         if(direction === 'next') {
-            // "Swipe Up" Logic (Go Deeper / Next)
             if(active.classList.contains('static')) {
                 active.classList.remove('static'); active.classList.add('opt-hidden');
                 view.querySelector('.sub-slide:nth-child(2)').classList.add('opt-active');
@@ -949,7 +964,6 @@
                 }
             }
         } else {
-            // "Swipe Down" Logic (Go Back)
             if(ENGINE_STATE.currentDomain === 'research' && ENGINE_STATE.researchPath.length > 1) {
                 ENGINE_STATE.researchPath.pop(); 
                 buildResearchDeck(ENGINE_STATE.researchPath[ENGINE_STATE.researchPath.length-1]);
