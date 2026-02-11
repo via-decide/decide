@@ -257,44 +257,48 @@ NARRATION:
 
 /* --- 4. YOUTUBE POST GENERATOR --- */
 btnYt.onclick = () => {
-  if (!ALL_NODES.length) return alert("Generate script first");
+  if (!SCRIPT_TEXTS.length) {
+    alert("Generate script first");
+    return;
+  }
 
-  const topic = inferTopic(ALL_NODES);
-  const bullets = inferBullets(ALL_NODES);
+  const meta = buildYouTubeMeta(SCRIPT_TEXTS, SESSION_ID);
 
   const ytPost = `
-TITLE:
-${topic.main}
+${meta.title}
 
-ALT TITLES:
-${topic.alt.join('\n')}
+Alt A/B titles (use later if needed):
+
+${meta.altTitles.join('\n')}
 
 ---
 
-DESCRIPTION:
+📝 YouTube Description
 
-${topic.hook}
+${meta.hook}
 
 In this video, we break down:
 
-${bullets.map(b => `• ${b}`).join('\n')}
+${meta.bullets.map(b => `• ${b}`).join('\n')}
 
-This video was generated using a research-driven studio engine that converts
-multi-source documents into a scene-based visual narrative.
+This video was generated using a research-driven studio engine,
+converting multiple scientific sources into a structured,
+scene-based visual script.
 
 ---
 
 🔗 Explore the Engine Behind This Video
 
 🧠 Interactive Research Engine  
-https://viadecide.com/
+👉 https://viadecide.com/
 
 🎬 Engine Walkthrough & Updates  
-https://www.youtube.com/@decide.engine
+👉 https://www.youtube.com/@decide.engine
 
 📄 Research → Script → Video Pipeline  
+
 Session ID: ${SESSION_ID}  
-Multi-PDF merged research  
+Multi-source merged research  
 Scene-timed narration system  
 
 ---
@@ -303,30 +307,20 @@ Scene-timed narration system
 
 Wikipedia + scientific context extraction  
 Multi-PDF merge into a single narrative  
-Scene timing + voice pacing calibration  
-Converted into a studio-ready script  
+Narrative pacing + voice calibration  
+Converted into a studio-ready explainer script  
 
 This is not animation-first content.  
 This is thinking-first video.
 
 ---
 
-PINNED COMMENT:
+📌 Pinned Comment
 
-This video was built using a research → script → video engine.
-
-🧠 Try the interactive engine  
-https://viadecide.com/
-
-🎬 See how these videos are generated  
-https://www.youtube.com/@decide.engine
-
-📄 Research Session ID: ${SESSION_ID}
-
-Reply "${topic.cta}" if you want more like this.
+${meta.pinned}
 `;
 
-  renderUIBlock(ytPost, -1); // -1 marks special block
+  renderUIBlock(ytPost, -1);
 };
 
 /* --- HELPERS --- */
