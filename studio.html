@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MEDIA FORGE | Studio v4.5 (JSON Engine)</title>
+<title>MEDIA FORGE | Studio v4.6 (YouTube Engine)</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -86,7 +87,7 @@ button:active { transform: scale(0.98); }
 
 <div class="card">
   <div class="header">
-    <strong>⚗️ MEDIA FORGE STUDIO v4.5</strong>
+    <strong>⚗️ MEDIA FORGE STUDIO v4.6</strong>
     <span id="system-status">System Ready</span>
   </div>
 
@@ -180,7 +181,7 @@ btnLoadJson.onclick = () => {
             alert("Invalid JSON Format (Must be Array)");
         }
     } catch(e) {
-        alert("JSON Parse Error");
+        alert("JSON Parse Error: Ensure you copied the full array.");
     }
 };
 
@@ -226,18 +227,22 @@ btnGen.onclick = () => {
 
   if(ALL_NODES.length === 0) return alert("No data loaded!");
 
+  // Use raw nodes if clustering is too complex for now, or implement simple one
   ALL_NODES.forEach((n, i) => {
     const words = n.body.split(/\s+/).length;
     const seconds = Math.min(60, Math.max(15, Math.round(words / 2.5))); 
     totalTime += seconds;
+    const pace = Math.round((words / seconds) * 60);
 
     const scriptBlock = 
-`SCENE ${i+1} [${n.title || 'RESEARCH'}]
+`SCENE ${i+1}: ${n.title || 'RESEARCH NODE'}
 SOURCE: ${n.source}
-TIMING: ${seconds}s Est.
+DURATION: ${seconds}s
+VOICE PACE: ${pace} WPM
 
 VISUAL CUE:
 Minimalist kinetic type, dark background, green accent.
+Slow camera push. No stock footage.
 
 NARRATION:
 "${trim(n.body, 400)}"
@@ -247,58 +252,56 @@ NARRATION:
     renderUIBlock(scriptBlock, i);
   });
 
+  // Enable Export Buttons
   btnPdfScript.classList.add('ready');
   btnPdfScript.disabled = false;
-  btnYt.disabled = false;
+  
   btnYt.classList.add('ready'); // Red button active
+  btnYt.disabled = false;
   
   status.textContent = `Generated ${SCRIPT_TEXTS.length} scenes. Runtime: ~${Math.round(totalTime/60)}m.`;
 };
 
 /* --- 4. YOUTUBE POST GENERATOR --- */
 btnYt.onclick = () => {
-  if (!SCRIPT_TEXTS.length) {
-    alert("Generate script first");
-    return;
-  }
+  if (!ALL_NODES.length) return alert("Generate script first");
 
-  const meta = buildYouTubeMeta(SCRIPT_TEXTS, SESSION_ID);
+  const topic = inferTopic(ALL_NODES);
+  const bullets = inferBullets(ALL_NODES);
 
   const ytPost = `
-${meta.title}
+TITLE:
+${topic.main}
 
-Alt A/B titles (use later if needed):
-
-${meta.altTitles.join('\n')}
+ALT TITLES:
+${topic.alt.join('\n')}
 
 ---
 
-📝 YouTube Description
+DESCRIPTION:
 
-${meta.hook}
+${topic.hook}
 
 In this video, we break down:
 
-${meta.bullets.map(b => `• ${b}`).join('\n')}
+${bullets.map(b => `• ${b}`).join('\n')}
 
-This video was generated using a research-driven studio engine,
-converting multiple scientific sources into a structured,
-scene-based visual script.
+This video was generated using a research-driven studio engine that converts
+multi-source documents into a scene-based visual narrative.
 
 ---
 
 🔗 Explore the Engine Behind This Video
 
 🧠 Interactive Research Engine  
-👉 https://viadecide.com/
+https://viadecide.com/
 
 🎬 Engine Walkthrough & Updates  
-👉 https://www.youtube.com/@decide.engine
+https://www.youtube.com/@decide.engine
 
 📄 Research → Script → Video Pipeline  
-
 Session ID: ${SESSION_ID}  
-Multi-source merged research  
+Multi-PDF merged research  
 Scene-timed narration system  
 
 ---
@@ -307,20 +310,30 @@ Scene-timed narration system
 
 Wikipedia + scientific context extraction  
 Multi-PDF merge into a single narrative  
-Narrative pacing + voice calibration  
-Converted into a studio-ready explainer script  
+Scene timing + voice pacing calibration  
+Converted into a studio-ready script  
 
 This is not animation-first content.  
 This is thinking-first video.
 
 ---
 
-📌 Pinned Comment
+PINNED COMMENT:
 
-${meta.pinned}
+This video was built using a research → script → video engine.
+
+🧠 Try the interactive engine  
+https://viadecide.com/
+
+🎬 See how these videos are generated  
+https://www.youtube.com/@decide.engine
+
+📄 Research Session ID: ${SESSION_ID}
+
+Reply "${topic.cta}" if you want more like this.
 `;
 
-  renderUIBlock(ytPost, -1);
+  renderUIBlock(ytPost, -1); // -1 marks special block
 };
 
 /* --- HELPERS --- */
@@ -330,37 +343,51 @@ function inferTopic(nodes){
   if (text.includes('sun') || text.includes('fusion')) {
     return {
       main: "What Actually Happens Inside the Sun? (Fusion, Flares & Solar Storms Explained)",
-      alt: ["The Sun Is Not What You Think", "Inside the Sun: Physics Powering Solar System"],
-      hook: "The Sun is not just a glowing ball in the sky. It is a self-regulating nuclear engine.",
+      alt: [
+        "The Sun Is Not What You Think",
+        "Inside the Sun: Physics Powering Solar System"
+      ],
+      hook: "The Sun is not just a glowing ball in the sky.\nIt is a self-regulating nuclear engine driven by fusion, magnetic chaos, and plasma storms powerful enough to affect Earth.",
       cta: "SUN"
     };
   }
+  
   if (text.includes('system') || text.includes('feedback')) {
-    return {
-      main: "Systems Thinking: How Everything is Connected",
-      alt: ["Why Feedback Loops Rule the World", "Cybernetics Explained"],
-      hook: "From biology to economics, the same hidden laws govern everything.",
-      cta: "SYSTEMS"
-    };
+      return {
+          main: "Systems Thinking: The Hidden Code of Reality",
+          alt: ["Why Feedback Loops Rule Everything", "Cybernetics: The Science of Control"],
+          hook: "From biology to economics, hidden feedback loops govern our world. Understanding them is the key to predicting the future.",
+          cta: "SYSTEMS"
+      };
   }
 
   return {
-    main: "Deep Dive Research Analysis",
-    alt: ["Explaining Complex Topics", "Visual Research Breakdown"],
-    hook: "Breaking down complex systems using structured research data.",
+    main: "Inside a System You Think You Understand",
+    alt: ["Deep Dive Research Analysis", "Visual Research Breakdown"],
+    hook: "This video breaks down a complex system using structured research, revealing the hidden mechanics underneath.",
     cta: "MORE"
   };
 }
 
 function inferBullets(nodes){
-  const keywords = ["fusion", "sunspots", "flare", "wind", "magnetic", "feedback", "cybernetics", "agent", "simulation"];
+  const keywords = [
+    "fusion", "sunspots", "flare", "wind", "magnetic", 
+    "feedback", "cybernetics", "agent", "simulation", "entropy",
+    "black hole", "gravity", "quantum"
+  ];
+
   const found = new Set();
   nodes.forEach(n => {
     keywords.forEach(k => {
       if (n.body && n.body.toLowerCase().includes(k)) found.add(k);
     });
   });
-  return [...found].map(k => "Understanding " + k.toUpperCase());
+
+  if(found.size === 0) return ["Key Research Insights", "Critical Analysis", "Visual Breakdown"];
+
+  return [...found].map(k =>
+    "How " + k.replace(/^\w/, c => c.toUpperCase()) + " works"
+  );
 }
 
 function renderUIBlock(text, idx){
@@ -381,7 +408,8 @@ function copyToClip(text) {
 }
 
 function trim(str, n) {
-    return (str && str.length > n) ? str.substr(0, n-1) + '...' : str;
+    if(!str) return "";
+    return (str.length > n) ? str.substr(0, n-1) + '...' : str;
 }
 
 /* --- EXPORTS --- */
@@ -391,68 +419,26 @@ btnJson.onclick = () => {
     alert("JSON Payload Copied!");
 };
 
-btnGen.onclick = () => {
-  out.innerHTML = '';
-  SCRIPT_TEXTS = [];
-  let totalTime = 0;
+btnPdfScript.onclick = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFont("courier", "bold");
+    doc.setFontSize(16);
+    doc.text("MEDIA FORGE // STUDIO SCRIPT", 20, 20);
+    doc.setFontSize(10);
+    doc.setFont("courier", "normal");
+    
+    let y = 30;
+    SCRIPT_TEXTS.forEach((txt, i) => {
+        if(y > 250) { doc.addPage(); y = 20; }
+        doc.text(`--- SCENE ${i+1} ---`, 20, y); y += 7;
+        const lines = doc.splitTextToSize(txt, 170);
+        doc.text(lines, 20, y);
+        y += (lines.length * 5) + 10;
+    });
+    doc.save("Studio_Script_Output.pdf");
+};
 
-  if (ALL_NODES.length === 0) {
-    alert("No data loaded!");
-    return;
-  }
-
-  // 1. Normalize & cluster nodes
-  const clusters = buildNarrativeClusters(ALL_NODES);
-
-  // 2. Build scenes from clusters
-  clusters.forEach((cluster, i) => {
-    const body = cluster.text;
-    const words = body.split(/\s+/).length;
-
-    // Narrative pacing (slower, explainer-grade)
-    const seconds = clamp(Math.round(words / 2.2), 25, 55);
-    const pace = Math.round((words / seconds) * 60);
-    totalTime += seconds;
-
-    const script =
-`SCENE ${i + 1}: ${cluster.title}
-ROLE: ${cluster.role}
-DURATION: ${seconds}s
-VOICE PACE: ${pace} WPM
-
-VISUAL DIRECTION:
-Dark studio background
-Minimal kinetic typography
-One concept per screen
-Slow camera push, no stock footage
-
-NARRATION:
-${body}
-`;
-
-    SCRIPT_TEXTS.push(script);
-    renderUIBlock(script, i);
-  });
-
-  renderUIBlock(
-`STRUCTURE SUMMARY
-Scenes: ${SCRIPT_TEXTS.length}
-Estimated Runtime: ~${Math.round(totalTime / 60)} minutes
-
-This script is optimized for:
-• Explainer videos
-• Knowledge retention
-• Canva / NotebookLM narration
-`,
--2);
-
-  btnPdfScript.classList.add('ready');
-  btnPdfScript.disabled = false;
-  btnYt.classList.add('ready');
-  btnYt.disabled = false;
-
-  status.textContent =
-    `Narrative script generated (${SCRIPT_TEXTS.length} scenes, ~${Math.round(totalTime / 60)} min).`;
-};</script>
+</script>
 </body>
 </html>
