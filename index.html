@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v84.0 (Deep)</title>
+    <title>Decide Engine | OS v84.5 (Bridge)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,7 +14,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v84.0
+           CORE SYSTEM | DECIDE OS v84.5
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -228,9 +228,10 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v84.0 (DEEP DATA)
+       KUTCH AUTOMATION | v84.5 (STUDIO BRIDGE)
        ========================================= */
     
+    // --- CONFIG & CONSTANTS ---
     const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxxh1ZwNRwqsSW1Lf62eh2wiwaNKzHWX8Icq472NQVj7-yEvOYuTDuiEGmelW_DG2Zs/exec"; 
     const PHONE_REVIEW_URL = "https://youtu.be/W28-2z9IZbA?si=nJDuPcmTsaUcao9d";
     const AUDIO_REVIEW_URL = "https://youtu.be/ceuEz96MMEY";
@@ -249,25 +250,25 @@
     // 🧠 50 TOPICS KNOWLEDGE BASE
     const CURATED_PATHS = {
         // --- COSMOLOGY ---
-        "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe.", links: ["Cosmic Inflation", "Nucleosynthesis", "CMB Radiation", "Hubble's Law", "The Singularity"] },
-        "BLACK HOLES": { title: "Black Holes", summary: "A region of spacetime where gravity is so strong that nothing can escape from it.", links: ["Event Horizon", "Singularity", "Hawking Radiation", "Spaghettification", "Supermassive Black Holes"] },
-        "DARK MATTER": { title: "Dark Matter", summary: "A hypothetical form of matter thought to account for approximately 85% of the matter in the universe.", links: ["Gravitational Lensing", "Galaxy Rotation Curves", "WIMPs", "Cosmic Web", "Dark Energy"] },
-        "FERMI PARADOX": { title: "The Fermi Paradox", summary: "The contradiction between the lack of evidence for extraterrestrial civilizations and high probability estimates.", links: ["Great Filter", "Drake Equation", "Zoo Hypothesis", "Von Neumann Probes", "Rare Earth Hypothesis"] },
-        "NEUTRON STARS": { title: "Neutron Stars", summary: "The collapsed core of a massive supergiant star.", links: ["Pulsars", "Magnetars", "Supernova", "Degeneracy Pressure", "Kilonova"] },
-        "STRING THEORY": { title: "String Theory", summary: "Theoretical framework replacing point-like particles with one-dimensional objects called strings.", links: ["M-Theory", "Extra Dimensions", "Quantum Gravity", "Supersymmetry", "Branes"] },
-        "EXOPLANETS": { title: "Exoplanets", summary: "A planet outside the Solar System.", links: ["Goldilocks Zone", "Transit Method", "Hot Jupiters", "Super-Earths", "Biosignatures"] },
-        "THE MULTIVERSE": { title: "The Multiverse", summary: "A hypothetical group of multiple universes.", links: ["Bubble Universes", "Many-Worlds Theory", "Parallel Dimensions", "Cosmic Inflation", "Fine-Tuning"] },
-        "ENTROPY": { title: "Entropy", summary: "The eventual fate of the universe where it has diminished to a state of no thermodynamic free energy.", links: ["Second Law", "Thermodynamics", "Arrow of Time", "The Big Freeze", "Maxwell's Demon"] },
-        "DYSON SPHERES": { title: "Dyson Spheres", summary: "A hypothetical megastructure that completely encompasses a star.", links: ["Kardashev Scale", "Megastructures", "Technosignatures", "Matrioshka Brain", "Stellar Engines"] },
-        "GENERAL RELATIVITY": { title: "General Relativity", summary: "The geometric theory of gravitation published by Albert Einstein.", links: ["Spacetime Curvature", "Time Dilation", "Gravitational Waves", "Equivalence Principle", "Wormholes"] },
-        "THE SUN": { title: "The Sun", summary: "The star around which the earth orbits.", links: ["Nuclear Fusion", "Solar Flares", "Corona", "Sunspots", "Solar Wind"] },
+        "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.", links: ["Cosmic Inflation", "Nucleosynthesis", "CMB Radiation", "Hubble's Law", "The Singularity"] },
+        "BLACK HOLES": { title: "Black Holes", summary: "A region of spacetime where gravity is so strong that nothing—no particles or even electromagnetic radiation such as light—can escape from it.", links: ["Event Horizon", "Singularity", "Hawking Radiation", "Spaghettification", "Supermassive Black Holes"] },
+        "DARK MATTER": { title: "Dark Matter", summary: "A hypothetical form of matter thought to account for approximately 85% of the matter in the universe and about a quarter of its total energy density.", links: ["Gravitational Lensing", "Galaxy Rotation Curves", "WIMPs", "Cosmic Web", "Dark Energy"] },
+        "FERMI PARADOX": { title: "The Fermi Paradox", summary: "The apparent contradiction between the lack of evidence for extraterrestrial civilizations and various high estimates for their probability.", links: ["Great Filter", "Drake Equation", "Zoo Hypothesis", "Von Neumann Probes", "Rare Earth Hypothesis"] },
+        "NEUTRON STARS": { title: "Neutron Stars", summary: "The collapsed core of a massive supergiant star, which had a total mass of between 10 and 25 solar masses.", links: ["Pulsars", "Magnetars", "Supernova", "Degeneracy Pressure", "Kilonova"] },
+        "STRING THEORY": { title: "String Theory", summary: "A theoretical framework in which the point-like particles of particle physics are replaced by one-dimensional objects called strings.", links: ["M-Theory", "Extra Dimensions", "Quantum Gravity", "Supersymmetry", "Branes"] },
+        "EXOPLANETS": { title: "Exoplanets", summary: "A planet outside the Solar System. The first evidence of an exoplanet was noted in 1917, but was not recognized as such.", links: ["Goldilocks Zone", "Transit Method", "Hot Jupiters", "Super-Earths", "Biosignatures"] },
+        "THE MULTIVERSE": { title: "The Multiverse", summary: "A hypothetical group of multiple universes. Together, these universes comprise everything that exists.", links: ["Bubble Universes", "Many-Worlds Theory", "Parallel Dimensions", "Cosmic Inflation", "Fine-Tuning"] },
+        "ENTROPY": { title: "Entropy", summary: "The eventual fate of the universe where it has diminished to a state of no thermodynamic free energy and therefore can no longer sustain processes that increase entropy.", links: ["Second Law", "Thermodynamics", "Arrow of Time", "The Big Freeze", "Maxwell's Demon"] },
+        "DYSON SPHERES": { title: "Dyson Spheres", summary: "A hypothetical megastructure that completely encompasses a star and captures a large percentage of its solar power output.", links: ["Kardashev Scale", "Megastructures", "Technosignatures", "Matrioshka Brain", "Stellar Engines"] },
+        "GENERAL RELATIVITY": { title: "General Relativity", summary: "The geometric theory of gravitation published by Albert Einstein in 1915 and the current description of gravitation in modern physics.", links: ["Spacetime Curvature", "Time Dilation", "Gravitational Waves", "Equivalence Principle", "Wormholes"] },
+        "THE SUN": { title: "The Sun", summary: "The star around which the earth orbits. It is the dominant body of the solar system.", links: ["Nuclear Fusion", "Solar Flares", "Corona", "Sunspots", "Solar Wind"] },
         "ASTROBIOLOGY": { title: "Astrobiology", summary: "The study of the origin, evolution, distribution, and future of life in the universe.", links: ["Panspermia", "Extremophiles", "SETI", "Habitability", "Europa Clipper"] },
         "THE MOON": { title: "The Moon", summary: "Earth's only natural satellite.", links: ["Tidal Locking", "Lunar Mare", "Apollo Program", "Impact Theory", "Lunar Water"] },
         
         // --- HISTORY ---
-        "FALL OF ROME": { title: "Fall of Rome", summary: "The process of decline in the Western Roman Empire.", links: ["Visigoths", "Constantine", "Economic Inflation", "Military Decline", "Migration Period"] },
-        "SILK ROAD": { title: "The Silk Road", summary: "A network of trade routes connecting the East and West.", links: ["Marco Polo", "Spice Trade", "Cultural Exchange", "Han Dynasty", "Byzantine Empire"] },
-        "INDUSTRIAL REVOLUTION": { title: "Industrial Revolution", summary: "The transition to new manufacturing processes.", links: ["Steam Engine", "Urbanization", "Textile Industry", "Capitalism", "Labor Unions"] },
+        "FALL OF ROME": { title: "Fall of Rome", summary: "The process of decline in the Western Roman Empire in which the Empire failed to enforce its rule.", links: ["Visigoths", "Constantine", "Economic Inflation", "Military Decline", "Migration Period"] },
+        "SILK ROAD": { title: "The Silk Road", summary: "A network of trade routes connecting the East and West, central to economic interactions.", links: ["Marco Polo", "Spice Trade", "Cultural Exchange", "Han Dynasty", "Byzantine Empire"] },
+        "INDUSTRIAL REVOLUTION": { title: "Industrial Revolution", summary: "The transition to new manufacturing processes in Great Britain, continental Europe, and the United States.", links: ["Steam Engine", "Urbanization", "Textile Industry", "Capitalism", "Labor Unions"] },
         "FRENCH REVOLUTION": { title: "French Revolution", summary: "A period of radical political and societal change in France.", links: ["Napoleon", "Guillotine", "Reign of Terror", "Louis XVI", "Enlightenment"] },
         "COLD WAR": { title: "The Cold War", summary: "A period of geopolitical tension between the Soviet Union and the United States.", links: ["Nuclear Arms Race", "Space Race", "Berlin Wall", "Cuban Missile Crisis", "Espionage"] },
         "THE RENAISSANCE": { title: "The Renaissance", summary: "A fervent period of European cultural, artistic, political and economic rebirth.", links: ["Da Vinci", "Humanism", "Medici Family", "Printing Press", "Galileo"] },
@@ -385,7 +386,6 @@
         async getContext(title) {
             if(CURATED_PATHS[title.toUpperCase()]) {
                 const c = CURATED_PATHS[title.toUpperCase()];
-                // Adapt local format to engine format
                 return { title: c.title, summary: c.summary, links: c.links.map(l => ({name: l})) };
             }
             try {
@@ -420,6 +420,21 @@
         if(dot) isOnline ? dot.classList.remove('offline') : dot.classList.add('offline');
     }
 
+    // --- BACKEND LOGGER ---
+    function logToSheet(data) {
+        const formData = new URLSearchParams();
+        formData.append("type", "JSON_EXPORT");
+        formData.append("payload", JSON.stringify(data));
+        formData.append("session", ENGINE_STATE.sessionID);
+        
+        fetch(BACKEND_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData.toString()
+        }).catch(e => console.log("Sync skipped"));
+    }
+
     // --- RENDERERS ---
     function renderLobby() {
         const container = document.getElementById('master-container');
@@ -429,7 +444,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v84.0 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v84.5 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -445,7 +460,7 @@
                 <div class="grid-btn" onclick="loadDomain('research')">
                     <div class="grid-icon">🧠</div>
                     <div class="grid-label">RESEARCH</div>
-                    <div class="grid-status">50+ NODES</div>
+                    <div class="grid-status">STUDIO LINK</div>
                 </div>
                 <div class="grid-btn" onclick="loadDomain('trivia')">
                     <div class="grid-icon">🧩</div>
@@ -579,13 +594,12 @@
         }
     }
 
-    // --- RESEARCH ---
+    // --- RESEARCH (UPDATED: JSON BRIDGE) ---
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         let topicsHTML = `<div class="topic-grid">`;
         for(let key in CURATED_PATHS) {
             const t = CURATED_PATHS[key];
-            // Only show main topics, not sub-nodes like "FEEDBACK LOOPS" in the main grid
             if(t.summary) {
                 topicsHTML += `<div class="topic-card" onclick="triggerCurated('${key}')"><div class="topic-title">${t.title}</div><div class="topic-desc">${t.summary}</div></div>`;
             }
@@ -613,8 +627,15 @@
         links = links.slice(0, 5);
         const section = document.createElement('section'); section.className = "main-slide next";
         
+        // ADDED: COPY JSON BUTTON
         section.innerHTML = `
-            <div class="slide-header"><span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span><button class="skip-btn-clickable" onclick="saveJSON()">SAVE PDF 💾</button></div>
+            <div class="slide-header">
+                <span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span>
+                <div style="display:flex; gap:10px;">
+                    <button class="skip-btn-clickable" onclick="copyJSON()">COPY JSON 📋</button>
+                    <button class="skip-btn-clickable" onclick="saveJSON()">PDF 💾</button>
+                </div>
+            </div>
             <div class="carousel-viewport">
                 <div class="sub-slide static">
                     <div class="role-label">KNOWLEDGE NODE</div>
@@ -637,6 +658,20 @@
         const ctx = await WIKI_ENGINE.getContext(t);
         ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
         buildResearchDeck(ctx);
+    }
+
+    // --- JSON BRIDGE ---
+    function copyJSON() {
+        const payload = ENGINE_STATE.researchPath.map((item, i) => ({
+            id: `NODE_${ENGINE_STATE.sessionID}_${i}`,
+            title: item.title.toUpperCase(),
+            body: item.summary,
+            source: "DECIDE ENGINE RESEARCH"
+        }));
+        
+        navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+        showToast("JSON COPIED! PASTE IN STUDIO");
+        logToSheet(payload); // Also log to backend
     }
 
     function saveJSON() {
