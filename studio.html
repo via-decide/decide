@@ -12,7 +12,7 @@
 :root{
   --bg:#09090b;--panel:#121214;--border:#27272a;
   --text:#e4e4e7;--muted:#a1a1aa;
-  --green:#22c55e;--blue:#3b82f6;--purple:#a855f7;
+  --green:#22c55e;--blue:#3b82f6;--purple:#a855f7;--red:#ef4444;
   --font:'Courier New',monospace;
 }
 *{box-sizing:border-box}
@@ -26,7 +26,6 @@ body{
   margin-bottom: 20px;
 }
 .header{display:flex;justify-content:space-between;margin-bottom:1rem;border-bottom:1px solid var(--border);padding-bottom:10px}
-
 
 /* ZONES */
 .grid-zones { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
@@ -58,6 +57,7 @@ button{
 button.ready{background:var(--green);color:#000;cursor:pointer}
 button.blue{background:var(--blue);color:#fff;cursor:pointer}
 button.purple{background:var(--purple);color:#fff;cursor:pointer}
+button.red{background:var(--red);color:#fff;cursor:pointer}
 button:active { transform: scale(0.98); }
 
 /* OUTPUT */
@@ -99,16 +99,16 @@ button:active { transform: scale(0.98); }
       </div>
 
       <div style="display:flex; flex-direction:column;">
-          <textarea id="json-input" class="json-box" placeholder="PASTE JSON PAYLOAD HERE..."></textarea>
+          <textarea id="json-input" class="json-box" placeholder="PASTE JSON FROM DECIDE ENGINE..."></textarea>
           <button id="load-json" class="blue" style="margin-top:0; padding:0.5rem">LOAD JSON PAYLOAD</button>
       </div>
   </div>
 
   <div class="controls">
       <button id="gen">1. GENERATE SCRIPT</button>
-      <button id="export-json" class="purple">2. EXPORT DATA JSON</button>
+      <button id="yt" class="red">2. YOUTUBE POST</button>
       <button id="pdf-script">3. SAVE SCRIPT PDF</button>
-      <button id="pdf-source">4. REGEN USER PDF</button>
+      <button id="export-json" class="purple">4. EXPORT DATA</button>
   </div>
   
   <div class="status-bar" id="status">Waiting for data...</div>
@@ -126,14 +126,15 @@ const status = document.getElementById('status');
 const out = document.getElementById('out');
 
 const btnGen = document.getElementById('gen');
+const btnYt = document.getElementById('yt');
 const btnJson = document.getElementById('export-json');
 const btnPdfScript = document.getElementById('pdf-script');
-const btnPdfSource = document.getElementById('pdf-source');
 const btnLoadJson = document.getElementById('load-json');
 
 /* --- STATE --- */
 let ALL_NODES = [];
 let SCRIPT_TEXTS = [];
+let SESSION_ID = "SID-" + Math.random().toString(36).slice(2,6).toUpperCase();
 
 /* --- 1. PDF INGESTION --- */
 fileInput.onchange = async e => {
@@ -173,7 +174,7 @@ btnLoadJson.onclick = () => {
         const data = JSON.parse(raw);
         if(Array.isArray(data)) {
             ALL_NODES = data;
-            status.textContent = `Payload Loaded: ${ALL_NODES.length} Nodes`;
+            status.textContent = `Payload Loaded: ${ALL_NODES.length} Nodes from Decide Engine`;
             finishLoad();
         } else {
             alert("Invalid JSON Format (Must be Array)");
@@ -185,12 +186,11 @@ btnLoadJson.onclick = () => {
 
 /* --- LOGIC: NODE PARSER --- */
 function extractNodes(t, source){
-  // Simple regex to split by "NODE X" or assume full doc
   const parts = t.split(/NODE\s*\d+/i);
   
   if(parts.length > 1) {
       parts.forEach((p,i)=>{
-        if(i===0) return; // skip pre-match
+        if(i===0) return;
         p = p.trim();
         if(p.length < 20) return;
         ALL_NODES.push({
@@ -201,23 +201,20 @@ function extractNodes(t, source){
         });
       });
   } else {
-      // Fallback for non-formatted docs
       ALL_NODES.push({
           id: `DOC_${Date.now()}`,
           title: `FULL DOC (${source})`,
-          body: t.slice(0, 5000), // Cap at 5k chars for safety
+          body: t.slice(0, 5000),
           source: source
       });
   }
 }
 
 function finishLoad() {
-    status.textContent = `Ready: ${ALL_NODES.length} data nodes loaded.`;
+    status.textContent = `Ready: ${ALL_NODES.length} research nodes loaded.`;
     btnGen.classList.add('ready');
     btnGen.disabled = false;
     btnJson.disabled = false;
-    
-    // Auto-fill JSON box for safety
     jsonInput.value = JSON.stringify(ALL_NODES, null, 2);
 }
 
@@ -230,13 +227,12 @@ btnGen.onclick = () => {
   if(ALL_NODES.length === 0) return alert("No data loaded!");
 
   ALL_NODES.forEach((n, i) => {
-    // Logic: 150 words = ~1 minute (avg speaking)
     const words = n.body.split(/\s+/).length;
     const seconds = Math.min(60, Math.max(15, Math.round(words / 2.5))); 
     totalTime += seconds;
 
     const scriptBlock = 
-`SCENE ${i+1} [${n.title}]
+`SCENE ${i+1} [${n.title || 'RESEARCH'}]
 SOURCE: ${n.source}
 TIMING: ${seconds}s Est.
 
@@ -251,110 +247,174 @@ NARRATION:
     renderUIBlock(scriptBlock, i);
   });
 
-  // Enable Exports
   btnPdfScript.classList.add('ready');
   btnPdfScript.disabled = false;
-  btnPdfSource.classList.add('ready');
-  btnPdfSource.disabled = false;
+  btnYt.disabled = false;
+  btnYt.classList.add('ready'); // Red button active
   
-  status.textContent = `Generated ${SCRIPT_TEXTS.length} scenes. Total runtime: ~${Math.round(totalTime/60)} mins.`;
+  status.textContent = `Generated ${SCRIPT_TEXTS.length} scenes. Runtime: ~${Math.round(totalTime/60)}m.`;
 };
 
-/* --- UI RENDERER --- */
+/* --- 4. YOUTUBE POST GENERATOR --- */
+btnYt.onclick = () => {
+  if (!ALL_NODES.length) return alert("Generate script first");
+
+  const topic = inferTopic(ALL_NODES);
+  const bullets = inferBullets(ALL_NODES);
+
+  const ytPost = `
+TITLE:
+${topic.main}
+
+ALT TITLES:
+${topic.alt.join('\n')}
+
+---
+
+DESCRIPTION:
+
+${topic.hook}
+
+In this video, we break down:
+
+${bullets.map(b => `• ${b}`).join('\n')}
+
+This video was generated using a research-driven studio engine that converts
+multi-source documents into a scene-based visual narrative.
+
+---
+
+🔗 Explore the Engine Behind This Video
+
+🧠 Interactive Research Engine  
+https://viadecide.com/
+
+🎬 Engine Walkthrough & Updates  
+https://www.youtube.com/@decide.engine
+
+📄 Research → Script → Video Pipeline  
+Session ID: ${SESSION_ID}  
+Multi-PDF merged research  
+Scene-timed narration system  
+
+---
+
+🧪 How this video was made
+
+Wikipedia + scientific context extraction  
+Multi-PDF merge into a single narrative  
+Scene timing + voice pacing calibration  
+Converted into a studio-ready script  
+
+This is not animation-first content.  
+This is thinking-first video.
+
+---
+
+PINNED COMMENT:
+
+This video was built using a research → script → video engine.
+
+🧠 Try the interactive engine  
+https://viadecide.com/
+
+🎬 See how these videos are generated  
+https://www.youtube.com/@decide.engine
+
+📄 Research Session ID: ${SESSION_ID}
+
+Reply "${topic.cta}" if you want more like this.
+`;
+
+  renderUIBlock(ytPost, -1); // -1 marks special block
+};
+
+/* --- HELPERS --- */
+function inferTopic(nodes){
+  const text = nodes.map(n => n.body).join(' ').toLowerCase();
+
+  if (text.includes('sun') || text.includes('fusion')) {
+    return {
+      main: "What Actually Happens Inside the Sun? (Fusion, Flares & Solar Storms Explained)",
+      alt: ["The Sun Is Not What You Think", "Inside the Sun: Physics Powering Solar System"],
+      hook: "The Sun is not just a glowing ball in the sky. It is a self-regulating nuclear engine.",
+      cta: "SUN"
+    };
+  }
+  if (text.includes('system') || text.includes('feedback')) {
+    return {
+      main: "Systems Thinking: How Everything is Connected",
+      alt: ["Why Feedback Loops Rule the World", "Cybernetics Explained"],
+      hook: "From biology to economics, the same hidden laws govern everything.",
+      cta: "SYSTEMS"
+    };
+  }
+
+  return {
+    main: "Deep Dive Research Analysis",
+    alt: ["Explaining Complex Topics", "Visual Research Breakdown"],
+    hook: "Breaking down complex systems using structured research data.",
+    cta: "MORE"
+  };
+}
+
+function inferBullets(nodes){
+  const keywords = ["fusion", "sunspots", "flare", "wind", "magnetic", "feedback", "cybernetics", "agent", "simulation"];
+  const found = new Set();
+  nodes.forEach(n => {
+    keywords.forEach(k => {
+      if (n.body && n.body.toLowerCase().includes(k)) found.add(k);
+    });
+  });
+  return [...found].map(k => "Understanding " + k.toUpperCase());
+}
+
 function renderUIBlock(text, idx){
   const d = document.createElement('div');
   d.className = 'block';
   d.innerHTML = 
-    `<div class="label">SCENE ${idx+1} // GENERATED</div>
+    `<div class="label">${idx === -1 ? 'YOUTUBE METADATA' : `SCENE ${idx+1}`}</div>
      <div class="text">${text}</div>
      <div class="actions">
-       <button class="copy-btn" onclick="copyToClip(${idx})">COPY TEXT</button>
+       <button class="copy-btn" onclick="copyToClip('${encodeURIComponent(text)}')">COPY TEXT</button>
      </div>`;
   out.appendChild(d);
 }
 
-function copyToClip(i) {
-    navigator.clipboard.writeText(SCRIPT_TEXTS[i]);
+function copyToClip(text) {
+    navigator.clipboard.writeText(decodeURIComponent(text));
     alert("Copied to clipboard");
 }
 
 function trim(str, n) {
-    return (str.length > n) ? str.substr(0, n-1) + '...' : str;
+    return (str && str.length > n) ? str.substr(0, n-1) + '...' : str;
 }
 
-/* --- 4. EXPORT HANDLERS --- */
-
-// A. EXPORT JSON (The Payload)
+/* --- EXPORTS --- */
 btnJson.onclick = () => {
     const payload = JSON.stringify(ALL_NODES, null, 2);
     navigator.clipboard.writeText(payload);
-    jsonInput.value = payload;
-    alert("JSON Payload Copied! Save this text file to reload later.");
+    alert("JSON Payload Copied!");
 };
 
-// B. EXPORT SCRIPT PDF
 btnPdfScript.onclick = () => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
     doc.setFont("courier", "bold");
     doc.setFontSize(16);
     doc.text("MEDIA FORGE // STUDIO SCRIPT", 20, 20);
-    
     doc.setFontSize(10);
     doc.setFont("courier", "normal");
     
     let y = 30;
-    
     SCRIPT_TEXTS.forEach((txt, i) => {
         if(y > 250) { doc.addPage(); y = 20; }
-        
-        doc.text(`--- SCENE ${i+1} ---`, 20, y);
-        y += 7;
-        
+        doc.text(`--- SCENE ${i+1} ---`, 20, y); y += 7;
         const lines = doc.splitTextToSize(txt, 170);
         doc.text(lines, 20, y);
         y += (lines.length * 5) + 10;
     });
-    
     doc.save("Studio_Script_Output.pdf");
-};
-
-// C. REGENERATE USER PDF (Source Reconstruction)
-btnPdfSource.onclick = () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let y = 20;
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("RECONSTRUCTED SOURCE DOCUMENT", 20, y);
-    y += 15;
-
-    doc.setFont("times", "normal");
-    doc.setFontSize(11);
-
-    ALL_NODES.forEach((n, i) => {
-        if(y > 270) { doc.addPage(); y = 20; }
-
-        // Header
-        doc.setFont("helvetica", "bold");
-        doc.text(`[NODE ${i+1}] ${n.title}`, 20, y);
-        y += 7;
-
-        // Body
-        doc.setFont("times", "normal");
-        const lines = doc.splitTextToSize(n.body, 170);
-        doc.text(lines, 20, y);
-        y += (lines.length * 5) + 10;
-        
-        // Separator
-        doc.setDrawColor(200);
-        doc.line(20, y-5, 190, y-5);
-        y += 5;
-    });
-
-    doc.save("Reconstructed_Source.pdf");
 };
 
 </script>
