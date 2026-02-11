@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v85.2 (Stable)</title>
+    <title>Decide Engine | OS v85.3 (Cognition)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,13 +14,13 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v85.2
+           CORE SYSTEM | DECIDE OS v85.3
            ========================================= */
         :root {
             --brand-orange: #ff671f;
             --brand-gold: #ffb700;
             --brand-dark: #050505;
-            --glass-surface: rgba(20, 20, 20, 0.85); /* Slightly darker for readability */
+            --glass-surface: rgba(20, 20, 20, 0.85);
             --glass-border: rgba(255, 255, 255, 0.15);
             --text-main: #ffffff;
             --text-muted: #a0a0a0;
@@ -153,7 +153,7 @@
             mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
             touch-action: pan-y; 
             cursor: text;
-            user-select: text; /* Allow selection */
+            user-select: text; 
             -webkit-user-select: text;
         }
         .wiki-summary::-webkit-scrollbar { width: 6px; }
@@ -210,7 +210,7 @@
         .deal-tag { color: var(--accent-go); font-size: 0.8rem; font-weight: bold; background: rgba(0, 230, 118, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-family: var(--font-tech); }
         .nav-hint { margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; font-family: var(--font-tech); font-size: 0.7rem; color: #555; }
         .skip-btn-clickable { cursor: pointer; padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; color: #aaa; pointer-events: auto; }
-        .skip-btn-clickable:hover { background: rgba(255,255,255,0.15); color:#fff; }
+        .skip-btn-clickable:hover { background: rgba(255,255,255,0.15); color: #fff; }
         .final-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; width: 100%; }
 
     </style>
@@ -243,7 +243,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v85.2 (STABLE & FLUID)
+       KUTCH AUTOMATION | v85.3 (COGNITION)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
@@ -374,7 +374,84 @@
         review: { label: "ENGINE REVIEW ↗", init: () => window.open(YOUTUBE_CHANNEL, '_blank') }
     };
 
-    // --- ENGINES ---
+    // --- PATCH 5: KNOWLEDGE PIPELINE (REPLACES OLD WIKI_ENGINE) ---
+    const WIKI_ENGINE = {
+        async resolveTitle(query) {
+            try {
+                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
+                const res = await fetch(url);
+                const data = await res.json();
+                return data[1]?.[0] || null;
+            } catch(e) { return null; }
+        },
+
+        async fetchSummary(title) {
+            try {
+                const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+                const res = await fetch(url);
+                if(!res.ok) return null;
+                return await res.json();
+            } catch(e) { return null; }
+        },
+
+        async fetchLinks(title) {
+            try {
+                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&prop=links&titles=${encodeURIComponent(title)}&pllimit=20&format=json`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                if (pageId === "-1") return [];
+                const rawLinks = pages[pageId].links || [];
+                return rawLinks.map(l => l.title);
+            } catch(e) { return []; }
+        },
+
+        async fetchWikidataFacts(title) {
+            try {
+                const searchUrl = `https://www.wikidata.org/w/api.php?origin=*&action=wbsearchentities&search=${encodeURIComponent(title)}&language=en&format=json`;
+                const res = await fetch(searchUrl);
+                const data = await res.json();
+                const id = data.search?.[0]?.id;
+                if(!id) return null;
+                // Hook ready for future use
+                return id; 
+            } catch(e) { return null; }
+        },
+
+        async buildKnowledgeNode(query) {
+            // 1. Check Local Cache First
+            if(CURATED_PATHS[query.toUpperCase()]) {
+                const c = CURATED_PATHS[query.toUpperCase()];
+                return { 
+                    title: c.title, 
+                    summary: c.summary, 
+                    description: "Curated Knowledge Node",
+                    links: c.links.map(l => ({name: l}))
+                };
+            }
+
+            // 2. Resolve Valid Title
+            const title = await this.resolveTitle(query);
+            if(!title) return null;
+
+            // 3. Fetch Rich Content & Links Parallel
+            const [summary, links, factId] = await Promise.all([
+                this.fetchSummary(title),
+                this.fetchLinks(title),
+                this.fetchWikidataFacts(title) // Background fetch
+            ]);
+
+            return {
+                title: summary?.title || title,
+                summary: summary?.extract || "No extract available.",
+                description: summary?.description || "Research Topic",
+                thumbnail: summary?.thumbnail?.source || null,
+                links: links.slice(0, 5).map(l => ({name: l}))
+            };
+        }
+    };
+
     const TRIVIA_ENGINE = {
         api: "https://opentdb.com/api.php?amount=5&type=multiple",
         async fetch(category = "") {
@@ -384,34 +461,6 @@
                 const data = await res.json();
                 return data.results || [];
             } catch(e) { return []; }
-        }
-    };
-
-    const WIKI_ENGINE = {
-        async search(query) {
-            const upper = query.toUpperCase();
-            if(CURATED_PATHS[upper]) return upper; 
-            try {
-                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                return (data[1] && data[1].length > 0) ? data[1][0] : null;
-            } catch(e) { return null; }
-        },
-        async getContext(title) {
-            if(CURATED_PATHS[title.toUpperCase()]) {
-                const c = CURATED_PATHS[title.toUpperCase()];
-                return { title: c.title, summary: c.summary, links: c.links.map(l => ({name: l})) };
-            }
-            try {
-                const url = `https://en.wikipedia.org/w/api.php?origin=*&action=query&prop=extracts|links&titles=${encodeURIComponent(title)}&redirects=1&exintro=1&explaintext=1&pllimit=20&format=json`;
-                const res = await fetch(url);
-                const data = await res.json();
-                const pageId = Object.keys(data.query.pages)[0];
-                if(pageId === "-1") return { title: "Not Found", summary: "", links: [] };
-                const page = data.query.pages[pageId];
-                return { title: page.title, summary: page.extract || "No summary.", links: page.links ? page.links.map(l => ({name: l.title})) : [] };
-            } catch(e) { return { title: "Error", summary: "Connection Failed.", links: [] }; }
         }
     };
 
@@ -459,7 +508,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v85.2 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v85.3 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -475,7 +524,7 @@
                 <div class="grid-btn" onclick="loadDomain('research')">
                     <div class="grid-icon">🧠</div>
                     <div class="grid-label">RESEARCH</div>
-                    <div class="grid-status">STUDIO LINK</div>
+                    <div class="grid-status">COGNITION ENGINE</div>
                 </div>
                 <div class="grid-btn" onclick="loadDomain('trivia')">
                     <div class="grid-icon">🧩</div>
@@ -609,7 +658,7 @@
         }
     }
 
-    // --- RESEARCH (UPDATED: JSON BRIDGE) ---
+    // --- RESEARCH (UPDATED: PIPELINE ENABLED) ---
     async function renderSearchSlide() {
         const section = document.createElement('section'); section.className = "main-slide next";
         let topicsHTML = `<div class="topic-grid">`;
@@ -630,19 +679,20 @@
         const q = document.getElementById('search-input').value;
         if(!q) return showToast("ENTER TOPIC");
         showToast("FORGING NODE...");
-        const title = await WIKI_ENGINE.search(q);
-        if(!title) return showToast("NOT FOUND");
-        const context = await WIKI_ENGINE.getContext(title);
-        ENGINE_STATE.researchPath = [{ title: context.title, summary: context.summary }];
-        buildResearchDeck(context);
+        
+        // Use new Pipeline
+        const node = await WIKI_ENGINE.buildKnowledgeNode(q);
+        
+        if(!node) return showToast("NOT FOUND");
+        
+        ENGINE_STATE.researchPath = [node];
+        buildResearchDeck(node);
     }
 
     function buildResearchDeck(context) {
-        let links = context.links || [];
-        links = links.slice(0, 5);
+        const links = context.links || [];
         const section = document.createElement('section'); section.className = "main-slide next";
         
-        // ADDED: COPY JSON BUTTON
         section.innerHTML = `
             <div class="slide-header">
                 <span class="header-title">DEPTH: ${ENGINE_STATE.researchPath.length}</span>
@@ -653,14 +703,14 @@
             </div>
             <div class="carousel-viewport">
                 <div class="sub-slide static">
-                    <div class="role-label">KNOWLEDGE NODE</div>
+                    <div class="role-label">${context.description ? context.description.toUpperCase() : 'KNOWLEDGE NODE'}</div>
                     <h1>${context.title}</h1>
                     <div class="wiki-summary">${context.summary}</div>
                     <div class="nav-hint"><span>SWIPE DOWN: BACK</span><span style="color:var(--accent-go)">UP: DIG DEEPER</span></div>
                 </div>
                 ${links.map((link, i) => `
                     <div class="sub-slide opt-hidden" data-val="${link.name}">
-                        <div class="role-label">RELATED PATH ${i+1}/5</div>
+                        <div class="role-label">RELATED PATH ${i+1}/${links.length}</div>
                         <h1>${link.name}</h1>
                         <div class="nav-hint"><span class="skip-btn-clickable" onclick="manualSkip(this)">SKIP</span><span style="color:var(--accent-go)">SELECT &uarr;</span></div>
                     </div>`).join('')}
@@ -670,9 +720,11 @@
 
     async function diveDeeper(t) {
         showToast("DIVING...");
-        const ctx = await WIKI_ENGINE.getContext(t);
-        ENGINE_STATE.researchPath.push({ title: ctx.title, summary: ctx.summary });
-        buildResearchDeck(ctx);
+        const node = await WIKI_ENGINE.buildKnowledgeNode(t);
+        if(!node) { showToast("DATA ERROR"); return; }
+        
+        ENGINE_STATE.researchPath.push(node);
+        buildResearchDeck(node);
     }
 
     // --- JSON BRIDGE ---
@@ -886,8 +938,6 @@
             // Scroll Guard for mobile
             const scrollable = e.target.closest('.wiki-summary');
             if(scrollable) {
-                 // Simple logic: if inside text, don't swipe nav unless explicitly handled
-                 // For now, let's just allow scrolling and block swipe nav on text
                  return;
             }
             handleInput(e.changedTouches[0].clientY, e.target);
