@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Decide Engine | OS v86.1 (Report Fix)</title>
+    <title>Decide Engine | OS v86.2 (Voice Logic)</title>
     
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
 
     <style>
         /* =========================================
-           CORE SYSTEM | DECIDE OS v86.1
+           CORE SYSTEM | DECIDE OS v86.2
            ========================================= */
         :root {
             --brand-orange: #ff671f;
@@ -147,6 +147,7 @@
 
         h1 { font-family: var(--font-ui); font-size: 2rem; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.03em; line-height: 1.1; background: linear-gradient(to right, #fff, #ccc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
+        /* SELECTION & SCROLL FIXES */
         .wiki-summary { 
             font-family: var(--font-ui); font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; 
             font-weight: 400; max-height: 300px; overflow-y: auto; 
@@ -243,7 +244,7 @@
 
 <script>
     /* =========================================
-       KUTCH AUTOMATION | v86.1 (REPORT FIX)
+       KUTCH AUTOMATION | v86.2 (VOICE LOGIC)
        ========================================= */
     
     // --- CONFIG & CONSTANTS ---
@@ -256,16 +257,105 @@
     const UPI_ID = "6351537770@yapl";
     const QR_IMAGE = "1000206276.png"; 
 
-    // 🎙️ VOICE DATA
+    // 🎙️ VOICE DATA - ENGINE LOGIC v86.2
     const VOICE_FEED = [
-      { id: "voice_focus_ai", title: "Voice Focus AI – Call Clarity Explained", mode: "explain", blocks: [{ text: "Voice Focus AI uses a six-microphone array to isolate human voice." }, { text: "It improves both outgoing clarity and incoming audio." }] },
-      { id: "earbuds_buy_wait_2026", title: "Wireless Earbuds – Buy vs Wait (Feb 2026)", mode: "decision", blocks: [{ text: "Buy today: Technics AZ100 for work. Wait for Sony WF-1000XM6." }] }
+      {
+        id: "market_update_feb7",
+        title: "Feb 7 Market Update: Buy vs. Wait",
+        mode: "decision_matrix",
+        blocks: [
+          { text: "Market Analysis for February 7, 2026. Here is the Buy versus Wait decision framework." },
+          { text: "Verdict One: Flagship Evasion. Do not buy Samsung or Sony flagships today. The Sony WF-1000 XM6 launches on February 12th, and Galaxy Buds 4 Pro on February 25th." },
+          { text: "Verdict Two: Immediate Buy Recommendations. For Android and PC users, buy the Technics AZ100 for its 3-device multipoint connection. For iPhone users, the AirPods Pro 3 remain the ecosystem hegemon. For pure silence, the Bose QC Ultra is still the King of ANC." }
+        ]
+      },
+      {
+        id: "tech_deep_dive_beast",
+        title: "Tech Explainer: What is 'Beast Mode'?",
+        mode: "education",
+        blocks: [
+          { text: "Deep Dive into boAt Airdopes 141 specifications." },
+          { text: "Beast Mode is a marketing term for a dedicated low-latency gaming mode. It lowers audio lag to 80 milliseconds." },
+          { text: "Context Analysis: While 80ms is better than standard Bluetooth, it trails behind premium competitors like Realme, which offer 40ms latency." }
+        ]
+      },
+      {
+        id: "tech_deep_dive_voice_focus",
+        title: "Tech Explainer: Voice Focus AI",
+        mode: "education",
+        blocks: [
+          { text: "Analyzing Technics EAH-AZ100 call technology." },
+          { text: "Voice Focus AI uses a six-microphone array paired with an onboard AI chip. Unlike standard noise reduction, it cleans up both your voice, and the voice of the person you are talking to." },
+          { text: "Warning: At maximum suppression levels, it may result in a slightly robotic vocal timbre." }
+        ]
+      }
     ];
 
     // 🧠 50 TOPICS KNOWLEDGE BASE
     const CURATED_PATHS = {
+        // --- COSMOLOGY ---
         "THE BIG BANG": { title: "The Big Bang", summary: "The prevailing cosmological model explaining the existence of the observable universe from the earliest known periods through its subsequent large-scale evolution.", links: ["Cosmic Inflation", "Nucleosynthesis", "CMB Radiation", "Hubble's Law", "The Singularity"] },
-        // ... (Include other topics here)
+        "BLACK HOLES": { title: "Black Holes", summary: "A region of spacetime where gravity is so strong that nothing can escape from it.", links: ["Event Horizon", "Singularity", "Hawking Radiation", "Spaghettification", "Supermassive Black Holes"] },
+        "DARK MATTER": { title: "Dark Matter", summary: "A hypothetical form of matter thought to account for approximately 85% of the matter in the universe and about a quarter of its total energy density.", links: ["Gravitational Lensing", "Galaxy Rotation Curves", "WIMPs", "Cosmic Web", "Dark Energy"] },
+        "FERMI PARADOX": { title: "The Fermi Paradox", summary: "The apparent contradiction between the lack of evidence for extraterrestrial civilizations and various high estimates for their probability.", links: ["Great Filter", "Drake Equation", "Zoo Hypothesis", "Von Neumann Probes", "Rare Earth Hypothesis"] },
+        "NEUTRON STARS": { title: "Neutron Stars", summary: "The collapsed core of a massive supergiant star, which had a total mass of between 10 and 25 solar masses.", links: ["Pulsars", "Magnetars", "Supernova", "Degeneracy Pressure", "Kilonova"] },
+        "STRING THEORY": { title: "String Theory", summary: "A theoretical framework in which the point-like particles of particle physics are replaced by one-dimensional objects called strings.", links: ["M-Theory", "Extra Dimensions", "Quantum Gravity", "Supersymmetry", "Branes"] },
+        "EXOPLANETS": { title: "Exoplanets", summary: "A planet outside the Solar System. The first evidence of an exoplanet was noted in 1917, but was not recognized as such.", links: ["Goldilocks Zone", "Transit Method", "Hot Jupiters", "Super-Earths", "Biosignatures"] },
+        "THE MULTIVERSE": { title: "The Multiverse", summary: "A hypothetical group of multiple universes. Together, these universes comprise everything that exists.", links: ["Bubble Universes", "Many-Worlds Theory", "Parallel Dimensions", "Cosmic Inflation", "Fine-Tuning"] },
+        "ENTROPY": { title: "Entropy", summary: "The eventual fate of the universe where it has diminished to a state of no thermodynamic free energy and therefore can no longer sustain processes that increase entropy.", links: ["Second Law", "Thermodynamics", "Arrow of Time", "The Big Freeze", "Maxwell's Demon"] },
+        "DYSON SPHERES": { title: "Dyson Spheres", summary: "A hypothetical megastructure that completely encompasses a star and captures a large percentage of its solar power output.", links: ["Kardashev Scale", "Megastructures", "Technosignatures", "Matrioshka Brain", "Stellar Engines"] },
+        "GENERAL RELATIVITY": { title: "General Relativity", summary: "The geometric theory of gravitation published by Albert Einstein in 1915 and the current description of gravitation in modern physics.", links: ["Spacetime Curvature", "Time Dilation", "Gravitational Waves", "Equivalence Principle", "Wormholes"] },
+        "THE SUN": { title: "The Sun", summary: "The star around which the earth orbits. It is the dominant body of the solar system.", links: ["Nuclear Fusion", "Solar Flares", "Corona", "Sunspots", "Solar Wind"] },
+        "ASTROBIOLOGY": { title: "Astrobiology", summary: "The study of the origin, evolution, distribution, and future of life in the universe.", links: ["Panspermia", "Extremophiles", "SETI", "Habitability", "Europa Clipper"] },
+        "THE MOON": { title: "The Moon", summary: "Earth's only natural satellite.", links: ["Tidal Locking", "Lunar Mare", "Apollo Program", "Impact Theory", "Lunar Water"] },
+        
+        // --- HISTORY ---
+        "FALL OF ROME": { title: "Fall of Rome", summary: "The process of decline in the Western Roman Empire in which the Empire failed to enforce its rule.", links: ["Visigoths", "Constantine", "Economic Inflation", "Military Decline", "Migration Period"] },
+        "SILK ROAD": { title: "The Silk Road", summary: "A network of trade routes connecting the East and West, central to economic interactions.", links: ["Marco Polo", "Spice Trade", "Cultural Exchange", "Han Dynasty", "Byzantine Empire"] },
+        "INDUSTRIAL REVOLUTION": { title: "Industrial Revolution", summary: "The transition to new manufacturing processes in Great Britain, continental Europe, and the United States.", links: ["Steam Engine", "Urbanization", "Textile Industry", "Capitalism", "Labor Unions"] },
+        "FRENCH REVOLUTION": { title: "French Revolution", summary: "A period of radical political and societal change in France.", links: ["Napoleon", "Guillotine", "Reign of Terror", "Louis XVI", "Enlightenment"] },
+        "COLD WAR": { title: "The Cold War", summary: "A period of geopolitical tension between the Soviet Union and the United States.", links: ["Nuclear Arms Race", "Space Race", "Berlin Wall", "Cuban Missile Crisis", "Espionage"] },
+        "THE RENAISSANCE": { title: "The Renaissance", summary: "A fervent period of European cultural, artistic, political and economic rebirth.", links: ["Da Vinci", "Humanism", "Medici Family", "Printing Press", "Galileo"] },
+        "VIKINGS": { title: "Vikings", summary: "Norse seafarers who raided, traded, and settled in wide areas of Europe.", links: ["Longships", "Norse Mythology", "Ragnar Lothbrok", "Valhalla", "Lindisfarne"] },
+        "MONGOL EMPIRE": { title: "Mongol Empire", summary: "The largest contiguous land empire in history. Originating in Mongolia in East Asia.", links: ["Genghis Khan", "Silk Road Safety", "Horse Archery", "Pax Mongolica", "Kublai Khan"] },
+        "BLACK DEATH": { title: "The Black Death", summary: "A bubonic plague pandemic occurring in Western Eurasia and North Africa.", links: ["Yersinia Pestis", "Plague Doctor", "Feudalism Decline", "Quarantine", "Danse Macabre"] },
+        "ANCIENT EGYPT": { title: "Ancient Egypt", summary: "A civilization of ancient North Africa.", links: ["Pyramids", "Pharaohs", "Hieroglyphs", "Mummification", "Cleopatra"] },
+        "SAMURAI": { title: "Samurai", summary: "The hereditary military nobility and officer caste of medieval Japan.", links: ["Bushido", "Katana", "Shogunate", "Ronin", "Seppuku"] },
+        "ALEXANDER THE GREAT": { title: "Alexander the Great", summary: "A king of the ancient Greek kingdom of Macedon.", links: ["Hellenistic Period", "Macedonian Phalanx", "Persian Empire", "Aristotle", "Library of Alexandria"] },
+        "MAYA CIVILIZATION": { title: "Maya Civilization", summary: "A Mesoamerican civilization noted for its logosyllabic script.", links: ["Chichen Itza", "Maya Calendar", "Human Sacrifice", "Step Pyramids", "Cenotes"] },
+        "WORLD WAR I": { title: "World War I", summary: "A global war originating in Europe that lasted from 1914 to 1918.", links: ["Trench Warfare", "Treaty of Versailles", "Archduke Franz Ferdinand", "Chemical Weapons", "No Man's Land"] },
+        "THE CRUSADES": { title: "The Crusades", summary: "A series of religious wars initiated by the Latin Church.", links: ["Knights Templar", "Saladin", "Holy Land", "Siege of Jerusalem", "Richard the Lionheart"] },
+
+        // --- MODERN / SYSTEMS ---
+        "SYSTEMS THINKING": { 
+            title: "Systems Thinking", 
+            summary: "A holistic approach to analysis that focuses on the way that a system's constituent parts interrelate and how systems work over time.", 
+            links: ["FEEDBACK LOOPS", "CYBERNETICS", "AGENT-BASED MODEL", "SOCIAL SIMULATION", "Emergence"] 
+        },
+        "FEEDBACK LOOPS": { title: "Feedback Loops", summary: "A process in which the outputs of a system are circled back and used as inputs (Node 01).", links: ["Positive Feedback", "Negative Feedback", "Homeostasis", "Runaway Effect", "Control Theory"] },
+        "CYBERNETICS": { title: "Cybernetics", summary: "The transdisciplinary study of circular causal processes such as feedback and recursion (Node 02).", links: ["Norbert Wiener", "Steering", "Macy Conferences", "Information Theory", "Second-Order Cybernetics"] },
+        "AGENT-BASED MODEL": { title: "Agent-Based Model (ABM)", summary: "Computational model for simulating the actions and interactions of autonomous agents (Node 03).", links: ["Game Theory", "Complex Systems", "Cellular Automata", "NetLogo", "Emergent Behavior"] },
+        "SOCIAL SIMULATION": { title: "Social Simulation", summary: "Scientific discipline concerned with simulation of social phenomena using multi-agent models (Node 04).", links: ["Artificial Society", "Computational Sociology", "Opinion Dynamics", "Crowd Simulation", "Economic Modeling"] },
+        
+        "GENERATIVE AI": { title: "Generative AI", summary: "AI capable of generating text, images, or other media.", links: ["LLMs", "Diffusion Models", "Transformer Architecture", "Neural Networks", "AI Ethics"] },
+        "BLOCKCHAIN": { title: "Blockchain", summary: "A distributed database or ledger.", links: ["Decentralization", "Smart Contracts", "Cryptography", "Bitcoin", "Web3"] },
+        "GAME THEORY": { title: "Game Theory", summary: "Models of strategic interaction among rational decision-makers.", links: ["Nash Equilibrium", "Prisoner's Dilemma", "Zero-Sum Game", "Coordination", "Behavioral Economics"] },
+        "CRISPR": { title: "CRISPR", summary: "A family of DNA sequences found in the genomes of prokaryotic organisms.", links: ["Gene Editing", "Cas9", "Bioethics", "Designer Babies", "Genetic Engineering"] },
+        "QUANTUM COMPUTING": { title: "Quantum Computing", summary: "Computation harnessing quantum states.", links: ["Qubits", "Superposition", "Quantum Supremacy", "Cryptography Break", "Shor's Algorithm"] },
+        "NEURALINK": { title: "Brain-Computer Interface", summary: "Communication pathway between a brain and an external device.", links: ["Neural Lace", "Cyborgs", "Neuroscience", "Prosthetics", "AI Symbiosis"] },
+        "THE SINGULARITY": { title: "Technological Singularity", summary: "A hypothetical point in time at which technological growth becomes uncontrollable.", links: ["Artificial Superintelligence", "Moore's Law", "Transhumanism", "Ray Kurzweil", "Intelligence Explosion"] },
+        "CIRCULAR ECONOMY": { title: "Circular Economy", summary: "A model of production and consumption involving sharing and reusing.", links: ["Sustainability", "Zero Waste", "Supply Chain", "Green Tech", "Planned Obsolescence"] },
+        "MINIMALISM": { title: "Digital Minimalism", summary: "Focusing online time on a small number of carefully selected activities.", links: ["Deep Work", "Attention Economy", "Dopamine Detox", "Essentialism", "Slow Living"] },
+        "METAVERSE": { title: "The Metaverse", summary: "A hypothetical iteration of the Internet as a universal virtual world.", links: ["Virtual Reality", "Augmented Reality", "Digital Avatars", "Spatial Computing", "NFTs"] },
+        "STOICISM": { title: "Stoicism", summary: "A school of Hellenistic philosophy teaching acceptance of the moment.", links: ["Marcus Aurelius", "Seneca", "Amor Fati", "Dichotomy of Control", "Virtue Ethics"] },
+        "FIRST PRINCIPLES": { title: "First Principles", summary: "A method of thinking that breaks problems down to their fundamental truths.", links: ["Reasoning", "Elon Musk", "Physics", "Innovation", "Deconstruction"] },
+        "NETWORK EFFECTS": { title: "Network Effects", summary: "Value derived from the number of users of compatible products.", links: ["Metcalfe's Law", "Social Media", "Virality", "Critical Mass", "Platform Economy"] },
+        "AGILE METHODOLOGY": { title: "Agile Methodology", summary: "Software development where solutions evolve through collaborative effort.", links: ["Scrum", "Kanban", "Iterative Design", "Sprints", "MVP"] },
+        "FUSION ENERGY": { title: "Fusion Energy", summary: "Generating electricity by using heat from nuclear fusion reactions.", links: ["Tokamak", "Clean Energy", "Plasma Physics", "ITER", "Unlimited Power"] },
+        "VERTICAL FARMING": { title: "Vertical Farming", summary: "Growing crops in vertically stacked layers.", links: ["Hydroponics", "Aeroponics", "Food Security", "Urban Agriculture", "Sustainable Farming"] },
+        "BIOHACKING": { title: "Biohacking", summary: "Do-it-yourself biology.", links: ["Nootropics", "Quantified Self", "Intermittent Fasting", "Genomics", "Longevity"] },
+        "SPACE TOURISM": { title: "Space Tourism", summary: "Human space travel for recreational purposes.", links: ["SpaceX", "Blue Origin", "Virgin Galactic", "Commercial Spaceflight", "Zero Gravity"] },
+        "SMART CITIES": { title: "Smart Cities", summary: "Urban area using sensors to collect data.", links: ["IoT", "Urban Planning", "Autonomous Vehicles", "5G Networks", "Big Data"] }
     };
 
     const PHONE_DB = {
@@ -593,7 +683,7 @@
         
         section.innerHTML = `
             <div class="slide-header">
-                <span class="header-title">DECIDE OS v86.1 <div class="status-dot"></div></span>
+                <span class="header-title">DECIDE OS v85.4 <div class="status-dot"></div></span>
             </div>
             <div class="lobby-grid">
                 <div class="grid-btn" onclick="loadDomain('smartphones')">
@@ -878,6 +968,7 @@
     function copyJSON() {
         const payload = ENGINE_STATE.researchPath.map((item, i) => ({ id: `NODE_${ENGINE_STATE.sessionID}_${i}`, title: item.title.toUpperCase(), body: item.summary, source: "DECIDE ENGINE RESEARCH" }));
         navigator.clipboard.writeText(JSON.stringify(payload, null, 2)); showToast("JSON COPIED! PASTE IN STUDIO");
+        logToSheet(payload); 
     }
     function saveJSON() {
         const { jsPDF } = window.jspdf; const doc = new jsPDF();
