@@ -397,26 +397,68 @@ btnJson.onclick = () => {
     alert("JSON Payload Copied!");
 };
 
-btnPdfScript.onclick = () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFont("courier", "bold");
-    doc.setFontSize(16);
-    doc.text("MEDIA FORGE // STUDIO SCRIPT", 20, 20);
-    doc.setFontSize(10);
-    doc.setFont("courier", "normal");
-    
-    let y = 30;
-    SCRIPT_TEXTS.forEach((txt, i) => {
-        if(y > 250) { doc.addPage(); y = 20; }
-        doc.text(`--- SCENE ${i+1} ---`, 20, y); y += 7;
-        const lines = doc.splitTextToSize(txt, 170);
-        doc.text(lines, 20, y);
-        y += (lines.length * 5) + 10;
-    });
-    doc.save("Studio_Script_Output.pdf");
-};
+btnGen.onclick = () => {
+  out.innerHTML = '';
+  SCRIPT_TEXTS = [];
+  let totalTime = 0;
 
-</script>
+  if (ALL_NODES.length === 0) {
+    alert("No data loaded!");
+    return;
+  }
+
+  // 1. Normalize & cluster nodes
+  const clusters = buildNarrativeClusters(ALL_NODES);
+
+  // 2. Build scenes from clusters
+  clusters.forEach((cluster, i) => {
+    const body = cluster.text;
+    const words = body.split(/\s+/).length;
+
+    // Narrative pacing (slower, explainer-grade)
+    const seconds = clamp(Math.round(words / 2.2), 25, 55);
+    const pace = Math.round((words / seconds) * 60);
+    totalTime += seconds;
+
+    const script =
+`SCENE ${i + 1}: ${cluster.title}
+ROLE: ${cluster.role}
+DURATION: ${seconds}s
+VOICE PACE: ${pace} WPM
+
+VISUAL DIRECTION:
+Dark studio background
+Minimal kinetic typography
+One concept per screen
+Slow camera push, no stock footage
+
+NARRATION:
+${body}
+`;
+
+    SCRIPT_TEXTS.push(script);
+    renderUIBlock(script, i);
+  });
+
+  renderUIBlock(
+`STRUCTURE SUMMARY
+Scenes: ${SCRIPT_TEXTS.length}
+Estimated Runtime: ~${Math.round(totalTime / 60)} minutes
+
+This script is optimized for:
+• Explainer videos
+• Knowledge retention
+• Canva / NotebookLM narration
+`,
+-2);
+
+  btnPdfScript.classList.add('ready');
+  btnPdfScript.disabled = false;
+  btnYt.classList.add('ready');
+  btnYt.disabled = false;
+
+  status.textContent =
+    `Narrative script generated (${SCRIPT_TEXTS.length} scenes, ~${Math.round(totalTime / 60)} min).`;
+};</script>
 </body>
 </html>
